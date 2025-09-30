@@ -78,6 +78,10 @@
           <div class="divider">
             <span>or</span>
           </div>
+          <p class="signup-prompt">
+            Don't have an account?
+            <router-link to="/admin/signup" class="signup-link">Sign Up</router-link>
+          </p>
           <Button
             label="Back to Home"
             icon="pi pi-home"
@@ -202,13 +206,7 @@ async function handleSubmit() {
 }
 
 function handleForgotPassword() {
-  // TODO: Implement forgot password flow with Cognito
-  toast.add({
-    severity: 'info',
-    summary: 'Password Reset',
-    detail: 'Password reset functionality coming soon. Please contact support.',
-    life: 5000
-  })
+  router.push({ name: 'admin-forgot-password' })
 }
 
 function goHome() {
@@ -331,6 +329,23 @@ function goHome() {
 
 .login-footer {
   margin-top: 2rem;
+}
+
+.signup-prompt {
+  text-align: center;
+  margin: 1rem 0;
+  color: var(--text-color-secondary);
+}
+
+.signup-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
 }
 
 .divider {

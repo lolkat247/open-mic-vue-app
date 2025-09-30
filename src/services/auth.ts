@@ -249,4 +249,53 @@ export class AuthService {
       })
     })
   }
+
+  /**
+   * Change password for authenticated user
+   */
+  changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const currentUser = this.userPool.getCurrentUser()
+
+      if (!currentUser) {
+        reject(new Error('No authenticated user'))
+        return
+      }
+
+      currentUser.getSession((sessionError: Error | null, session: CognitoUserSession | null) => {
+        if (sessionError || !session) {
+          reject(sessionError || new Error('No valid session'))
+          return
+        }
+
+        currentUser.changePassword(oldPassword, newPassword, (error, _result) => {
+          if (error) {
+            reject(error)
+            return
+          }
+          resolve()
+        })
+      })
+    })
+  }
+
+  /**
+   * Resend confirmation code
+   */
+  resendConfirmationCode(email: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const cognitoUser = new CognitoUser({
+        Username: email,
+        Pool: this.userPool
+      })
+
+      cognitoUser.resendConfirmationCode((error, _result) => {
+        if (error) {
+          reject(error)
+          return
+        }
+        resolve()
+      })
+    })
+  }
 }

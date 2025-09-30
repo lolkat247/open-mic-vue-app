@@ -17,12 +17,15 @@
             class="create-button"
           />
           <Button
-            icon="pi pi-sign-out"
-            label="Logout"
+            icon="pi pi-user"
+            :label="userEmail || 'User'"
             text
-            @click="handleLogout"
-            class="logout-button"
+            @click="toggleUserMenu"
+            aria-haspopup="true"
+            aria-controls="user_menu"
+            class="user-menu-button"
           />
+          <Menu ref="userMenu" id="user_menu" :model="userMenuItems" :popup="true" />
         </div>
       </div>
     </div>
@@ -132,6 +135,7 @@ import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import Select from 'primevue/select'
+import Menu from 'primevue/menu'
 import Message from 'primevue/message'
 import { useAuthStore } from '../stores/auth'
 import { useAPI } from '../composables/useAPI'
@@ -156,8 +160,37 @@ const showFormDialog = ref(false)
 const showCreateDialog = ref(false)
 const selectedEvent = ref<Event | null>(null)
 const isSubmitting = ref(false)
+const userMenu = ref()
 
 const userEmail = computed(() => authStore.userEmail)
+
+const userMenuItems = computed(() => [
+  {
+    label: userEmail.value || 'User',
+    disabled: true,
+    class: 'user-menu-header'
+  },
+  {
+    separator: true
+  },
+  {
+    label: 'Change Password',
+    icon: 'pi pi-key',
+    command: () => {
+      router.push({ name: 'admin-change-password' })
+    }
+  },
+  {
+    separator: true
+  },
+  {
+    label: 'Logout',
+    icon: 'pi pi-sign-out',
+    command: () => {
+      handleLogout()
+    }
+  }
+])
 
 const filterOptions = [
   { label: 'All Events', value: 'all' },
@@ -380,6 +413,10 @@ function handleManage(eventId: string) {
   router.push({ name: 'admin-event', params: { eventId } })
 }
 
+function toggleUserMenu(e: PointerEvent) {
+  userMenu.value.toggle(e)
+}
+
 function handleLogout() {
   confirm.require({
     message: 'Are you sure you want to logout?',
@@ -462,6 +499,15 @@ onMounted(() => {
   display: flex;
   gap: 1rem;
   align-items: center;
+}
+
+.user-menu-button {
+  font-weight: 600;
+}
+
+:deep(.user-menu-header) {
+  font-weight: 600 !important;
+  color: var(--text-color) !important;
 }
 
 .dashboard-container {

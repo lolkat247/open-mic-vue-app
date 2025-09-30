@@ -133,6 +133,32 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function changePassword(oldPassword: string, newPassword: string) {
+    isLoading.value = true
+    error.value = null
+    try {
+      await authService.changePassword(oldPassword, newPassword)
+    } catch (err: any) {
+      error.value = err.message || 'Password change failed'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function resendConfirmationCode(email: string) {
+    isLoading.value = true
+    error.value = null
+    try {
+      await authService.resendConfirmationCode(email)
+    } catch (err: any) {
+      error.value = err.message || 'Failed to resend code'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     // State
     idToken,
@@ -150,6 +176,8 @@ export const useAuthStore = defineStore('auth', () => {
     restoreSession,
     refreshSession,
     forgotPassword,
-    confirmPassword
+    confirmPassword,
+    changePassword,
+    resendConfirmationCode
   }
 })

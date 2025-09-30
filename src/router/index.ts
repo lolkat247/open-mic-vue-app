@@ -4,13 +4,18 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
-// Route components (will be created)
+// Route components
 const Home = () => import('../views/HomeView.vue')
 const PublicQueueView = () => import('../views/PublicQueueView.vue')
 const PerformerSignupView = () => import('../views/PerformerSignupView.vue')
 const ManageSlotView = () => import('../views/ManageSlotView.vue')
 const ProjectorView = () => import('../views/ProjectorView.vue')
 const AdminLogin = () => import('../views/AdminLogin.vue')
+const AdminSignup = () => import('../views/AdminSignup.vue')
+const AdminConfirmEmail = () => import('../views/AdminConfirmEmail.vue')
+const ForgotPassword = () => import('../views/ForgotPassword.vue')
+const ResetPassword = () => import('../views/ResetPassword.vue')
+const ChangePassword = () => import('../views/ChangePassword.vue')
 const AdminDashboard = () => import('../views/AdminDashboard.vue')
 const AdminEventView = () => import('../views/AdminEventView.vue')
 
@@ -50,6 +55,36 @@ const routes: RouteRecordRaw[] = [
     name: 'admin-login',
     component: AdminLogin,
     meta: { title: 'Admin Login' }
+  },
+  {
+    path: '/admin/signup',
+    name: 'admin-signup',
+    component: AdminSignup,
+    meta: { title: 'Admin Sign Up' }
+  },
+  {
+    path: '/admin/confirm-email',
+    name: 'admin-confirm-email',
+    component: AdminConfirmEmail,
+    meta: { title: 'Confirm Email' }
+  },
+  {
+    path: '/admin/forgot-password',
+    name: 'admin-forgot-password',
+    component: ForgotPassword,
+    meta: { title: 'Forgot Password' }
+  },
+  {
+    path: '/admin/reset-password',
+    name: 'admin-reset-password',
+    component: ResetPassword,
+    meta: { title: 'Reset Password' }
+  },
+  {
+    path: '/admin/change-password',
+    name: 'admin-change-password',
+    component: ChangePassword,
+    meta: { title: 'Change Password', requiresAuth: true }
   },
   {
     path: '/admin/dashboard',
