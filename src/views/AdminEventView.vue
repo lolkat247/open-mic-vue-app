@@ -30,6 +30,19 @@
               class="status-badge"
             />
           </div>
+          <div v-if="currentEvent?.event_code" class="event-code-display">
+            <span class="code-label">Event Code:</span>
+            <span class="code-value">{{ currentEvent.event_code }}</span>
+            <Button
+              icon="pi pi-copy"
+              text
+              rounded
+              size="small"
+              @click="copyEventCode"
+              v-tooltip.top="'Copy event code'"
+              class="copy-button"
+            />
+          </div>
         </div>
         <div class="header-actions">
           <Button
@@ -227,6 +240,7 @@ import Dialog from 'primevue/dialog'
 import Textarea from 'primevue/textarea'
 import { useEventStore } from '../stores/event'
 import { useQueueStore } from '../stores/queue'
+import { useAuthStore } from '../stores/auth'
 import { useAPI } from '../composables/useAPI'
 import { useWebSocket } from '../composables/useWebSocket'
 import LoadingState from '../components/shared/LoadingState.vue'
@@ -240,6 +254,7 @@ const router = useRouter()
 const toast = useToast()
 const eventStore = useEventStore()
 const queueStore = useQueueStore()
+const authStore = useAuthStore()
 const { apiService } = useAPI()
 
 const eventId = route.params.eventId as string
@@ -513,23 +528,32 @@ function goBack() {
   router.push({ name: 'admin-dashboard' })
 }
 
+function copyEventCode() {
+  if (currentEvent.value?.event_code) {
+    navigator.clipboard.writeText(currentEvent.value.event_code)
+    toast.add({
+      severity: 'success',
+      summary: 'Copied',
+      detail: 'Event code copied to clipboard',
+      life: 2000
+    })
+  }
+}
+
 onMounted(async () => {
   isLoading.value = true
   error.value = null
 
   try {
-    // Connect to WebSocket for real-time updates
-    connect()
+    // Fetch event details via REST API
+    const { event } = await apiService.getEvent(eventId)
+    eventStore.setEvent(event)
 
-    // Wait for initial data
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    if (!currentEvent.value) {
-      error.value = 'Event not found'
-    }
+    // Connect to WebSocket for real-time updates with current token
+    connect(authStore.token)
   } catch (err: any) {
     console.error('Failed to load event:', err)
-    error.value = err.message || 'Failed to load event'
+    error.value = err.message || 'Event not found'
   } finally {
     isLoading.value = false
   }
@@ -607,6 +631,38 @@ onUnmounted(() => {
 
 .meta-item i {
   color: var(--primary-color);
+}
+
+.event-code-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-top: 0.75rem;
+}
+
+.code-label {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.code-value {
+  font-size: 1.1rem;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.1em;
+}
+
+.event-code-display .copy-button {
+  color: white;
+  margin-left: 0.25rem;
+}
+
+.event-code-display .copy-button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .header-actions {

@@ -17,6 +17,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Getters
   const isAuthenticated = computed(() => !!idToken.value)
+  const token = computed(() => idToken.value)
 
   // Actions
   async function signIn(email: string, password: string) {
@@ -168,6 +169,7 @@ export const useAuthStore = defineStore('auth', () => {
     error,
     // Getters
     isAuthenticated,
+    token,
     // Actions
     signIn,
     signUp,

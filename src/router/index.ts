@@ -33,8 +33,20 @@ const routes: RouteRecordRaw[] = [
     meta: { title: 'Queue' }
   },
   {
+    path: '/queue',
+    name: 'public-queue-code',
+    component: PublicQueueView,
+    meta: { title: 'Queue' }
+  },
+  {
     path: '/event/:eventId/signup',
     name: 'performer-signup',
+    component: PerformerSignupView,
+    meta: { title: 'Sign Up to Perform' }
+  },
+  {
+    path: '/signup',
+    name: 'performer-signup-code',
     component: PerformerSignupView,
     meta: { title: 'Sign Up to Perform' }
   },
@@ -47,6 +59,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/event/:eventId/projector',
     name: 'projector',
+    component: ProjectorView,
+    meta: { title: 'Projector View' }
+  },
+  {
+    path: '/projector',
+    name: 'projector-code',
     component: ProjectorView,
     meta: { title: 'Projector View' }
   },

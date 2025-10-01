@@ -4,7 +4,10 @@
     <div class="projector-header">
       <div class="event-info">
         <h1 v-if="currentEvent" class="event-name">{{ currentEvent.name }}</h1>
-        <span v-if="currentEvent" class="event-date">{{ formatDate(currentEvent.date) }}</span>
+        <div class="event-details">
+          <span v-if="currentEvent" class="event-date">{{ formatDate(currentEvent.date) }}</span>
+          <span v-if="currentEvent?.event_code" class="event-code">Code: {{ currentEvent.event_code }}</span>
+        </div>
       </div>
       <div class="header-actions">
         <div class="current-time">{{ currentTime }}</div>
@@ -71,7 +74,7 @@
     </div>
 
     <!-- Connection Status (subtle) -->
-    <div v-if="!isConnected" class="connection-indicator">
+    <div v-if="ws && !ws.isConnected" class="connection-indicator">
       <i class="pi pi-exclamation-circle"></i>
       <span>Reconnecting...</span>
     </div>
@@ -85,13 +88,15 @@ import Button from 'primevue/button'
 import { useEventStore } from '../stores/event'
 import { useQueueStore } from '../stores/queue'
 import { useWebSocket } from '../composables/useWebSocket'
+import { useAPI } from '../composables/useAPI'
 import { formatDate } from '../utils/time'
 
 const route = useRoute()
 const eventStore = useEventStore()
 const queueStore = useQueueStore()
+const { apiService } = useAPI()
 
-const eventId = route.params.eventId as string
+const eventId = ref<string>('')
 const isFullscreen = ref(false)
 const currentTime = ref('')
 const elapsedSeconds = ref(0)
@@ -99,8 +104,8 @@ const elapsedSeconds = ref(0)
 let timeInterval: number | null = null
 let elapsedInterval: number | null = null
 
-// WebSocket connection
-const { connect, disconnect, isConnected } = useWebSocket(eventId, 'projector')
+// WebSocket connection - will be initialized after we have eventId
+const ws = ref<ReturnType<typeof useWebSocket> | null>(null)
 
 // Computed properties
 const currentEvent = computed(() => eventStore.currentEvent)
@@ -160,41 +165,94 @@ async function toggleFullscreen() {
 
 // Lifecycle
 onMounted(async () => {
-  // Connect to WebSocket
-  connect()
+  try {
+    // Check if accessing by event code or event ID
+    const code = route.query.code as string | undefined
+    const paramEventId = route.params.eventId as string | undefined
 
-  // Update current time
-  updateCurrentTime()
-  timeInterval = window.setInterval(updateCurrentTime, 1000)
+    // Helper function to check if string looks like an event code (6 alphanumeric chars)
+    const isEventCode = (str: string) => /^[A-Z0-9]{6}$/.test(str)
 
-  // Update elapsed time
-  updateElapsedTime()
-  elapsedInterval = window.setInterval(updateElapsedTime, 1000)
-
-  // Listen for fullscreen changes
-  document.addEventListener('fullscreenchange', () => {
-    isFullscreen.value = !!document.fullscreenElement
-  })
-
-  // Request wake lock to prevent screen sleep
-  if ('wakeLock' in navigator) {
-    try {
-      await (navigator as any).wakeLock.request('screen')
-    } catch (error) {
-      console.error('Wake lock failed:', error)
+    if (code) {
+      // Look up event by code from query parameter
+      try {
+        const response = await apiService.getEventByCode(code)
+        if (response.event) {
+          eventId.value = response.event.event_id
+        } else {
+          console.error('Invalid event code')
+          return
+        }
+      } catch (error: any) {
+        console.error('Failed to look up event by code:', error)
+        return
+      }
+    } else if (paramEventId) {
+      // Check if paramEventId looks like an event code
+      if (isEventCode(paramEventId)) {
+        // Look up event by code from route parameter
+        try {
+          const response = await apiService.getEventByCode(paramEventId)
+          if (response.event) {
+            eventId.value = response.event.event_id
+          } else {
+            console.error('Invalid event code')
+            return
+          }
+        } catch (error: any) {
+          console.error('Failed to look up event by code:', error)
+          return
+        }
+      } else {
+        // Use as event ID directly (UUID format)
+        eventId.value = paramEventId
+      }
+    } else {
+      console.error('No event ID or code provided')
+      return
     }
+
+    // Initialize WebSocket connection with the resolved eventId
+    ws.value = useWebSocket(eventId.value, 'projector')
+
+    // Connect to WebSocket
+    ws.value.connect()
+
+    // Update current time
+    updateCurrentTime()
+    timeInterval = window.setInterval(updateCurrentTime, 1000)
+
+    // Update elapsed time
+    updateElapsedTime()
+    elapsedInterval = window.setInterval(updateElapsedTime, 1000)
+
+    // Listen for fullscreen changes
+    document.addEventListener('fullscreenchange', () => {
+      isFullscreen.value = !!document.fullscreenElement
+    })
+
+    // Request wake lock to prevent screen sleep
+    if ('wakeLock' in navigator) {
+      try {
+        await (navigator as any).wakeLock.request('screen')
+      } catch (error) {
+        console.error('Wake lock failed:', error)
+      }
+    }
+
+    // Auto-enter fullscreen after 3 seconds
+    setTimeout(() => {
+      if (!isFullscreen.value) {
+        toggleFullscreen()
+      }
+    }, 3000)
+  } catch (error) {
+    console.error('Failed to initialize projector view:', error)
   }
-
-  // Auto-enter fullscreen after 3 seconds
-  setTimeout(() => {
-    if (!isFullscreen.value) {
-      toggleFullscreen()
-    }
-  }, 3000)
 })
 
 onUnmounted(() => {
-  disconnect()
+  ws.value?.disconnect()
   if (timeInterval) clearInterval(timeInterval)
   if (elapsedInterval) clearInterval(elapsedInterval)
 })
@@ -234,10 +292,27 @@ onUnmounted(() => {
   color: #ffffff;
 }
 
+.event-details {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
 .event-date {
   font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
+}
+
+.event-code {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  background: rgba(58, 123, 213, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(58, 123, 213, 0.5);
 }
 
 .header-actions {

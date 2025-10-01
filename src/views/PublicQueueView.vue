@@ -4,7 +4,7 @@
 
     <div class="queue-container">
       <!-- Connection Status -->
-      <Message v-if="!isConnected && !isLoadingEvent" severity="warn" :closable="false">
+      <Message v-if="ws && !ws.isConnected && !isLoadingEvent" severity="warn" :closable="false">
         <div class="connection-message">
           <i class="pi pi-exclamation-triangle"></i>
           <span>Connection lost. Trying to reconnect...</span>
@@ -81,6 +81,7 @@ import Message from 'primevue/message'
 import { useEventStore } from '../stores/event'
 import { useQueueStore } from '../stores/queue'
 import { useWebSocket } from '../composables/useWebSocket'
+import { useAPI } from '../composables/useAPI'
 import EventHeader from '../components/shared/EventHeader.vue'
 import LoadingState from '../components/shared/LoadingState.vue'
 import CurrentPerformer from '../components/queue/CurrentPerformer.vue'
@@ -90,13 +91,14 @@ const route = useRoute()
 const router = useRouter()
 const eventStore = useEventStore()
 const queueStore = useQueueStore()
+const { apiService } = useAPI()
 
-const eventId = route.params.eventId as string
+const eventId = ref<string>('')
 const isLoadingEvent = ref(true)
 const error = ref<string | null>(null)
 
-// WebSocket connection
-const { connect, disconnect, isConnected } = useWebSocket(eventId, 'public')
+// WebSocket connection - will be initialized after we have eventId
+const ws = ref<ReturnType<typeof useWebSocket> | null>(null)
 
 // Computed properties
 const currentEvent = computed(() => eventStore.currentEvent)
@@ -107,17 +109,18 @@ const signupsEnabled = computed(() => eventStore.signupsEnabled)
 
 // Check if user has a slot (from localStorage)
 const hasUserSlot = computed(() => {
-  const storedSlotId = localStorage.getItem(`slot_${eventId}`)
+  if (!eventId.value) return false
+  const storedSlotId = localStorage.getItem(`slot_${eventId.value}`)
   return !!storedSlotId
 })
 
 // Actions
 function goToSignup() {
-  router.push({ name: 'performer-signup', params: { eventId } })
+  router.push({ name: 'performer-signup', params: { eventId: eventId.value } })
 }
 
 function goToManageSlot() {
-  router.push({ name: 'manage-slot', params: { eventId } })
+  router.push({ name: 'manage-slot', params: { eventId: eventId.value } })
 }
 
 // Lifecycle
@@ -126,8 +129,64 @@ onMounted(async () => {
   error.value = null
 
   try {
+    // Check if accessing by event code or event ID
+    const code = route.query.code as string | undefined
+    const paramEventId = route.params.eventId as string | undefined
+
+    // Helper function to check if string looks like an event code (6 alphanumeric chars)
+    const isEventCode = (str: string) => /^[A-Z0-9]{6}$/.test(str)
+
+    if (code) {
+      // Look up event by code from query parameter
+      try {
+        const response = await apiService.getEventByCode(code)
+        if (response.event) {
+          eventId.value = response.event.event_id
+        } else {
+          error.value = 'Invalid event code'
+          isLoadingEvent.value = false
+          return
+        }
+      } catch (err: any) {
+        console.error('Failed to look up event by code:', err)
+        error.value = err.message || 'Invalid event code'
+        isLoadingEvent.value = false
+        return
+      }
+    } else if (paramEventId) {
+      // Check if paramEventId looks like an event code
+      if (isEventCode(paramEventId)) {
+        // Look up event by code from route parameter
+        try {
+          const response = await apiService.getEventByCode(paramEventId)
+          if (response.event) {
+            eventId.value = response.event.event_id
+          } else {
+            error.value = 'Invalid event code'
+            isLoadingEvent.value = false
+            return
+          }
+        } catch (err: any) {
+          console.error('Failed to look up event by code:', err)
+          error.value = err.message || 'Invalid event code'
+          isLoadingEvent.value = false
+          return
+        }
+      } else {
+        // Use as event ID directly (UUID format)
+        eventId.value = paramEventId
+      }
+    } else {
+      error.value = 'No event ID or code provided'
+      isLoadingEvent.value = false
+      return
+    }
+
+    // Initialize WebSocket connection with the resolved eventId
+    ws.value = useWebSocket(eventId.value, 'public')
+
     // Connect to WebSocket (will populate stores)
-    connect()
+    ws.value.connect()
 
     // Wait a bit for the full_state message
     await new Promise((resolve) => setTimeout(resolve, 1500))
@@ -144,7 +203,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  disconnect()
+  ws.value?.disconnect()
 })
 </script>
 

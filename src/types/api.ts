@@ -11,6 +11,7 @@ export type SlotStatus =
 
 export interface Event {
   event_id: string
+  event_code?: string
   name: string
   date: string // ISO date string (YYYY-MM-DD)
   curfew: string // Time string (HH:MM)

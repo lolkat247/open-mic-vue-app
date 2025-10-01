@@ -71,6 +71,16 @@ export class APIService {
     return this.apiCall<GetEventsResponse>('/events')
   }
 
+  async getEvent(eventId: string): Promise<{ event: Event }> {
+    return this.apiCall<{ event: Event }>(`/events/${eventId}`)
+  }
+
+  async getEventByCode(code: string): Promise<{ event: Event }> {
+    return this.apiCall<{ event: Event }>(`/events/by-code/${code}`, {
+      authenticated: false // Public endpoint
+    })
+  }
+
   async updateEvent(eventId: string, updates: Partial<CreateEventRequest>): Promise<{ event: Event }> {
     return this.apiCall<{ event: Event }>(`/events/${eventId}`, {
       method: 'PATCH',

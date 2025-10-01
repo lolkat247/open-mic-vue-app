@@ -17,12 +17,14 @@ export function useWebSocket(eventId: string, viewType: WebSocketViewType, token
   const isConnected = ref(false)
   const connectionError = ref<string | null>(null)
 
-  function connect() {
+  function connect(connectionToken?: string | null) {
     if (ws.value) {
       ws.value.disconnect()
     }
 
-    ws.value = new WebSocketService(config.websocketUrl, eventId, viewType, token)
+    // Use the provided token, or fall back to the initial token
+    const tokenToUse = connectionToken !== undefined ? connectionToken : token
+    ws.value = new WebSocketService(config.websocketUrl, eventId, viewType, tokenToUse)
 
     ws.value.setHandlers({
       onFullState: (data) => {

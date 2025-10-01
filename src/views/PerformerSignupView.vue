@@ -134,7 +134,7 @@ const eventStore = useEventStore()
 const queueStore = useQueueStore()
 const { apiService } = useAPI()
 
-const eventId = route.params.eventId as string
+const eventId = ref<string>('')
 const isLoadingEvent = ref(true)
 const eventError = ref<string | null>(null)
 const isSubmitting = ref(false)
@@ -142,8 +142,8 @@ const submitError = ref<string | null>(null)
 const showSuccessDialog = ref(false)
 const createdSlot = ref<Slot | null>(null)
 
-// WebSocket for real-time updates
-const { connect } = useWebSocket(eventId, 'public')
+// WebSocket for real-time updates - will be initialized after we have eventId
+let wsConnect: (() => void) | null = null
 
 const currentEvent = computed(() => eventStore.currentEvent)
 const signupsEnabled = computed(() => eventStore.signupsEnabled)
@@ -171,13 +171,13 @@ async function handleSignup(formData: SignupFormData) {
     if (!signupData.leave_by_at) delete signupData.leave_by_at
     if (!signupData.notes) delete signupData.notes
 
-    const response = await apiService.createSlot(eventId, signupData)
+    const response = await apiService.createSlot(eventId.value, signupData)
 
     if (response.slot) {
       createdSlot.value = response.slot
 
       // Store slot ID in localStorage for quick access
-      localStorage.setItem(`slot_${eventId}`, response.slot.slot_id)
+      localStorage.setItem(`slot_${eventId.value}`, response.slot.slot_id)
 
       showSuccessDialog.value = true
 
@@ -207,7 +207,7 @@ function goBack() {
 }
 
 function goToQueue() {
-  router.push({ name: 'public-queue', params: { eventId } })
+  router.push({ name: 'public-queue', params: { eventId: eventId.value } })
 }
 
 onMounted(async () => {
@@ -215,8 +215,65 @@ onMounted(async () => {
   eventError.value = null
 
   try {
+    // Check if accessing by event code or event ID
+    const code = route.query.code as string | undefined
+    const paramEventId = route.params.eventId as string | undefined
+
+    // Helper function to check if string looks like an event code (6 alphanumeric chars)
+    const isEventCode = (str: string) => /^[A-Z0-9]{6}$/.test(str)
+
+    if (code) {
+      // Look up event by code from query parameter
+      try {
+        const response = await apiService.getEventByCode(code)
+        if (response.event) {
+          eventId.value = response.event.event_id
+        } else {
+          eventError.value = 'Invalid event code'
+          isLoadingEvent.value = false
+          return
+        }
+      } catch (error: any) {
+        console.error('Failed to look up event by code:', error)
+        eventError.value = error.message || 'Invalid event code'
+        isLoadingEvent.value = false
+        return
+      }
+    } else if (paramEventId) {
+      // Check if paramEventId looks like an event code
+      if (isEventCode(paramEventId)) {
+        // Look up event by code from route parameter
+        try {
+          const response = await apiService.getEventByCode(paramEventId)
+          if (response.event) {
+            eventId.value = response.event.event_id
+          } else {
+            eventError.value = 'Invalid event code'
+            isLoadingEvent.value = false
+            return
+          }
+        } catch (error: any) {
+          console.error('Failed to look up event by code:', error)
+          eventError.value = error.message || 'Invalid event code'
+          isLoadingEvent.value = false
+          return
+        }
+      } else {
+        // Use as event ID directly (UUID format)
+        eventId.value = paramEventId
+      }
+    } else {
+      eventError.value = 'No event ID or code provided'
+      isLoadingEvent.value = false
+      return
+    }
+
+    // Initialize WebSocket connection with the resolved eventId
+    const ws = useWebSocket(eventId.value, 'public')
+    wsConnect = ws.connect
+
     // Connect to WebSocket for event data
-    connect()
+    wsConnect()
 
     // Wait for initial data
     await new Promise((resolve) => setTimeout(resolve, 1500))
