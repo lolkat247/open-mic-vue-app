@@ -224,8 +224,9 @@ onMounted(async () => {
 
     if (code) {
       // Look up event by code from query parameter
+      const normalizedCode = code.trim().toUpperCase()
       try {
-        const response = await apiService.getEventByCode(code)
+        const response = await apiService.getEventByCode(normalizedCode)
         if (response.event) {
           eventId.value = response.event.event_id
         } else {
@@ -240,27 +241,36 @@ onMounted(async () => {
         return
       }
     } else if (paramEventId) {
+      // Normalize the input (trim and uppercase)
+      const normalizedParam = paramEventId.trim().toUpperCase()
+      console.log('Normalized param:', normalizedParam)
+
       // Check if paramEventId looks like an event code
-      if (isEventCode(paramEventId)) {
+      if (isEventCode(normalizedParam)) {
         // Look up event by code from route parameter
+        console.log('Detected as event code, looking up...')
         try {
-          const response = await apiService.getEventByCode(paramEventId)
+          const response = await apiService.getEventByCode(normalizedParam)
+          console.log('Event lookup response:', response)
           if (response.event) {
             eventId.value = response.event.event_id
+            console.log('Resolved event_id:', eventId.value)
           } else {
-            eventError.value = 'Invalid event code'
+            console.error('Event lookup returned no event')
+            eventError.value = `Event not found with code: ${normalizedParam}`
             isLoadingEvent.value = false
             return
           }
         } catch (error: any) {
           console.error('Failed to look up event by code:', error)
-          eventError.value = error.message || 'Invalid event code'
+          eventError.value = error.message || `Unable to find event with code: ${normalizedParam}`
           isLoadingEvent.value = false
           return
         }
       } else {
         // Use as event ID directly (UUID format)
-        eventId.value = paramEventId
+        console.log('Detected as UUID, using directly')
+        eventId.value = paramEventId.trim()
       }
     } else {
       eventError.value = 'No event ID or code provided'
@@ -269,17 +279,50 @@ onMounted(async () => {
     }
 
     // Initialize WebSocket connection with the resolved eventId
+    console.log('Initializing WebSocket for event_id:', eventId.value)
     const ws = useWebSocket(eventId.value, 'public', toast)
     wsConnect = ws.connect
 
     // Connect to WebSocket for event data
+    console.log('Connecting to WebSocket...')
     wsConnect()
 
-    // Wait for initial data
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    // Wait for WebSocket connection to establish
+    let attempts = 0
+    while (!ws.isConnected.value && attempts < 50) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      attempts++
+    }
+
+    if (!ws.isConnected.value) {
+      console.error('WebSocket failed to connect after 5 seconds')
+      eventError.value = 'Failed to connect to event. Please try refreshing the page.'
+      isLoadingEvent.value = false
+      return
+    }
+
+    console.log('WebSocket connected! Requesting initial data...')
+
+    // Request full state from server (can't be sent during $connect)
+    ws.requestResync()
+
+    // Wait for event data to load
+    attempts = 0
+    while (!currentEvent.value && attempts < 30) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      attempts++
+      if (attempts % 10 === 0) {
+        console.log(`Still waiting for event data... (${attempts * 100}ms elapsed)`)
+      }
+    }
+
+    console.log('After waiting, currentEvent:', currentEvent.value)
 
     if (!currentEvent.value) {
-      eventError.value = 'Event not found'
+      console.error('Event data never arrived from WebSocket')
+      eventError.value = 'Event not found. Please check the event code and try again.'
+    } else {
+      console.log('Event loaded successfully:', currentEvent.value.name)
     }
   } catch (error: any) {
     console.error('Failed to load event:', error)

@@ -141,9 +141,10 @@ onMounted(async () => {
 
     if (code) {
       // Look up event by code from query parameter
-      console.log('Looking up event by code (query):', code)
+      const normalizedCode = code.trim().toUpperCase()
+      console.log('Looking up event by code (query):', normalizedCode)
       try {
-        const response = await apiService.getEventByCode(code)
+        const response = await apiService.getEventByCode(normalizedCode)
         console.log('Event lookup response:', response)
         if (response.event) {
           eventId.value = response.event.event_id
@@ -160,31 +161,34 @@ onMounted(async () => {
         return
       }
     } else if (paramEventId) {
+      // Normalize the input (trim and uppercase)
+      const normalizedParam = paramEventId.trim().toUpperCase()
+
       // Check if paramEventId looks like an event code
-      if (isEventCode(paramEventId)) {
+      if (isEventCode(normalizedParam)) {
         // Look up event by code from route parameter
-        console.log('Looking up event by code (param):', paramEventId)
+        console.log('Looking up event by code (param):', normalizedParam)
         try {
-          const response = await apiService.getEventByCode(paramEventId)
+          const response = await apiService.getEventByCode(normalizedParam)
           console.log('Event lookup response:', response)
           if (response.event) {
             eventId.value = response.event.event_id
             console.log('Resolved event ID:', eventId.value)
           } else {
-            error.value = 'Invalid event code'
+            error.value = `Event not found with code: ${normalizedParam}`
             isLoadingEvent.value = false
             return
           }
         } catch (err: any) {
           console.error('Failed to look up event by code:', err)
-          error.value = `Failed to find event with code ${paramEventId}: ${err.message || 'Unknown error'}`
+          error.value = `Failed to find event with code ${normalizedParam}: ${err.message || 'Unknown error'}`
           isLoadingEvent.value = false
           return
         }
       } else {
         // Use as event ID directly (UUID format)
         console.log('Using event ID directly:', paramEventId)
-        eventId.value = paramEventId
+        eventId.value = paramEventId.trim()
       }
     } else {
       error.value = 'No event ID or code provided'

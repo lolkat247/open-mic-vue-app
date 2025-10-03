@@ -20,8 +20,9 @@
             <div class="card-footer">
               <InputText
                 v-model="eventIdInput"
-                placeholder="Enter Event ID"
+                placeholder="Enter Event Code (e.g. ABC123)"
                 class="w-full"
+                @input="formatEventCodeInput"
               />
               <Button
                 label="View Queue"
@@ -46,8 +47,9 @@
             <div class="card-footer">
               <InputText
                 v-model="signupEventId"
-                placeholder="Enter Event ID"
+                placeholder="Enter Event Code (e.g. ABC123)"
                 class="w-full"
+                @input="formatSignupEventId"
               />
               <Button
                 label="Sign Up"
@@ -93,15 +95,25 @@ const router = useRouter()
 const eventIdInput = ref('')
 const signupEventId = ref('')
 
+function formatEventCodeInput(event: Event) {
+  const input = (event.target as HTMLInputElement).value
+  eventIdInput.value = input.trim().toUpperCase()
+}
+
+function formatSignupEventId(event: Event) {
+  const input = (event.target as HTMLInputElement).value
+  signupEventId.value = input.trim().toUpperCase()
+}
+
 function goToQueue() {
   if (eventIdInput.value) {
-    router.push({ name: 'public-queue', params: { eventId: eventIdInput.value } })
+    router.push({ name: 'public-queue', params: { eventId: eventIdInput.value.trim() } })
   }
 }
 
 function goToSignup() {
   if (signupEventId.value) {
-    router.push({ name: 'performer-signup', params: { eventId: signupEventId.value } })
+    router.push({ name: 'performer-signup', params: { eventId: signupEventId.value.trim() } })
   }
 }
 
