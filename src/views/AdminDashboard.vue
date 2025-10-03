@@ -4,7 +4,15 @@
       <div class="header-content">
         <div class="header-left">
           <h1 class="dashboard-title">
-            <i class="pi pi-shield"></i>
+            <button
+              type="button"
+              class="back-button"
+              @click="goHome"
+              aria-label="Back to home"
+            >
+              <i class="pi pi-arrow-left" aria-hidden="true"></i>
+            </button>
+            <i class="pi pi-shield" aria-hidden="true"></i>
             Admin Dashboard
           </h1>
           <p v-if="userEmail" class="user-email">{{ userEmail }}</p>
@@ -417,6 +425,10 @@ function toggleUserMenu(e: PointerEvent) {
   userMenu.value.toggle(e)
 }
 
+function goHome() {
+  router.push({ name: 'home' })
+}
+
 function handleLogout() {
   confirm.require({
     message: 'Are you sure you want to logout?',
@@ -487,6 +499,31 @@ onMounted(() => {
 .dashboard-title i {
   color: var(--primary-color);
   font-size: 1.5rem;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  margin-right: 0.5rem;
+  padding: 0.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.back-button i {
+  color: var(--text-color-secondary);
+  font-size: 1.25rem;
+  transition: color 120ms ease, opacity 120ms ease, background-color 120ms ease;
+  opacity: 0.85;
+}
+
+.back-button:hover i,
+.back-button:focus i {
+  color: rgba(0,0,0,0.9);
+  opacity: 1;
 }
 
 .user-email {
