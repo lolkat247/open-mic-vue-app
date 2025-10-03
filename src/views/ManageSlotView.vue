@@ -163,7 +163,7 @@ const authenticatedSlotId = ref<string>('')
 const authenticatedPassword = ref<string>('')
 
 // WebSocket for real-time updates
-const { connect } = useWebSocket(eventId, 'public')
+const { connect } = useWebSocket(eventId, 'public', toast)
 
 const currentEvent = computed(() => eventStore.currentEvent)
 const storedSlotId = computed(() => localStorage.getItem(`slot_${eventId}`) || '')

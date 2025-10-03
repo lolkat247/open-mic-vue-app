@@ -84,6 +84,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
 import { useEventStore } from '../stores/event'
 import { useQueueStore } from '../stores/queue'
@@ -92,6 +93,7 @@ import { useAPI } from '../composables/useAPI'
 import { formatDate } from '../utils/time'
 
 const route = useRoute()
+const toast = useToast()
 const eventStore = useEventStore()
 const queueStore = useQueueStore()
 const { apiService } = useAPI()
@@ -213,7 +215,7 @@ onMounted(async () => {
     }
 
     // Initialize WebSocket connection with the resolved eventId
-    ws.value = useWebSocket(eventId.value, 'projector')
+    ws.value = useWebSocket(eventId.value, 'projector', toast)
 
     // Connect to WebSocket
     ws.value.connect()

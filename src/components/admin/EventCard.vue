@@ -34,6 +34,10 @@
           <i class="pi pi-clock"></i>
           <span>Curfew: {{ event.curfew }}</span>
         </div>
+        <div v-if="event.event_code" class="meta-item">
+          <i class="pi pi-key"></i>
+          <span>Code: {{ event.event_code }}</span>
+        </div>
       </div>
     </template>
 
@@ -143,7 +147,7 @@ const menuItems = computed(() => [
     command: () => {
       const url = router.resolve({
         name: 'public-queue',
-        params: { eventId: props.event.event_id }
+        params: { eventId: props.event.event_code || props.event.event_id }
       }).href
       window.open(url, '_blank')
     }
@@ -154,7 +158,7 @@ const menuItems = computed(() => [
     command: () => {
       const url = router.resolve({
         name: 'projector',
-        params: { eventId: props.event.event_id }
+        params: { eventId: props.event.event_code || props.event.event_id }
       }).href
       window.open(url, '_blank')
     }

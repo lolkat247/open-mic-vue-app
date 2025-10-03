@@ -269,7 +269,7 @@ onMounted(async () => {
     }
 
     // Initialize WebSocket connection with the resolved eventId
-    const ws = useWebSocket(eventId.value, 'public')
+    const ws = useWebSocket(eventId.value, 'public', toast)
     wsConnect = ws.connect
 
     // Connect to WebSocket for event data

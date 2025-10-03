@@ -268,7 +268,7 @@ const isSendingBanner = ref(false)
 const menu = ref()
 
 // WebSocket for real-time updates
-const { connect, disconnect } = useWebSocket(eventId, 'staff')
+const { connect, disconnect } = useWebSocket(eventId, 'staff', toast)
 
 const currentEvent = computed(() => eventStore.currentEvent)
 const queueSlots = computed(() => queueStore.slots.filter(s => s.status === 'queued'))

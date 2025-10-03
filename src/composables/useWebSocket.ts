@@ -1,17 +1,16 @@
 // Composable for WebSocket connection management
 
-import { ref, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { WebSocketService } from '../services/websocket'
 import { useEventStore } from '../stores/event'
 import { useQueueStore } from '../stores/queue'
-import { useToast } from 'primevue/usetoast'
+import type { ToastServiceMethods } from 'primevue/toastservice'
 import type { WebSocketViewType } from '../types/api'
 import { config } from '../config'
 
-export function useWebSocket(eventId: string, viewType: WebSocketViewType, token: string | null = null) {
+export function useWebSocket(eventId: string, viewType: WebSocketViewType, toast: ToastServiceMethods, token: string | null = null) {
   const eventStore = useEventStore()
   const queueStore = useQueueStore()
-  const toast = useToast()
 
   const ws = ref<WebSocketService | null>(null)
   const isConnected = ref(false)
@@ -109,10 +108,9 @@ export function useWebSocket(eventId: string, viewType: WebSocketViewType, token
     }
   }
 
-  // Cleanup on unmount
-  onUnmounted(() => {
-    disconnect()
-  })
+  // Note: Components should call disconnect() in their own onUnmounted hook
+  // We can't use onUnmounted here because this composable might be called
+  // after async operations, which breaks Vue's lifecycle context
 
   return {
     connect,

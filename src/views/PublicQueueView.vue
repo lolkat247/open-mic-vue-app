@@ -4,7 +4,7 @@
 
     <div class="queue-container">
       <!-- Connection Status -->
-      <Message v-if="ws && !ws.isConnected && !isLoadingEvent" severity="warn" :closable="false">
+      <Message v-if="!isLoadingEvent && currentEvent && !isConnected" severity="warn" :closable="false">
         <div class="connection-message">
           <i class="pi pi-exclamation-triangle"></i>
           <span>Connection lost. Trying to reconnect...</span>
@@ -74,8 +74,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import { useEventStore } from '../stores/event'
@@ -89,6 +90,7 @@ import QueueList from '../components/queue/QueueList.vue'
 
 const route = useRoute()
 const router = useRouter()
+const toast = useToast()
 const eventStore = useEventStore()
 const queueStore = useQueueStore()
 const { apiService } = useAPI()
@@ -96,9 +98,10 @@ const { apiService } = useAPI()
 const eventId = ref<string>('')
 const isLoadingEvent = ref(true)
 const error = ref<string | null>(null)
+const isConnected = ref(false)
 
-// WebSocket connection - will be initialized after we have eventId
-const ws = ref<ReturnType<typeof useWebSocket> | null>(null)
+// WebSocket connection - initialized here in setup context
+let wsInstance: ReturnType<typeof useWebSocket> | null = null
 
 // Computed properties
 const currentEvent = computed(() => eventStore.currentEvent)
@@ -138,10 +141,13 @@ onMounted(async () => {
 
     if (code) {
       // Look up event by code from query parameter
+      console.log('Looking up event by code (query):', code)
       try {
         const response = await apiService.getEventByCode(code)
+        console.log('Event lookup response:', response)
         if (response.event) {
           eventId.value = response.event.event_id
+          console.log('Resolved event ID:', eventId.value)
         } else {
           error.value = 'Invalid event code'
           isLoadingEvent.value = false
@@ -149,7 +155,7 @@ onMounted(async () => {
         }
       } catch (err: any) {
         console.error('Failed to look up event by code:', err)
-        error.value = err.message || 'Invalid event code'
+        error.value = `Failed to find event: ${err.message || 'Invalid event code'}`
         isLoadingEvent.value = false
         return
       }
@@ -157,10 +163,13 @@ onMounted(async () => {
       // Check if paramEventId looks like an event code
       if (isEventCode(paramEventId)) {
         // Look up event by code from route parameter
+        console.log('Looking up event by code (param):', paramEventId)
         try {
           const response = await apiService.getEventByCode(paramEventId)
+          console.log('Event lookup response:', response)
           if (response.event) {
             eventId.value = response.event.event_id
+            console.log('Resolved event ID:', eventId.value)
           } else {
             error.value = 'Invalid event code'
             isLoadingEvent.value = false
@@ -168,12 +177,13 @@ onMounted(async () => {
           }
         } catch (err: any) {
           console.error('Failed to look up event by code:', err)
-          error.value = err.message || 'Invalid event code'
+          error.value = `Failed to find event with code ${paramEventId}: ${err.message || 'Unknown error'}`
           isLoadingEvent.value = false
           return
         }
       } else {
         // Use as event ID directly (UUID format)
+        console.log('Using event ID directly:', paramEventId)
         eventId.value = paramEventId
       }
     } else {
@@ -183,16 +193,44 @@ onMounted(async () => {
     }
 
     // Initialize WebSocket connection with the resolved eventId
-    ws.value = useWebSocket(eventId.value, 'public')
+    console.log('Initializing WebSocket for event:', eventId.value)
+    wsInstance = useWebSocket(eventId.value, 'public', toast)
+
+    // Watch for connection status
+    watch(() => wsInstance?.isConnected, (connected) => {
+      isConnected.value = connected || false
+    })
 
     // Connect to WebSocket (will populate stores)
-    ws.value.connect()
+    console.log('Connecting to WebSocket...')
+    wsInstance.connect()
 
-    // Wait a bit for the full_state message
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    // Wait for connection to actually be established
+    console.log('Waiting for WebSocket connection...')
+    let attempts = 0
+    while (!wsInstance.isConnected.value && attempts < 50) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      attempts++
+    }
+
+    if (!wsInstance.isConnected.value) {
+      console.error('WebSocket failed to connect after 5 seconds')
+      error.value = 'Failed to connect to event. Please try refreshing the page.'
+      return
+    }
+
+    console.log('WebSocket connected! Requesting full state...')
+    wsInstance.requestResync()
+
+    // Wait for the full_state message
+    console.log('Waiting for WebSocket full_state...')
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    console.log('Current event after WebSocket wait:', currentEvent.value)
+    console.log('WebSocket connected?', wsInstance.isConnected)
 
     if (!currentEvent.value) {
-      error.value = 'Event not found or connection failed'
+      error.value = 'Event not found or connection failed. Please try refreshing the page.'
     }
   } catch (err: any) {
     console.error('Failed to load event:', err)
@@ -203,7 +241,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  ws.value?.disconnect()
+  wsInstance?.disconnect()
 })
 </script>
 
