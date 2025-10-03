@@ -32,10 +32,10 @@
               <i class="pi pi-clock"></i>
               <div>
                 <span class="info-label">Default Slot Duration</span>
-                <span class="info-value">{{ currentEvent.defaults.slot_duration_minutes || 5 }} minutes</span>
+                <span class="info-value">{{ currentEvent.defaults?.slot_duration_minutes || 5 }} minutes</span>
               </div>
             </div>
-            <div v-if="currentEvent.policies.max_slots_per_performer" class="info-item">
+            <div v-if="currentEvent.policies?.max_slots_per_performer" class="info-item">
               <i class="pi pi-users"></i>
               <div>
                 <span class="info-label">Max Slots Per Performer</span>
@@ -50,7 +50,7 @@
           </div>
 
           <SignupForm
-            :default-duration="currentEvent.defaults.slot_duration_minutes || 5"
+            :default-duration="currentEvent.defaults?.slot_duration_minutes || 5"
             :is-submitting="isSubmitting"
             @submit="handleSignup"
           />
