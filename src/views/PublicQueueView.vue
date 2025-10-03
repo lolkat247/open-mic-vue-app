@@ -196,10 +196,11 @@ onMounted(async () => {
     console.log('Initializing WebSocket for event:', eventId.value)
     wsInstance = useWebSocket(eventId.value, 'public', toast)
 
-    // Watch for connection status
-    watch(() => wsInstance?.isConnected, (connected) => {
+    // Watch for connection status changes
+    watch(() => wsInstance?.isConnected.value, (connected) => {
+      console.log('Connection status changed:', connected)
       isConnected.value = connected || false
-    })
+    }, { immediate: true })
 
     // Connect to WebSocket (will populate stores)
     console.log('Connecting to WebSocket...')
