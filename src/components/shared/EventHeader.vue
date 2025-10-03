@@ -12,7 +12,7 @@
           <span>Curfew: {{ event.curfew }}</span>
         </div>
       </div>
-      <Message v-if="!event.signups_enabled" severity="warn" :closable="false">
+      <Message v-if="event.signups_enabled === false" severity="warn" :closable="false">
         Signups are currently paused
       </Message>
     </div>

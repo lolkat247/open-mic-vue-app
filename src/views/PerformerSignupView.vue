@@ -21,7 +21,7 @@
       <template v-else-if="currentEvent">
         <EventHeader :event="currentEvent" />
 
-        <Message v-if="!signupsEnabled" severity="warn" :closable="false">
+        <Message v-if="signupsEnabled === false" severity="warn" :closable="false">
           <strong>Signups are currently paused</strong>
           <p>The organizer has temporarily paused signups. Please check back later.</p>
         </Message>
