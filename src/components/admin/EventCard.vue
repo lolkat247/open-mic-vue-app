@@ -1,5 +1,5 @@
 <template>
-  <Card class="event-card" :class="{ 'signups-paused': !event.signups_enabled }" @click="handleCardClick">
+  <Card class="event-card" :class="{ 'signups-paused': event.signups_enabled === false }" @click="handleCardClick">
     <template #header>
       <div class="card-header">
         <Badge
@@ -110,11 +110,11 @@ const confirm = useConfirm()
 const menu = ref()
 
 const signupStatusLabel = computed(() => {
-  return props.event.signups_enabled ? 'Open' : 'Paused'
+  return props.event.signups_enabled === false ? 'Paused' : 'Open'
 })
 
 const signupStatusSeverity = computed(() => {
-  return props.event.signups_enabled ? 'success' : 'warn'
+  return props.event.signups_enabled === false ? 'warn' : 'success'
 })
 
 const stats = computed(() => {
@@ -134,9 +134,9 @@ const menuItems = computed(() => [
     command: () => emit('edit', props.event)
   },
   {
-    label: props.event.signups_enabled ? 'Pause Signups' : 'Resume Signups',
-    icon: props.event.signups_enabled ? 'pi pi-pause' : 'pi pi-play',
-    command: () => emit('toggleSignups', props.event.event_id, !props.event.signups_enabled)
+    label: props.event.signups_enabled === false ? 'Resume Signups' : 'Pause Signups',
+    icon: props.event.signups_enabled === false ? 'pi pi-play' : 'pi pi-pause',
+    command: () => emit('toggleSignups', props.event.event_id, props.event.signups_enabled === false)
   },
   {
     separator: true

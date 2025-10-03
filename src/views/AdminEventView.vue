@@ -286,10 +286,10 @@ const noShowCount = computed(() =>
 )
 
 const signupStatus = computed(() =>
-  currentEvent.value?.signups_enabled ? 'Open' : 'Paused'
+  currentEvent.value?.signups_enabled === false ? 'Paused' : 'Open'
 )
 const signupSeverity = computed(() =>
-  currentEvent.value?.signups_enabled ? 'success' : 'warn'
+  currentEvent.value?.signups_enabled === false ? 'warn' : 'success'
 )
 
 const menuItems = computed(() => [
@@ -307,8 +307,8 @@ const menuItems = computed(() => [
     }
   },
   {
-    label: currentEvent.value?.signups_enabled ? 'Pause Signups' : 'Resume Signups',
-    icon: currentEvent.value?.signups_enabled ? 'pi pi-pause' : 'pi pi-play',
+    label: currentEvent.value?.signups_enabled === false ? 'Resume Signups' : 'Pause Signups',
+    icon: currentEvent.value?.signups_enabled === false ? 'pi pi-play' : 'pi pi-pause',
     command: () => handleToggleSignups()
   },
   {
@@ -351,9 +351,10 @@ async function handleToggleSignups() {
   if (!currentEvent.value) return
 
   try {
-    const enabled = !currentEvent.value.signups_enabled
+    const currentlyEnabled = currentEvent.value.signups_enabled !== false
+    const newEnabled = !currentlyEnabled
 
-    if (enabled) {
+    if (newEnabled) {
       await apiService.resumeSignups(eventId)
       toast.add({
         severity: 'success',
