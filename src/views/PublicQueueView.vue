@@ -1,5 +1,13 @@
 <template>
   <div class="public-queue-view">
+    <Button
+      icon="pi pi-arrow-left"
+      text
+      rounded
+      @click="goHome"
+      aria-label="Back to home"
+      class="back-button"
+    />
     <EventHeader v-if="currentEvent" :event="currentEvent" />
 
     <div class="queue-container">
@@ -115,6 +123,10 @@ const hasUserSlot = computed(() => {
 })
 
 // Actions
+function goHome() {
+  router.push({ name: 'Home' })
+}
+
 function goToSignup() {
   router.push({ name: 'performer-signup', params: { eventId: eventId.value } })
 }
