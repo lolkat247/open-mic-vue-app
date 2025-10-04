@@ -4,14 +4,14 @@
       <div class="header-content">
         <div class="header-left">
           <h1 class="dashboard-title">
-            <button
-              type="button"
-              class="back-button"
+            <Button
+              icon="pi pi-arrow-left"
+              text
+              rounded
               @click="goHome"
               aria-label="Back to home"
-            >
-              <i class="pi pi-arrow-left" aria-hidden="true"></i>
-            </button>
+              class="back-button"
+            />
             <i class="pi pi-shield" aria-hidden="true"></i>
             Admin Dashboard
           </h1>
@@ -501,7 +501,7 @@ onMounted(() => {
   font-size: 1.5rem;
 }
 
-.back-button {
+:deep(.back-button) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -513,16 +513,20 @@ onMounted(() => {
   cursor: pointer;
 }
 
-.back-button i {
+:deep(.back-button .p-button-icon), :deep(.back-button .pi) {
   color: var(--text-color-secondary);
   font-size: 1.25rem;
   transition: color 120ms ease, opacity 120ms ease, background-color 120ms ease;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
-.back-button:hover i,
-.back-button:focus i {
-  color: rgba(0,0,0,0.9);
+:deep(.back-button:hover), :deep(.back-button:focus) {
+  background: #ffffff;
+}
+
+:deep(.back-button:hover .p-button-icon), :deep(.back-button:focus .p-button-icon),
+:deep(.back-button:hover .pi), :deep(.back-button:focus .pi) {
+  color: var(--green-500);
   opacity: 1;
 }
 
