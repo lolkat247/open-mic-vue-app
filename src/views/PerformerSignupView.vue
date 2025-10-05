@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
@@ -94,6 +94,7 @@ const createdSlot = ref<Slot | null>(null)
 
 // WebSocket for real-time updates - will be initialized after we have eventId
 let wsConnect: (() => void) | null = null
+let wsDisconnect: (() => void) | null = null
 
 const currentEvent = computed(() => eventStore.currentEvent)
 const signupsEnabled = computed(() => eventStore.signupsEnabled)
@@ -220,6 +221,7 @@ onMounted(async () => {
     console.log('Initializing WebSocket for event_id:', eventId.value)
     const ws = useWebSocket(eventId.value, 'public', toast)
     wsConnect = ws.connect
+    wsDisconnect = ws.disconnect
 
     // Connect to WebSocket for event data
     console.log('Connecting to WebSocket...')
@@ -267,6 +269,12 @@ onMounted(async () => {
     eventError.value = error.message || 'Failed to load event'
   } finally {
     isLoadingEvent.value = false
+  }
+})
+
+onUnmounted(() => {
+  if (wsDisconnect) {
+    wsDisconnect()
   }
 })
 </script>

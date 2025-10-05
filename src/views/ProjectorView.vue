@@ -26,10 +26,10 @@
     <div class="projector-content">
       <TransitionGroup name="slide-fade" mode="out-in">
         <!-- Current Performer -->
-        <div v-if="currentSlot" key="current" class="current-section">
-          <div class="now-performing-badge">
-            <i class="pi pi-play-circle"></i>
-            <span>NOW PERFORMING</span>
+        <div v-if="currentSlot && statusBadge" key="current" class="current-section">
+          <div class="now-performing-badge" :style="{ background: statusBadge.gradient }">
+            <i :class="currentSlot.status === 'setting_up' ? 'pi pi-cog' : 'pi pi-play-circle'"></i>
+            <span>{{ statusBadge.text }}</span>
           </div>
           <h2 class="performer-name">{{ currentSlot.stage_name }}</h2>
           <div class="performer-meta">
@@ -60,12 +60,10 @@
         </h3>
         <TransitionGroup name="list" tag="div" class="queue-preview">
           <div
-            v-for="(slot, index) in upcomingSlots"
+            v-for="slot in upcomingSlots"
             :key="slot.slot_id"
-            class="queue-preview-item"
-            :class="{ 'up-next': index === 0 }"
+            class="queue-preview-item up-next"
           >
-            <span class="queue-number">{{ index + 1 }}</span>
             <span class="queue-name">{{ slot.stage_name }}</span>
             <span class="queue-type">{{ slot.act_type }}</span>
           </div>
@@ -82,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
@@ -111,13 +109,47 @@ const ws = ref<ReturnType<typeof useWebSocket> | null>(null)
 
 // Computed properties
 const currentEvent = computed(() => eventStore.currentEvent)
-const currentSlot = computed(() => queueStore.currentSlot)
-const upcomingSlots = computed(() => queueStore.queuedSlots.slice(0, 5))
+// For projector, show both performing AND setting_up slots
+const currentSlot = computed(() => {
+  return queueStore.slots.find(slot =>
+    slot.status === 'performing' || slot.status === 'setting_up'
+  )
+})
+// Only show the slot marked as "up_next" by admin, not the whole queue
+const upcomingSlots = computed(() => {
+  const upNext = queueStore.upNextSlot
+  return upNext ? [upNext] : []
+})
+
+// Badge configuration based on status
+const statusBadge = computed(() => {
+  if (!currentSlot.value) return null
+
+  if (currentSlot.value.status === 'setting_up') {
+    return {
+      text: 'SETTING UP',
+      gradient: 'linear-gradient(90deg, #ff9800, #ff5722)'
+    }
+  }
+
+  return {
+    text: 'NOW PERFORMING',
+    gradient: 'linear-gradient(90deg, #00d2ff, #3a7bd5)'
+  }
+})
 
 const elapsedTime = computed(() => {
   const minutes = Math.floor(elapsedSeconds.value / 60)
   const seconds = elapsedSeconds.value % 60
   return `${minutes}:${seconds.toString().padStart(2, '0')}`
+})
+
+// Debug: Watch for currentSlot changes
+watch(currentSlot, (newSlot, oldSlot) => {
+  console.log('[Projector] Current slot changed:', {
+    old: oldSlot ? { id: oldSlot.slot_id, status: oldSlot.status, name: oldSlot.stage_name } : null,
+    new: newSlot ? { id: newSlot.slot_id, status: newSlot.status, name: newSlot.stage_name } : null
+  })
 })
 
 // Functions
@@ -217,8 +249,15 @@ onMounted(async () => {
     // Initialize WebSocket connection with the resolved eventId
     ws.value = useWebSocket(eventId.value, 'projector', toast)
 
-    // Connect to WebSocket
+    // Connect to WebSocket and request initial state
     ws.value.connect()
+
+    // Wait a moment for connection to establish, then request full state
+    setTimeout(() => {
+      if (ws.value) {
+        ws.value.requestResync()
+      }
+    }, 500)
 
     // Update current time
     updateCurrentTime()
@@ -353,13 +392,13 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 2rem;
-  background: linear-gradient(90deg, #00d2ff, #3a7bd5);
   border-radius: 50px;
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: 2px;
   margin-bottom: 2rem;
   animation: pulse 2s ease-in-out infinite;
+  /* background is set dynamically via :style binding */
 }
 
 .now-performing-badge i {
@@ -453,7 +492,7 @@ onUnmounted(() => {
 
 .queue-preview-item {
   display: grid;
-  grid-template-columns: 60px 1fr auto;
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: 2rem;
   padding: 1.25rem 1.5rem;
@@ -466,13 +505,6 @@ onUnmounted(() => {
 .queue-preview-item.up-next {
   background: rgba(58, 123, 213, 0.2);
   border-left-color: #3a7bd5;
-}
-
-.queue-number {
-  font-size: 2rem;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.6);
-  text-align: center;
 }
 
 .queue-name {
@@ -580,7 +612,6 @@ onUnmounted(() => {
   }
 
   .queue-preview-item {
-    grid-template-columns: 50px 1fr auto;
     gap: 1.5rem;
   }
 }

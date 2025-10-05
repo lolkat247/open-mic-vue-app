@@ -44,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import ProgressSpinner from 'primevue/progressspinner'
 import QueueItem from './QueueItem.vue'
 import type { Slot, ETAUpdate } from '../../types/api'
@@ -77,8 +78,17 @@ const props = withDefaults(defineProps<Props>(), {
   emptyIcon: 'pi pi-users'
 })
 
+// Create a reactive map of slot IDs to ETAs for better reactivity
+const etaMap = computed(() => {
+  const map = new Map<string, ETAUpdate>()
+  props.etaUpdates.forEach(eta => {
+    map.set(eta.slot_id, eta)
+  })
+  return map
+})
+
 function getETAForSlot(slotId: string): ETAUpdate | undefined {
-  return props.etaUpdates.find((eta) => eta.slot_id === slotId)
+  return etaMap.value.get(slotId)
 }
 </script>
 

@@ -41,26 +41,29 @@
     <div class="timer-actions">
       <Button
         v-if="!isPaused"
-        label="Pause"
+        label="Pause Timer"
         icon="pi pi-pause"
         severity="warning"
         outlined
         @click="handlePause"
+        v-tooltip.top="'Pause the timer (breaks, technical issues)'"
         size="small"
       />
       <Button
         v-else
-        label="Resume"
+        label="Resume Timer"
         icon="pi pi-play"
         severity="success"
         @click="handleResume"
+        v-tooltip.top="'Resume the timer'"
         size="small"
       />
       <Button
-        label="Complete"
+        label="Finish Performance"
         icon="pi pi-check"
         severity="info"
         @click="$emit('complete', slot.slot_id)"
+        v-tooltip.top="'Mark performer as done and move to next'"
         size="small"
       />
     </div>

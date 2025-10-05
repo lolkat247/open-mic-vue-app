@@ -120,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
@@ -163,7 +163,7 @@ const authenticatedSlotId = ref<string>('')
 const authenticatedPassword = ref<string>('')
 
 // WebSocket for real-time updates
-const { connect } = useWebSocket(eventId, 'public', toast)
+const ws = useWebSocket(eventId, 'public', toast)
 
 const currentEvent = computed(() => eventStore.currentEvent)
 const storedSlotId = computed(() => localStorage.getItem(`slot_${eventId}`) || '')
@@ -329,7 +329,7 @@ onMounted(async () => {
 
   try {
     // Connect to WebSocket for event data
-    connect()
+    ws.connect()
 
     // Wait for initial data
     await new Promise((resolve) => setTimeout(resolve, 1500))
@@ -343,6 +343,10 @@ onMounted(async () => {
   } finally {
     isLoadingEvent.value = false
   }
+})
+
+onUnmounted(() => {
+  ws.disconnect()
 })
 </script>
 

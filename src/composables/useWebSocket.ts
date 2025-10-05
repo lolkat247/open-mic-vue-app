@@ -1,7 +1,7 @@
 // Composable for WebSocket connection management
 
-import { ref } from 'vue'
-import { WebSocketService } from '../services/websocket'
+import { ref, onUnmounted } from 'vue'
+import { webSocketManager } from '../services/websocket-manager'
 import { useEventStore } from '../stores/event'
 import { useQueueStore } from '../stores/queue'
 import type { ToastServiceMethods } from 'primevue/toastservice'
@@ -12,20 +12,26 @@ export function useWebSocket(eventId: string, viewType: WebSocketViewType, toast
   const eventStore = useEventStore()
   const queueStore = useQueueStore()
 
-  const ws = ref<WebSocketService | null>(null)
   const isConnected = ref(false)
   const connectionError = ref<string | null>(null)
 
+  let subscriberId: symbol | null = null
+
   function connect(connectionToken?: string | null) {
-    if (ws.value) {
-      ws.value.disconnect()
+    // If already subscribed, unsubscribe first
+    if (subscriberId) {
+      disconnect()
     }
 
     // Use the provided token, or fall back to the initial token
     const tokenToUse = connectionToken !== undefined ? connectionToken : token
-    ws.value = new WebSocketService(config.websocketUrl, eventId, viewType, tokenToUse)
 
-    ws.value.setHandlers({
+    // Subscribe to the connection manager
+    subscriberId = webSocketManager.subscribe(
+      config.websocketUrl,
+      eventId,
+      viewType,
+      {
       onFullState: (data) => {
         console.log('Received full state:', data)
         if (data.event) {
@@ -85,38 +91,50 @@ export function useWebSocket(eventId: string, viewType: WebSocketViewType, toast
         isConnected.value = false
       },
 
-      onError: (error) => {
-        console.error('WebSocket error:', error)
-        connectionError.value = 'Connection error occurred'
-      }
-    })
+        onError: (error) => {
+          console.error('WebSocket error:', error)
+          connectionError.value = 'Connection error occurred'
+        }
+      },
+      tokenToUse
+    )
 
-    ws.value.connect()
+    // Update connection status
+    isConnected.value = webSocketManager.isConnected(eventId, viewType)
   }
 
   function disconnect() {
-    if (ws.value) {
-      ws.value.disconnect()
-      ws.value = null
+    if (subscriberId) {
+      webSocketManager.unsubscribe(eventId, viewType, subscriberId)
+      subscriberId = null
     }
     isConnected.value = false
   }
 
   function requestResync() {
-    if (ws.value) {
-      ws.value.requestResync()
+    const service = webSocketManager.getService(eventId, viewType)
+    if (service) {
+      service.requestResync()
     }
   }
 
-  // Note: Components should call disconnect() in their own onUnmounted hook
-  // We can't use onUnmounted here because this composable might be called
-  // after async operations, which breaks Vue's lifecycle context
+  // Auto-cleanup on unmount
+  // Note: This will be called when the component using this composable unmounts
+  onUnmounted(() => {
+    disconnect()
+  })
 
   return {
     connect,
     disconnect,
     requestResync,
     isConnected,
-    connectionError
+    connectionError,
+    ws: {
+      // Expose value getter for backward compatibility with code that checks ws.value
+      get value() {
+        return webSocketManager.getService(eventId, viewType)
+      }
+    }
   }
 }
