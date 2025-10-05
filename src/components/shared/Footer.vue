@@ -13,6 +13,7 @@
   padding: 1.5rem 2rem;
   margin-top: 2rem;
   position: relative;
+  z-index: 1;
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(12px);
@@ -49,7 +50,7 @@
     flex-direction: column;
     gap: 0.75rem;
     padding: 1.25rem 1.5rem;
-    margin-top: 5rem;
+    margin-top: 2rem;
     text-align: center;
   }
 

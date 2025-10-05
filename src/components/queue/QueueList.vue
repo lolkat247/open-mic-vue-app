@@ -102,8 +102,13 @@ function getETAForSlot(slotId: string): ETAUpdate | undefined {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--surface-border);
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .queue-title {
@@ -112,7 +117,10 @@ function getETAForSlot(slotId: string): ETAUpdate | undefined {
   gap: 0.75rem;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-color);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(0, 206, 144, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
 }
 

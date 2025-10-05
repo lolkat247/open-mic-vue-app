@@ -115,16 +115,22 @@ const statusSeverity = computed(() => {
   display: flex;
   gap: 1rem;
   padding: 1rem;
-  background: var(--surface-card);
-  border-radius: 8px;
-  border: 1px solid var(--surface-border);
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
   position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .queue-item:hover {
-  border-color: var(--primary-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 206, 144, 0.3);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.1),
+    0 0 20px rgba(0, 206, 144, 0.15);
+  transform: translateY(-2px);
 }
 
 .queue-item::before {
@@ -134,21 +140,24 @@ const statusSeverity = computed(() => {
   top: 0;
   bottom: 0;
   width: 4px;
-  border-radius: 8px 0 0 8px;
-  background: var(--surface-border);
-  transition: background 0.2s ease;
+  border-radius: 12px 0 0 12px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 }
 
 .queue-item.status-up_next::before {
-  background: var(--orange-500);
+  background: linear-gradient(180deg, var(--orange-400), var(--orange-600));
+  box-shadow: 0 0 8px rgba(255, 165, 0, 0.3);
 }
 
 .queue-item.status-setting_up::before {
-  background: var(--blue-500);
+  background: linear-gradient(180deg, var(--blue-400), var(--blue-600));
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
 }
 
 .queue-item.status-performing::before {
-  background: var(--green-500);
+  background: linear-gradient(180deg, rgba(0, 206, 144, 1), rgba(0, 255, 163, 1));
+  box-shadow: 0 0 8px rgba(0, 206, 144, 0.5);
 }
 
 .queue-position {
@@ -164,11 +173,13 @@ const statusSeverity = computed(() => {
   justify-content: center;
   width: 40px;
   height: 40px;
-  background: var(--primary-100);
-  color: var(--primary-700);
+  background: linear-gradient(135deg, rgba(0, 206, 144, 0.2), rgba(0, 255, 163, 0.2));
+  color: rgba(0, 206, 144, 1);
+  border: 2px solid rgba(0, 206, 144, 0.3);
   border-radius: 50%;
   font-weight: 700;
   font-size: 1.1rem;
+  box-shadow: 0 0 12px rgba(0, 206, 144, 0.2);
 }
 
 .queue-content {

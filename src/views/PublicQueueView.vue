@@ -46,7 +46,9 @@
       </template>
     </div>
 
-    <!-- Floating Action Button -->
+    <Footer />
+
+    <!-- Floating Action Buttons -->
     <Button
       v-if="signupsEnabled && !isLoadingEvent && currentEvent"
       class="fab"
@@ -58,7 +60,6 @@
       aria-label="Sign up to perform"
     />
 
-    <!-- Manage Slot Button (if user has signed up) -->
     <Button
       v-if="hasUserSlot"
       class="fab-secondary"
@@ -87,6 +88,7 @@ import EventHeader from '../components/shared/EventHeader.vue'
 import LoadingState from '../components/shared/LoadingState.vue'
 import CurrentPerformer from '../components/queue/CurrentPerformer.vue'
 import QueueList from '../components/queue/QueueList.vue'
+import Footer from '../components/shared/Footer.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -253,35 +255,33 @@ onUnmounted(() => {
 <style scoped>
 .public-queue-view {
   min-height: 100vh;
-  padding-bottom: 100px; /* Space for FAB */
+  padding-bottom: 2rem;
   position: relative;
   background-color: var(--surface-ground);
-  background-image:
-    repeating-radial-gradient(
-      circle at 0 0,
-      transparent 0,
-      var(--surface-ground) 40px
-    ),
-    repeating-linear-gradient(
-      45deg,
-      color-mix(in srgb, var(--primary-color) 8%, transparent) 0px,
-      color-mix(in srgb, var(--primary-color) 12%, transparent) 1px,
-      transparent 1px,
-      transparent 40px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      color-mix(in srgb, var(--primary-color) 8%, transparent) 0px,
-      color-mix(in srgb, var(--primary-color) 12%, transparent) 1px,
-      transparent 1px,
-      transparent 40px
-    );
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, var(--surface-ground) 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
+  display: flex;
+  flex-direction: column;
+}
+
+.public-queue-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .queue-container {
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
   padding: 1.5rem;
+  padding-bottom: 8rem;
+  position: relative;
+  z-index: 1;
+  flex: 1;
 }
 
 .connection-message {
@@ -299,13 +299,17 @@ onUnmounted(() => {
   bottom: 24px;
   right: 24px;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 0 20px rgba(0, 206, 144, 0.3);
   transition: all 0.3s ease;
 }
 
 .fab:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(0, 206, 144, 0.5);
 }
 
 .fab-secondary {
@@ -313,18 +317,23 @@ onUnmounted(() => {
   bottom: 24px;
   right: 140px;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 0 15px rgba(0, 206, 144, 0.2);
   transition: all 0.3s ease;
 }
 
 .fab-secondary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    0 0 25px rgba(0, 206, 144, 0.4);
 }
 
 @media (max-width: 768px) {
   .queue-container {
     padding: 1rem;
+    padding-bottom: 6rem;
   }
 
   .fab {
@@ -333,23 +342,8 @@ onUnmounted(() => {
   }
 
   .fab-secondary {
-    bottom: 88px;
-    right: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .fab,
-  .fab-secondary {
-    width: 100%;
-    max-width: calc(100% - 32px);
-    right: 16px;
-    left: 16px;
-    border-radius: 28px;
-  }
-
-  .fab-secondary {
     bottom: 80px;
+    right: 16px;
   }
 }
 

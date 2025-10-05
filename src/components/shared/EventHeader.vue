@@ -33,10 +33,16 @@ defineProps<Props>()
 
 <style scoped>
 .event-header {
-  background: var(--surface-card);
-  border-bottom: 1px solid var(--surface-border);
-  padding: 1.5rem;
-  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px 16px 0 0;
+  padding: 2rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
 }
 
 .event-header-content {
@@ -45,15 +51,32 @@ defineProps<Props>()
 }
 
 .event-name {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin: 0 0 0.75rem 0;
-  color: var(--text-color);
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(0, 206, 144, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.02em;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.event-name::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(0, 206, 144, 1) 0%, rgba(0, 255, 163, 1) 100%);
+  border-radius: 2px;
 }
 
 .event-details {
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem;
   flex-wrap: wrap;
   margin-bottom: 0.75rem;
 }
@@ -61,27 +84,33 @@ defineProps<Props>()
 .event-detail {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--text-color-secondary);
-  font-size: 0.95rem;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
 }
 
 .event-detail i {
-  font-size: 1rem;
+  font-size: 1.25rem;
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.3));
 }
 
 @media (max-width: 768px) {
   .event-header {
-    padding: 1rem;
+    padding: 1.5rem 1rem;
+    border-radius: 0;
   }
 
   .event-name {
-    font-size: 1.5rem;
+    font-size: 2rem;
+  }
+
+  .event-name::after {
+    width: 60px;
   }
 
   .event-details {
-    flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
   }
 }
 </style>
