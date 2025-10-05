@@ -198,8 +198,7 @@ onMounted(async () => {
     ws.value = useWebSocket(eventId.value, 'public')
 
     // Connect to WebSocket (will populate stores)
-    ws.value.connect()
-
+    ws.value?.connect()
     // Wait a bit for the full_state message
     await new Promise((resolve) => setTimeout(resolve, 1500))
 
