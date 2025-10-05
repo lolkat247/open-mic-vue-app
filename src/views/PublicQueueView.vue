@@ -124,7 +124,7 @@ const hasUserSlot = computed(() => {
 
 // Actions
 function goHome() {
-  router.push({ name: 'Home' })
+  router.push({ name: 'home' })
 }
 
 function goToSignup() {
