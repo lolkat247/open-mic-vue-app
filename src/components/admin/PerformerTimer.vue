@@ -12,13 +12,12 @@
     </div>
 
     <div class="timer-progress">
-      <ProgressBar
-        :value="progressPercentage"
-        :showValue="false"
-        :class="progressClass"
-      />
+      <div class="custom-progress-bar" :class="progressClass">
+        <div class="custom-progress-value" :style="{ width: progressPercentage + '%' }"></div>
+      </div>
       <div class="progress-labels">
         <span class="progress-label">{{ formatDuration(0) }}</span>
+        <span class="progress-label">{{ progressPercentage.toFixed(1) }}%</span>
         <span class="progress-label">{{ formatDuration(expectedDuration) }}</span>
       </div>
     </div>
@@ -40,25 +39,6 @@
 
     <div class="timer-actions">
       <Button
-        v-if="!isPaused"
-        label="Pause Timer"
-        icon="pi pi-pause"
-        severity="warning"
-        outlined
-        @click="handlePause"
-        v-tooltip.top="'Pause the timer (breaks, technical issues)'"
-        size="small"
-      />
-      <Button
-        v-else
-        label="Resume Timer"
-        icon="pi pi-play"
-        severity="success"
-        @click="handleResume"
-        v-tooltip.top="'Resume the timer'"
-        size="small"
-      />
-      <Button
         label="Finish Performance"
         icon="pi pi-check"
         severity="info"
@@ -67,20 +47,13 @@
         size="small"
       />
     </div>
-
-    <Message v-if="isPaused" severity="warn" :closable="false" class="pause-message">
-      <i class="pi pi-pause-circle"></i>
-      Timer paused
-    </Message>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import Badge from 'primevue/badge'
-import ProgressBar from 'primevue/progressbar'
 import Button from 'primevue/button'
-import Message from 'primevue/message'
 import type { Slot } from '../../types/api'
 import { formatDuration } from '../../utils/time'
 
@@ -94,13 +67,13 @@ const emit = defineEmits<{
   complete: [slotId: string]
 }>()
 
-const isPaused = ref(false)
 const elapsedSeconds = ref(0)
-const pausedAt = ref<Date | null>(null)
 let intervalId: number | null = null
 
 const statusLabel = computed(() => {
   switch (props.slot.status) {
+    case 'setting_up':
+      return 'Setting Up'
     case 'performing':
       return 'Performing'
     case 'completed':
@@ -112,6 +85,8 @@ const statusLabel = computed(() => {
 
 const statusSeverity = computed(() => {
   switch (props.slot.status) {
+    case 'setting_up':
+      return 'warning'
     case 'performing':
       return 'info'
     case 'completed':
@@ -131,7 +106,9 @@ const elapsedDisplay = computed(() => {
 
 const progressPercentage = computed(() => {
   const percentage = (elapsedSeconds.value / (expectedDuration.value * 60)) * 100
-  return Math.min(percentage, 100)
+  const capped = Math.min(percentage, 100)
+  console.log('[PerformerTimer] Progress:', capped.toFixed(1) + '%', 'Elapsed:', elapsedSeconds.value, 'Expected:', expectedDuration.value * 60)
+  return capped
 })
 
 const timerClass = computed(() => {
@@ -149,25 +126,25 @@ const progressClass = computed(() => {
 })
 
 function calculateElapsed() {
-  if (isPaused.value || !props.slot.started_at) {
+  const timestamp = props.slot.started_at || props.slot.setup_started_at
+
+  if (!timestamp) {
+    elapsedSeconds.value = 0
     return
   }
 
-  const startTime = new Date(props.slot.started_at).getTime()
+  const startTime = new Date(timestamp).getTime()
   const now = Date.now()
   const elapsed = Math.floor((now - startTime) / 1000)
   elapsedSeconds.value = Math.max(0, elapsed)
+
+  console.log('[PerformerTimer] Elapsed:', elapsed, 'seconds, Timestamp:', timestamp)
 }
 
-function handlePause() {
-  isPaused.value = true
-  pausedAt.value = new Date()
-}
-
-function handleResume() {
-  isPaused.value = false
-  pausedAt.value = null
-}
+// Watch for slot changes to recalculate
+watch(() => props.slot, () => {
+  calculateElapsed()
+}, { deep: true })
 
 onMounted(() => {
   // Calculate initial elapsed time
@@ -276,16 +253,64 @@ onUnmounted(() => {
   font-variant-numeric: tabular-nums;
 }
 
-:deep(.progress-normal .p-progressbar-value) {
-  background: var(--green-500);
+.custom-progress-bar {
+  height: 1.5rem;
+  background: var(--surface-100);
+  border-radius: 10px;
+  border: 1px solid var(--surface-300);
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
-:deep(.progress-warning .p-progressbar-value) {
-  background: var(--yellow-500);
+.custom-progress-value {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
 }
 
-:deep(.progress-danger .p-progressbar-value) {
-  background: var(--red-500);
+.custom-progress-value::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  border-radius: 8px;
+}
+
+.progress-normal .custom-progress-value {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.5);
+}
+
+.progress-warning .custom-progress-value {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+}
+
+.progress-danger .custom-progress-value {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.9);
+  }
 }
 
 .timer-details {
@@ -329,10 +354,6 @@ onUnmounted(() => {
 .timer-actions button {
   flex: 1;
   min-width: 120px;
-}
-
-.pause-message {
-  margin-top: 1rem;
 }
 
 @media (max-width: 768px) {

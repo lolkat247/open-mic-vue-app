@@ -253,8 +253,29 @@ onUnmounted(() => {
 <style scoped>
 .public-queue-view {
   min-height: 100vh;
-  background: var(--surface-ground);
   padding-bottom: 100px; /* Space for FAB */
+  position: relative;
+  background-color: var(--surface-ground);
+  background-image:
+    repeating-radial-gradient(
+      circle at 0 0,
+      transparent 0,
+      var(--surface-ground) 40px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--primary-color) 8%, transparent) 0px,
+      color-mix(in srgb, var(--primary-color) 12%, transparent) 1px,
+      transparent 1px,
+      transparent 40px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--primary-color) 8%, transparent) 0px,
+      color-mix(in srgb, var(--primary-color) 12%, transparent) 1px,
+      transparent 1px,
+      transparent 40px
+    );
 }
 
 .queue-container {
