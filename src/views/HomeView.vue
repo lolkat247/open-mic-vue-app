@@ -66,6 +66,37 @@
         </Card>
       </div>
 
+      <div class="about-section">
+        <h2 class="about-title">What is OpenMic.Site?</h2>
+        <p class="about-description">
+          A modern, real-time queue management system designed to make open mic nights run smoothly.
+          Performers can sign up instantly, hosts can manage the queue with ease, and everyone stays
+          informed with live updates.
+        </p>
+        <div class="features-grid">
+          <div class="feature-item">
+            <i class="pi pi-bolt feature-icon"></i>
+            <h3>Real-time Updates</h3>
+            <p>Instant queue changes via WebSocket connections</p>
+          </div>
+          <div class="feature-item">
+            <i class="pi pi-user-plus feature-icon"></i>
+            <h3>Easy Signup</h3>
+            <p>Performers can join the queue in seconds</p>
+          </div>
+          <div class="feature-item">
+            <i class="pi pi-chart-line feature-icon"></i>
+            <h3>Live Dashboard</h3>
+            <p>Hosts control everything from one place</p>
+          </div>
+          <div class="feature-item">
+            <i class="pi pi-clock feature-icon"></i>
+            <h3>Time Tracking</h3>
+            <p>Automatic performance timing and ETAs</p>
+          </div>
+        </div>
+      </div>
+
       <div class="admin-section">
         <p class="admin-intro">Admin? You're in the right place.</p>
         <Card class="admin-card">
@@ -86,6 +117,8 @@
           </template>
         </Card>
       </div>
+
+      <Footer />
     </div>
   </div>
 </template>
@@ -96,6 +129,7 @@ import { useRouter } from 'vue-router'
 import Card from 'primevue/card'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
+import Footer from '../components/shared/Footer.vue'
 
 const router = useRouter()
 const eventIdInput = ref('')
@@ -287,6 +321,69 @@ function goToAdmin() {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin-bottom: 5rem;
+}
+
+.about-section {
+  margin-top: 5rem;
+  padding: 3rem 2.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.about-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(0, 206, 144, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.about-description {
+  text-align: center;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+  max-width: 800px;
+  margin: 0 auto 3rem auto;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.feature-item {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  color: rgba(0, 206, 144, 1);
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 0 10px rgba(0, 206, 144, 0.4));
+}
+
+.feature-item h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 0.5rem;
+}
+
+.feature-item p {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
 }
 
 .admin-section {
@@ -534,6 +631,24 @@ function goToAdmin() {
     padding: 2rem 1rem;
   }
 
+  .about-section {
+    margin-top: 3rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .about-title {
+    font-size: 2rem;
+  }
+
+  .about-description {
+    font-size: 1rem;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
   .admin-intro {
     font-size: 1.4rem;
   }
@@ -580,6 +695,32 @@ function goToAdmin() {
   .intro-text {
     font-size: 1.2rem;
     margin: 2.5rem 1rem 1.5rem 1rem;
+  }
+
+  .about-section {
+    margin-top: 2.5rem;
+    padding: 1.75rem 1.25rem;
+  }
+
+  .about-title {
+    font-size: 1.75rem;
+  }
+
+  .about-description {
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+
+  .feature-icon {
+    font-size: 2rem;
+  }
+
+  .feature-item h3 {
+    font-size: 1.1rem;
+  }
+
+  .feature-item p {
+    font-size: 0.9rem;
   }
 
   .admin-intro {
