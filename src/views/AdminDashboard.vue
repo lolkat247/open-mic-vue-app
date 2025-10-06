@@ -530,6 +530,16 @@ onMounted(() => {
   opacity: 1;
 }
 
+/* Ensure the PrimeVue button root is rounded and clips the hover background */
+:deep(.back-button.p-button) {
+  border-radius: 9999px !important;
+  overflow: hidden;
+}
+
+:deep(.back-button.p-button:hover), :deep(.back-button.p-button:focus) {
+  background: #ffffff;
+}
+
 .user-email {
   color: var(--text-color-secondary);
   font-size: 0.9rem;

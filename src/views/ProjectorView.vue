@@ -10,6 +10,10 @@
         </div>
       </div>
       <div class="header-actions">
+        <div v-if="qrCodeDataUrl" class="qr-section">
+          <img :src="qrCodeDataUrl" alt="Queue QR Code" class="qr-code" />
+          <a :href="queueUrl" target="_blank" class="qr-link">{{ queueUrl }}</a>
+        </div>
         <div class="current-time">{{ currentTime }}</div>
         <Button
           :icon="isFullscreen ? 'pi pi-window-minimize' : 'pi pi-window-maximize'"
@@ -80,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
@@ -89,6 +93,7 @@ import { useQueueStore } from '../stores/queue'
 import { useWebSocket } from '../composables/useWebSocket'
 import { useAPI } from '../composables/useAPI'
 import { formatDate } from '../utils/time'
+import QRCode from 'qrcode'
 
 const route = useRoute()
 const toast = useToast()
@@ -100,6 +105,8 @@ const eventId = ref<string>('')
 const isFullscreen = ref(false)
 const currentTime = ref('')
 const elapsedSeconds = ref(0)
+const qrCodeDataUrl = ref<string>('')
+const queueUrl = ref<string>('')
 
 let timeInterval: number | null = null
 let elapsedInterval: number | null = null
@@ -194,6 +201,23 @@ async function toggleFullscreen() {
     } catch (error) {
       console.error('Failed to exit fullscreen:', error)
     }
+  }
+}
+
+async function generateQRCode(eventCode: string) {
+  try {
+    const url = `https://openmic.site/event/${eventCode}/queue`
+    queueUrl.value = url
+    qrCodeDataUrl.value = await QRCode.toDataURL(url, {
+      width: 200,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    })
+  } catch (error) {
+    console.error('Failed to generate QR code:', error)
   }
 }
 
@@ -297,6 +321,13 @@ onUnmounted(() => {
   if (timeInterval) clearInterval(timeInterval)
   if (elapsedInterval) clearInterval(elapsedInterval)
 })
+
+// Watch for event code and generate QR code
+watch(() => currentEvent.value?.event_code, (eventCode) => {
+  if (eventCode) {
+    generateQRCode(eventCode)
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>
@@ -360,6 +391,39 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 1.5rem;
+}
+
+.qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.qr-code {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+}
+
+.qr-link {
+  font-size: 0.9rem;
+  color: #3a7bd5;
+  text-decoration: none;
+  font-weight: 600;
+  word-break: break-all;
+  text-align: center;
+  max-width: 200px;
+  transition: color 0.2s ease;
+}
+
+.qr-link:hover {
+  color: #00d2ff;
+  text-decoration: underline;
 }
 
 .current-time {
