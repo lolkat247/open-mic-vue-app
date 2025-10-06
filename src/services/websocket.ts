@@ -44,6 +44,7 @@ export class WebSocketService {
   }
 
   setHandlers(handlers: WebSocketEventHandlers) {
+    console.log('Setting WebSocket handlers:', Object.keys(handlers))
     this.handlers = handlers
   }
 
@@ -63,6 +64,7 @@ export class WebSocketService {
     }
 
     const url = `${this.wsUrl}?${params.toString()}`
+    console.log('Connecting to WebSocket URL:', url)
 
     try {
       this.ws = new WebSocket(url)
@@ -78,9 +80,10 @@ export class WebSocketService {
       this.ws.onmessage = (event) => {
         try {
           const message: WebSocketMessage = JSON.parse(event.data)
+          console.log('WebSocket message received:', message.type, message)
           this.handleMessage(message)
         } catch (error) {
-          console.error('Failed to parse WebSocket message:', error)
+          console.error('Failed to parse WebSocket message:', error, event.data)
         }
       }
 
@@ -102,8 +105,10 @@ export class WebSocketService {
   }
 
   private handleMessage(message: WebSocketMessage) {
+    console.log('Handling message type:', message.type)
     switch (message.type) {
       case 'full_state':
+        console.log('Calling onFullState handler with data:', message.data)
         this.handlers.onFullState?.(message.data)
         break
       case 'delta':
@@ -114,6 +119,9 @@ export class WebSocketService {
         break
       case 'pong':
         // Pong received, connection is alive
+        break
+      case 'error':
+        console.error('WebSocket error message:', (message as any).message)
         break
       default:
         console.warn('Unknown message type:', message)
@@ -152,13 +160,16 @@ export class WebSocketService {
 
   send(message: WebSocketOutboundMessage) {
     if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(message))
+      const messageStr = JSON.stringify(message)
+      console.log('Sending WebSocket message:', message.type, messageStr)
+      this.ws.send(messageStr)
     } else {
-      console.warn('WebSocket not connected, cannot send message')
+      console.warn('WebSocket not connected, cannot send message. ReadyState:', this.ws?.readyState)
     }
   }
 
   requestResync() {
+    console.log('Requesting resync...')
     this.send({ type: 'request_resync' })
   }
 

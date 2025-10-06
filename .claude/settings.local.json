@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/jakeiglesias/Workplace/open-mic/open-mic-backend-api/lib/handlers/**)",
+      "Read(//Users/jakeiglesias/Workplace/open-mic/open-mic-backend-api/lib/services/**)",
+      "Read(//Users/jakeiglesias/Workplace/open-mic/open-mic-backend-api/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

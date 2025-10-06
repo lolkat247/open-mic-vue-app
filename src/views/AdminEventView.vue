@@ -69,120 +69,123 @@
 
       <!-- Main Content -->
       <div v-else class="event-content">
-        <!-- Current Performer Section -->
-        <div class="content-section">
-          <h2 class="section-title">
-            <i class="pi pi-play-circle"></i>
-            Current Performer
-          </h2>
-
-          <div v-if="currentPerformer" class="current-performer-container">
-            <PerformerTimer
-              :slot="currentPerformer"
+        <!-- Main Area: Queue Management -->
+        <div class="main-area">
+          <!-- Setting Up Section -->
+          <div v-if="settingUpSlot" class="content-section setting-up-section">
+            <SettingUpCard
+              :slot="settingUpSlot"
+              :has-current-performer="!!currentPerformer"
+              @mark-up-next="handleMarkUpNext"
+              @call-to-stage="handleCallToStage"
+              @start="handleStart"
               @complete="handleComplete"
-            />
-          </div>
-          <Message v-else severity="info" :closable="false">
-            <i class="pi pi-info-circle"></i>
-            No performer currently on stage
-          </Message>
-        </div>
-
-        <!-- Queue Management Section -->
-        <div class="content-section">
-          <QueueManager
-            :slots="queueSlots"
-            :is-reordering="isReordering"
-            :has-current-performer="!!currentPerformer"
-            @reorder="handleReorder"
-            @start="handleStart"
-            @complete="handleComplete"
-            @no-show="handleNoShow"
-            @reinstate="handleReinstate"
-          />
-        </div>
-
-        <!-- Completed/No-Show Section -->
-        <div v-if="inactiveSlots.length > 0" class="content-section">
-          <div class="section-header">
-            <h2 class="section-title">
-              <i class="pi pi-history"></i>
-              History
-            </h2>
-            <Button
-              :label="showHistory ? 'Hide' : 'Show'"
-              :icon="showHistory ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-              text
-              size="small"
-              @click="showHistory = !showHistory"
+              @no-show="handleNoShow"
+              @reinstate="handleReinstate"
             />
           </div>
 
-          <div v-if="showHistory" class="history-list">
-            <div
-              v-for="slot in inactiveSlots"
-              :key="slot.slot_id"
-              class="history-item"
-              :class="{ 'no-show': slot.status === 'no_show' }"
-            >
-              <div class="history-info">
-                <h4 class="history-name">{{ slot.stage_name }}</h4>
-                <div class="history-meta">
-                  <Badge
-                    :value="slot.status === 'completed' ? 'Completed' : 'No Show'"
-                    :severity="slot.status === 'completed' ? 'success' : 'danger'"
-                  />
-                  <span v-if="slot.act_type" class="meta-text">{{ slot.act_type }}</span>
-                  <span v-if="slot.completed_at" class="meta-text">
-                    {{ formatTime(slot.completed_at) }}
-                  </span>
-                </div>
-              </div>
-              <div class="history-actions">
-                <SlotControls
-                  :slot="slot"
-                  @reinstate="handleReinstate"
-                />
-              </div>
+          <!-- Up Next Section -->
+          <div class="content-section up-next-section">
+            <UpNextCard
+              :slot="upNextSlot"
+              :has-current-performer="!!currentPerformer"
+              @mark-up-next="handleMarkUpNext"
+              @call-to-stage="handleCallToStage"
+              @start="handleStart"
+              @complete="handleComplete"
+              @no-show="handleNoShow"
+              @reinstate="handleReinstate"
+            />
+          </div>
+
+          <!-- Queue Section -->
+          <div class="content-section queue-section">
+            <div class="queue-wrapper">
+              <QueueManager
+                :slots="queueSlots"
+                :is-reordering="isReordering"
+                :has-current-performer="!!currentPerformer"
+                @reorder="handleReorder"
+                @mark-up-next="handleMarkUpNext"
+                @call-to-stage="handleCallToStage"
+                @start="handleStart"
+                @complete="handleComplete"
+                @no-show="handleNoShow"
+                @reinstate="handleReinstate"
+              />
             </div>
           </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-          <Card class="stat-card">
-            <template #content>
-              <div class="stat-content">
-                <i class="pi pi-users stat-icon primary"></i>
-                <div class="stat-info">
-                  <span class="stat-value">{{ queuedCount }}</span>
-                  <span class="stat-label">In Queue</span>
+        <!-- Sidebar: Current Performer, Stats, History -->
+        <div class="sidebar-area">
+          <!-- Current Performer -->
+          <div class="sidebar-section current-performer-section">
+            <h3 class="sidebar-title">
+              <i class="pi pi-play-circle"></i>
+              Now Performing
+            </h3>
+            <div v-if="currentPerformer" class="current-performer-container">
+              <PerformerTimer
+                :slot="currentPerformer"
+                @complete="handleComplete"
+              />
+            </div>
+            <div v-else class="empty-performer">
+              <i class="pi pi-microphone"></i>
+              <p>No performer on stage</p>
+              <small>Click "Call to Stage" to begin</small>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="sidebar-section">
+            <CompactStats
+              :queued-count="queuedCount"
+              :completed-count="completedCount"
+              :no-show-count="noShowCount"
+            />
+          </div>
+
+          <!-- History -->
+          <div v-if="inactiveSlots.length > 0" class="sidebar-section history-section">
+            <div class="history-header">
+              <h3 class="sidebar-title">
+                <i class="pi pi-history"></i>
+                History
+              </h3>
+              <Button
+                :icon="showHistory ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                text
+                rounded
+                size="small"
+                @click="showHistory = !showHistory"
+                v-tooltip.top="showHistory ? 'Hide history' : 'Show history'"
+              />
+            </div>
+
+            <div v-if="showHistory" class="history-list">
+              <div
+                v-for="slot in inactiveSlots.slice(0, 5)"
+                :key="slot.slot_id"
+                class="history-item"
+                :class="{ 'no-show': slot.status === 'no_show' }"
+              >
+                <div class="history-info">
+                  <h4 class="history-name">{{ slot.stage_name }}</h4>
+                  <Badge
+                    :value="slot.status === 'completed' ? 'Done' : 'No Show'"
+                    :severity="slot.status === 'completed' ? 'success' : 'danger'"
+                    size="small"
+                  />
                 </div>
               </div>
-            </template>
-          </Card>
-          <Card class="stat-card">
-            <template #content>
-              <div class="stat-content">
-                <i class="pi pi-check-circle stat-icon success"></i>
-                <div class="stat-info">
-                  <span class="stat-value">{{ completedCount }}</span>
-                  <span class="stat-label">Completed</span>
-                </div>
-              </div>
-            </template>
-          </Card>
-          <Card class="stat-card">
-            <template #content>
-              <div class="stat-content">
-                <i class="pi pi-times-circle stat-icon danger"></i>
-                <div class="stat-info">
-                  <span class="stat-value">{{ noShowCount }}</span>
-                  <span class="stat-label">No Shows</span>
-                </div>
-              </div>
-            </template>
-          </Card>
+              <small v-if="inactiveSlots.length > 5" class="history-more">
+                +{{ inactiveSlots.length - 5 }} more
+              </small>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -246,7 +249,9 @@ import { useWebSocket } from '../composables/useWebSocket'
 import LoadingState from '../components/shared/LoadingState.vue'
 import PerformerTimer from '../components/admin/PerformerTimer.vue'
 import QueueManager from '../components/admin/QueueManager.vue'
-import SlotControls from '../components/admin/SlotControls.vue'
+import CompactStats from '../components/admin/CompactStats.vue'
+import UpNextCard from '../components/admin/UpNextCard.vue'
+import SettingUpCard from '../components/admin/SettingUpCard.vue'
 import { formatDate, formatTime } from '../utils/time'
 
 const route = useRoute()
@@ -257,7 +262,7 @@ const queueStore = useQueueStore()
 const authStore = useAuthStore()
 const { apiService } = useAPI()
 
-const eventId = route.params.eventId as string
+const eventId = ref<string>('')
 const isLoading = ref(true)
 const error = ref<string | null>(null)
 const isReordering = ref(false)
@@ -267,11 +272,14 @@ const bannerMessage = ref('')
 const isSendingBanner = ref(false)
 const menu = ref()
 
-// WebSocket for real-time updates
-const { connect, disconnect } = useWebSocket(eventId, 'staff')
+// WebSocket for real-time updates - will be initialized after we resolve eventId
+let wsConnect: (() => void) | null = null
+let wsDisconnect: (() => void) | null = null
 
 const currentEvent = computed(() => eventStore.currentEvent)
 const queueSlots = computed(() => queueStore.slots.filter(s => s.status === 'queued'))
+const upNextSlot = computed(() => queueStore.slots.find(s => s.status === 'up_next'))
+const settingUpSlot = computed(() => queueStore.slots.find(s => s.status === 'setting_up'))
 const currentPerformer = computed(() => queueStore.currentSlot)
 const inactiveSlots = computed(() =>
   queueStore.slots.filter(s => s.status === 'completed' || s.status === 'no_show')
@@ -286,10 +294,10 @@ const noShowCount = computed(() =>
 )
 
 const signupStatus = computed(() =>
-  currentEvent.value?.signups_enabled ? 'Open' : 'Paused'
+  currentEvent.value?.signups_enabled === false ? 'Paused' : 'Open'
 )
 const signupSeverity = computed(() =>
-  currentEvent.value?.signups_enabled ? 'success' : 'warn'
+  currentEvent.value?.signups_enabled === false ? 'warn' : 'success'
 )
 
 const menuItems = computed(() => [
@@ -307,8 +315,8 @@ const menuItems = computed(() => [
     }
   },
   {
-    label: currentEvent.value?.signups_enabled ? 'Pause Signups' : 'Resume Signups',
-    icon: currentEvent.value?.signups_enabled ? 'pi pi-pause' : 'pi pi-play',
+    label: currentEvent.value?.signups_enabled === false ? 'Resume Signups' : 'Pause Signups',
+    icon: currentEvent.value?.signups_enabled === false ? 'pi pi-play' : 'pi pi-pause',
     command: () => handleToggleSignups()
   },
   {
@@ -325,7 +333,7 @@ const menuItems = computed(() => [
     command: () => {
       const url = router.resolve({
         name: 'public-queue',
-        params: { eventId }
+        params: { eventId: eventId.value }
       }).href
       window.open(url, '_blank')
     }
@@ -336,7 +344,7 @@ const menuItems = computed(() => [
     command: () => {
       const url = router.resolve({
         name: 'projector',
-        params: { eventId }
+        params: { eventId: eventId.value }
       }).href
       window.open(url, '_blank')
     }
@@ -351,10 +359,11 @@ async function handleToggleSignups() {
   if (!currentEvent.value) return
 
   try {
-    const enabled = !currentEvent.value.signups_enabled
+    const currentlyEnabled = currentEvent.value.signups_enabled !== false
+    const newEnabled = !currentlyEnabled
 
-    if (enabled) {
-      await apiService.resumeSignups(eventId)
+    if (newEnabled) {
+      await apiService.resumeSignups(eventId.value)
       toast.add({
         severity: 'success',
         summary: 'Signups Resumed',
@@ -362,7 +371,7 @@ async function handleToggleSignups() {
         life: 3000
       })
     } else {
-      await apiService.pauseSignups(eventId)
+      await apiService.pauseSignups(eventId.value)
       toast.add({
         severity: 'warn',
         summary: 'Signups Paused',
@@ -387,12 +396,8 @@ async function handleReorder(slotIds: string[]) {
   isReordering.value = true
 
   try {
-    // Convert slot IDs array to the format expected by API
-    const slot_orders = slotIds.map((slot_id, index) => ({
-      slot_id,
-      order_index: index
-    }))
-    await apiService.reorderQueue(eventId, { slot_orders })
+    // Send slot IDs in the new order
+    await apiService.reorderQueue(eventId.value, { slot_order: slotIds })
     toast.add({
       severity: 'success',
       summary: 'Queue Reordered',
@@ -412,9 +417,49 @@ async function handleReorder(slotIds: string[]) {
   }
 }
 
+async function handleMarkUpNext(slotId: string) {
+  try {
+    await apiService.markUpNext(eventId.value, slotId)
+    toast.add({
+      severity: 'info',
+      summary: 'Marked as Up Next',
+      detail: 'Performer is now up next in queue',
+      life: 3000
+    })
+  } catch (err: any) {
+    console.error('Failed to mark as up next:', err)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: err.message || 'Failed to mark performer as up next',
+      life: 5000
+    })
+  }
+}
+
+async function handleCallToStage(slotId: string) {
+  try {
+    await apiService.callToStage(eventId.value, slotId)
+    toast.add({
+      severity: 'info',
+      summary: 'Called to Stage',
+      detail: 'Performer has been called to set up',
+      life: 3000
+    })
+  } catch (err: any) {
+    console.error('Failed to call to stage:', err)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: err.message || 'Failed to call performer to stage',
+      life: 5000
+    })
+  }
+}
+
 async function handleStart(slotId: string) {
   try {
-    await apiService.startPerformance(eventId, slotId)
+    await apiService.startPerformance(eventId.value, slotId)
     toast.add({
       severity: 'success',
       summary: 'Performance Started',
@@ -434,7 +479,7 @@ async function handleStart(slotId: string) {
 
 async function handleComplete(slotId: string) {
   try {
-    await apiService.completePerformance(eventId, slotId)
+    await apiService.completePerformance(eventId.value, slotId)
     toast.add({
       severity: 'success',
       summary: 'Performance Completed',
@@ -454,7 +499,7 @@ async function handleComplete(slotId: string) {
 
 async function handleNoShow(slotId: string) {
   try {
-    await apiService.markNoShow(eventId, slotId)
+    await apiService.markNoShow(eventId.value, slotId)
     toast.add({
       severity: 'warn',
       summary: 'Marked No Show',
@@ -474,7 +519,7 @@ async function handleNoShow(slotId: string) {
 
 async function handleReinstate(slotId: string) {
   try {
-    await apiService.reinstateSlot(eventId, slotId)
+    await apiService.reinstateSlot(eventId.value, slotId)
     toast.add({
       severity: 'success',
       summary: 'Slot Reinstated',
@@ -498,7 +543,7 @@ async function handleSendBanner() {
   isSendingBanner.value = true
 
   try {
-    await apiService.sendBanner(eventId, {
+    await apiService.sendBanner(eventId.value, {
       message: bannerMessage.value.trim()
     })
 
@@ -545,12 +590,74 @@ onMounted(async () => {
   error.value = null
 
   try {
+    const paramEventId = route.params.eventId as string | undefined
+
+    if (!paramEventId) {
+      error.value = 'No event ID or code provided'
+      isLoading.value = false
+      return
+    }
+
+    // Helper function to check if string looks like an event code (6 alphanumeric chars)
+    const isEventCode = (str: string) => /^[A-Z0-9]{6}$/.test(str)
+
+    // Normalize the input (trim and uppercase)
+    const normalizedParam = paramEventId.trim().toUpperCase()
+
+    // Check if paramEventId looks like an event code
+    if (isEventCode(normalizedParam)) {
+      // Look up event by code from route parameter
+      try {
+        const response = await apiService.getEventByCode(normalizedParam)
+        if (response.event) {
+          eventId.value = response.event.event_id
+        } else {
+          error.value = `Event not found with code: ${normalizedParam}`
+          isLoading.value = false
+          return
+        }
+      } catch (err: any) {
+        console.error('Failed to look up event by code:', err)
+        error.value = err.message || `Unable to find event with code: ${normalizedParam}`
+        isLoading.value = false
+        return
+      }
+    } else {
+      // Use as event ID directly (UUID format)
+      eventId.value = paramEventId.trim()
+    }
+
     // Fetch event details via REST API
-    const { event } = await apiService.getEvent(eventId)
+    const { event } = await apiService.getEvent(eventId.value)
     eventStore.setEvent(event)
 
-    // Connect to WebSocket for real-time updates with current token
-    connect(authStore.token)
+    // Initialize and connect to WebSocket for real-time updates with current token
+    const ws = useWebSocket(eventId.value, 'staff', toast, authStore.token)
+    wsConnect = () => ws.connect(authStore.token)
+    wsDisconnect = ws.disconnect
+
+    // Connect to WebSocket
+    wsConnect()
+
+    // Wait for WebSocket connection to establish
+    let attempts = 0
+    while (!ws.isConnected.value && attempts < 50) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      attempts++
+    }
+
+    if (!ws.isConnected.value) {
+      console.error('WebSocket failed to connect after 5 seconds')
+      toast.add({
+        severity: 'warn',
+        summary: 'Connection Issue',
+        detail: 'Real-time updates may not work. Try refreshing the page.',
+        life: 5000
+      })
+    } else {
+      // Request full state from server (can't be sent during $connect)
+      ws.requestResync()
+    }
   } catch (err: any) {
     console.error('Failed to load event:', err)
     error.value = err.message || 'Event not found'
@@ -560,7 +667,9 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  disconnect()
+  if (wsDisconnect) {
+    wsDisconnect()
+  }
 })
 </script>
 
@@ -638,31 +747,33 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--primary-color);
-  color: white;
+  background: var(--primary-500);
+  color: var(--primary-contrast-color, white);
   border-radius: 8px;
   font-weight: 600;
   margin-top: 0.75rem;
+  border: 2px solid var(--primary-600);
 }
 
 .code-label {
   font-size: 0.85rem;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .code-value {
   font-size: 1.1rem;
   font-family: 'Courier New', monospace;
   letter-spacing: 0.1em;
+  font-weight: 700;
 }
 
 .event-code-display .copy-button {
-  color: white;
+  color: var(--primary-contrast-color, white);
   margin-left: 0.25rem;
 }
 
 .event-code-display .copy-button:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .header-actions {
@@ -676,9 +787,28 @@ onUnmounted(() => {
 }
 
 .event-content {
+  display: grid;
+  grid-template-columns: 2fr 480px;
+  gap: 1.5rem;
+  min-height: calc(100vh - 180px);
+}
+
+.main-area {
+  min-width: 0;
+  min-height: 850px; /* Ensure enough space for queue */
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
+}
+
+.sidebar-area {
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
 }
 
 .content-section {
@@ -688,46 +818,121 @@ onUnmounted(() => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.section-title {
+.setting-up-section {
+  /* Specific styling for setting up section - inherits from .content-section */
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.up-next-section {
+  /* Specific styling for up next section - inherits from .content-section */
+}
+
+.queue-section {
+  min-height: 800px; /* Account for 700px list + header + padding */
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.queue-wrapper {
+  flex: 1;
+  min-height: 750px; /* Account for 700px list + header */
+}
+
+.sidebar-section {
+  background: var(--surface-card);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-title {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 1.25rem;
+  gap: 0.5rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-color);
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1rem 0;
 }
 
-.section-title i {
+.sidebar-title i {
   color: var(--primary-color);
+  font-size: 1.1rem;
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
+.current-performer-section {
+  /* Special styling for performer section */
 }
 
 .current-performer-container {
   margin: 0;
 }
 
+.empty-performer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-color-secondary);
+}
+
+.empty-performer i {
+  font-size: 3rem;
+  color: var(--surface-300);
+  margin-bottom: 0.75rem;
+}
+
+.empty-performer p {
+  margin: 0 0 0.25rem 0;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.empty-performer small {
+  font-size: 0.85rem;
+}
+
+.history-section {
+  /* Special styling for history */
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
 .history-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.625rem;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .history-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 0.75rem;
+  padding: 0.75rem;
   background: var(--surface-ground);
-  border-radius: 8px;
-  border-left: 4px solid var(--green-500);
+  border-radius: 6px;
+  border-left: 3px solid var(--green-500);
 }
 
 .history-item.no-show {
@@ -737,92 +942,27 @@ onUnmounted(() => {
 .history-info {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.history-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-color);
-  margin: 0;
-}
-
-.history-meta {
-  display: flex;
-  flex-wrap: wrap;
+  justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
 }
 
-.meta-text {
-  font-size: 0.85rem;
-  color: var(--text-color-secondary);
-}
-
-.history-actions {
-  flex-shrink: 0;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.stat-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.stat-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.5rem;
-}
-
-.stat-icon {
-  font-size: 2.5rem;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-}
-
-.stat-icon.primary {
-  background: var(--primary-50);
-  color: var(--primary-500);
-}
-
-.stat-icon.success {
-  background: var(--green-50);
-  color: var(--green-500);
-}
-
-.stat-icon.danger {
-  background: var(--red-50);
-  color: var(--red-500);
-}
-
-.stat-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
+.history-name {
+  font-size: 0.9rem;
+  font-weight: 600;
   color: var(--text-color);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.stat-label {
-  font-size: 0.85rem;
+.history-more {
+  display: block;
+  text-align: center;
+  padding: 0.5rem;
   color: var(--text-color-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 0.85rem;
 }
 
 .banner-form {
@@ -849,6 +989,33 @@ onUnmounted(() => {
   width: 100%;
 }
 
+@media (max-width: 1024px) {
+  .event-content {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .sidebar-area {
+    position: static;
+    max-height: none;
+    order: -1;
+  }
+
+  .main-area {
+    order: 1;
+    min-height: auto;
+  }
+
+  .setting-up-section,
+  .up-next-section {
+    padding: 1.25rem;
+  }
+
+  .queue-section {
+    min-height: 600px;
+  }
+}
+
 @media (max-width: 768px) {
   .event-header {
     padding: 1rem;
@@ -866,21 +1033,35 @@ onUnmounted(() => {
     padding: 1.5rem 1rem;
   }
 
-  .content-section {
-    padding: 1.25rem;
+  .content-section,
+  .sidebar-section {
+    padding: 1rem;
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr;
+  .setting-up-section,
+  .up-next-section {
+    padding: 1rem;
   }
 
-  .history-item {
-    flex-direction: column;
-    align-items: flex-start;
+  .main-area {
+    min-height: auto;
+    gap: 1rem;
   }
 
-  .history-actions {
-    width: 100%;
+  .queue-section {
+    min-height: 500px;
+  }
+
+  .history-list {
+    max-height: 250px;
+  }
+
+  .empty-performer {
+    padding: 1.5rem 1rem;
+  }
+
+  .empty-performer i {
+    font-size: 2.5rem;
   }
 }
 </style>

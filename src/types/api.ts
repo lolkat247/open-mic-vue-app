@@ -121,10 +121,7 @@ export interface WithdrawSlotRequest {
 }
 
 export interface ReorderSlotsRequest {
-  slot_orders: Array<{
-    slot_id: string
-    order_index: number
-  }>
+  slot_order: string[]
 }
 
 export interface APIError {

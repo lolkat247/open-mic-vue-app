@@ -12,7 +12,7 @@
 
     <div class="queue-container">
       <!-- Connection Status -->
-      <Message v-if="ws && !ws.isConnected && !isLoadingEvent" severity="warn" :closable="false">
+      <Message v-if="!isLoadingEvent && currentEvent && !isConnected" severity="warn" :closable="false">
         <div class="connection-message">
           <i class="pi pi-exclamation-triangle"></i>
           <span>Connection lost. Trying to reconnect...</span>
@@ -54,7 +54,9 @@
       </template>
     </div>
 
-    <!-- Floating Action Button -->
+    <Footer />
+
+    <!-- Floating Action Buttons -->
     <Button
       v-if="signupsEnabled && !isLoadingEvent && currentEvent"
       class="fab"
@@ -66,7 +68,6 @@
       aria-label="Sign up to perform"
     />
 
-    <!-- Manage Slot Button (if user has signed up) -->
     <Button
       v-if="hasUserSlot"
       class="fab-secondary"
@@ -82,8 +83,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import { useEventStore } from '../stores/event'
@@ -94,9 +96,11 @@ import EventHeader from '../components/shared/EventHeader.vue'
 import LoadingState from '../components/shared/LoadingState.vue'
 import CurrentPerformer from '../components/queue/CurrentPerformer.vue'
 import QueueList from '../components/queue/QueueList.vue'
+import Footer from '../components/shared/Footer.vue'
 
 const route = useRoute()
 const router = useRouter()
+const toast = useToast()
 const eventStore = useEventStore()
 const queueStore = useQueueStore()
 const { apiService } = useAPI()
@@ -104,9 +108,10 @@ const { apiService } = useAPI()
 const eventId = ref<string>('')
 const isLoadingEvent = ref(true)
 const error = ref<string | null>(null)
+const isConnected = ref(false)
 
-// WebSocket connection - will be initialized after we have eventId
-const ws = ref<ReturnType<typeof useWebSocket> | null>(null)
+// WebSocket connection - initialized here in setup context
+let wsInstance: ReturnType<typeof useWebSocket> | null = null
 
 // Computed properties
 const currentEvent = computed(() => eventStore.currentEvent)
@@ -150,10 +155,14 @@ onMounted(async () => {
 
     if (code) {
       // Look up event by code from query parameter
+      const normalizedCode = code.trim().toUpperCase()
+      console.log('Looking up event by code (query):', normalizedCode)
       try {
-        const response = await apiService.getEventByCode(code)
+        const response = await apiService.getEventByCode(normalizedCode)
+        console.log('Event lookup response:', response)
         if (response.event) {
           eventId.value = response.event.event_id
+          console.log('Resolved event ID:', eventId.value)
         } else {
           error.value = 'Invalid event code'
           isLoadingEvent.value = false
@@ -161,32 +170,39 @@ onMounted(async () => {
         }
       } catch (err: any) {
         console.error('Failed to look up event by code:', err)
-        error.value = err.message || 'Invalid event code'
+        error.value = `Failed to find event: ${err.message || 'Invalid event code'}`
         isLoadingEvent.value = false
         return
       }
     } else if (paramEventId) {
+      // Normalize the input (trim and uppercase)
+      const normalizedParam = paramEventId.trim().toUpperCase()
+
       // Check if paramEventId looks like an event code
-      if (isEventCode(paramEventId)) {
+      if (isEventCode(normalizedParam)) {
         // Look up event by code from route parameter
+        console.log('Looking up event by code (param):', normalizedParam)
         try {
-          const response = await apiService.getEventByCode(paramEventId)
+          const response = await apiService.getEventByCode(normalizedParam)
+          console.log('Event lookup response:', response)
           if (response.event) {
             eventId.value = response.event.event_id
+            console.log('Resolved event ID:', eventId.value)
           } else {
-            error.value = 'Invalid event code'
+            error.value = `Event not found with code: ${normalizedParam}`
             isLoadingEvent.value = false
             return
           }
         } catch (err: any) {
           console.error('Failed to look up event by code:', err)
-          error.value = err.message || 'Invalid event code'
+          error.value = `Failed to find event with code ${normalizedParam}: ${err.message || 'Unknown error'}`
           isLoadingEvent.value = false
           return
         }
       } else {
         // Use as event ID directly (UUID format)
-        eventId.value = paramEventId
+        console.log('Using event ID directly:', paramEventId)
+        eventId.value = paramEventId.trim()
       }
     } else {
       error.value = 'No event ID or code provided'
@@ -195,15 +211,45 @@ onMounted(async () => {
     }
 
     // Initialize WebSocket connection with the resolved eventId
-    ws.value = useWebSocket(eventId.value, 'public')
+    console.log('Initializing WebSocket for event:', eventId.value)
+    wsInstance = useWebSocket(eventId.value, 'public', toast)
+
+    // Watch for connection status changes
+    watch(() => wsInstance?.isConnected.value, (connected) => {
+      console.log('Connection status changed:', connected)
+      isConnected.value = connected || false
+    }, { immediate: true })
 
     // Connect to WebSocket (will populate stores)
-    ws.value?.connect()
-    // Wait a bit for the full_state message
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    console.log('Connecting to WebSocket...')
+    wsInstance.connect()
+
+    // Wait for connection to actually be established
+    console.log('Waiting for WebSocket connection...')
+    let attempts = 0
+    while (!wsInstance.isConnected.value && attempts < 50) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      attempts++
+    }
+
+    if (!wsInstance.isConnected.value) {
+      console.error('WebSocket failed to connect after 5 seconds')
+      error.value = 'Failed to connect to event. Please try refreshing the page.'
+      return
+    }
+
+    console.log('WebSocket connected! Requesting full state...')
+    wsInstance.requestResync()
+
+    // Wait for the full_state message
+    console.log('Waiting for WebSocket full_state...')
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    console.log('Current event after WebSocket wait:', currentEvent.value)
+    console.log('WebSocket connected?', wsInstance.isConnected)
 
     if (!currentEvent.value) {
-      error.value = 'Event not found or connection failed'
+      error.value = 'Event not found or connection failed. Please try refreshing the page.'
     }
   } catch (err: any) {
     console.error('Failed to load event:', err)
@@ -214,21 +260,40 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  ws.value?.disconnect()
+  wsInstance?.disconnect()
 })
 </script>
 
 <style scoped>
 .public-queue-view {
   min-height: 100vh;
-  background: var(--surface-ground);
-  padding-bottom: 100px; /* Space for FAB */
+  padding-bottom: 2rem;
+  position: relative;
+  background-color: var(--surface-ground);
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, var(--surface-ground) 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
+  display: flex;
+  flex-direction: column;
+}
+
+.public-queue-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .queue-container {
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
   padding: 1.5rem;
+  padding-bottom: 8rem;
+  position: relative;
+  z-index: 1;
+  flex: 1;
 }
 
 .connection-message {
@@ -246,13 +311,17 @@ onUnmounted(() => {
   bottom: 24px;
   right: 24px;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 0 20px rgba(0, 206, 144, 0.3);
   transition: all 0.3s ease;
 }
 
 .fab:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    0 0 30px rgba(0, 206, 144, 0.5);
 }
 
 .fab-secondary {
@@ -260,18 +329,23 @@ onUnmounted(() => {
   bottom: 24px;
   right: 140px;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 0 15px rgba(0, 206, 144, 0.2);
   transition: all 0.3s ease;
 }
 
 .fab-secondary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    0 0 25px rgba(0, 206, 144, 0.4);
 }
 
 @media (max-width: 768px) {
   .queue-container {
     padding: 1rem;
+    padding-bottom: 6rem;
   }
 
   .fab {
@@ -280,23 +354,8 @@ onUnmounted(() => {
   }
 
   .fab-secondary {
-    bottom: 88px;
-    right: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .fab,
-  .fab-secondary {
-    width: 100%;
-    max-width: calc(100% - 32px);
-    right: 16px;
-    left: 16px;
-    border-radius: 28px;
-  }
-
-  .fab-secondary {
     bottom: 80px;
+    right: 16px;
   }
 }
 

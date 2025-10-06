@@ -434,6 +434,11 @@ function resetForm() {
   font-size: 0.85rem;
 }
 
+.p-error {
+  color: #ef4444;
+  font-size: 0.85rem;
+}
+
 .w-full {
   width: 100%;
 }

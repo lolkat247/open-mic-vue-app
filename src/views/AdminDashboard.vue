@@ -233,7 +233,7 @@ const filteredEvents = computed(() => {
         case 'past':
           return eventDate < today
         case 'paused':
-          return !event.signups_enabled
+          return event.signups_enabled === false
         default:
           return true
       }

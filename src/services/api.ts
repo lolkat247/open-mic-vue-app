@@ -142,6 +142,18 @@ export class APIService {
 
   // Staff Queue Management APIs (Authenticated)
 
+  async markUpNext(eventId: string, slotId: string): Promise<{ slot: any }> {
+    return this.apiCall<{ slot: any }>(`/events/${eventId}/slots/${slotId}/up-next`, {
+      method: 'POST'
+    })
+  }
+
+  async callToStage(eventId: string, slotId: string): Promise<{ slot: any }> {
+    return this.apiCall<{ slot: any }>(`/events/${eventId}/slots/${slotId}/call-to-stage`, {
+      method: 'POST'
+    })
+  }
+
   async startPerformance(eventId: string, slotId: string): Promise<{ slot: any }> {
     return this.apiCall<{ slot: any }>(`/events/${eventId}/slots/${slotId}/start`, {
       method: 'POST'

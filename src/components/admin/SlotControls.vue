@@ -1,59 +1,83 @@
 <template>
   <div class="slot-controls">
-    <!-- Start Performance -->
+    <!-- Mark as Up Next (queued -> up_next) -->
+    <Button
+      v-if="canMarkUpNext"
+      label="Mark as Up Next"
+      icon="pi pi-arrow-right"
+      severity="info"
+      :loading="isMarkingUpNext"
+      :disabled="isLoading"
+      @click="handleMarkUpNext"
+      v-tooltip.top="'Mark this performer as up next in queue'"
+      class="control-button"
+    />
+
+    <!-- Call to Stage (up_next -> setting_up) -->
+    <Button
+      v-if="canCallToStage"
+      label="Call to Stage"
+      icon="pi pi-microphone"
+      severity="warning"
+      :loading="isCallingToStage"
+      :disabled="isLoading"
+      @click="handleCallToStage"
+      v-tooltip.top="'Call this performer to the stage to set up'"
+      class="control-button"
+    />
+
+    <!-- Start Performance (setting_up -> performing) -->
     <Button
       v-if="canStart"
-      label="Start"
+      label="Start Performance"
       icon="pi pi-play"
       severity="success"
       :loading="isStarting"
       :disabled="isLoading || hasCurrentPerformer"
       @click="handleStart"
+      v-tooltip.top="hasCurrentPerformer ? 'Complete current performer first' : 'Start this performer\'s set'"
       class="control-button"
     />
 
     <!-- Complete Performance -->
     <Button
       v-if="canComplete"
-      label="Complete"
+      label="Finish Performance"
       icon="pi pi-check"
       severity="info"
       :loading="isCompleting"
       :disabled="isLoading"
       @click="handleComplete"
+      v-tooltip.top="'Mark this performance as completed'"
       class="control-button"
     />
 
     <!-- Mark as No Show -->
     <Button
       v-if="canNoShow"
-      label="No Show"
+      label="Mark No Show"
       icon="pi pi-times"
       severity="danger"
       outlined
       :loading="isNoShowing"
       :disabled="isLoading"
       @click="confirmNoShow"
+      v-tooltip.top="'Remove from queue (performer didn\'t show up)'"
       class="control-button"
     />
 
     <!-- Reinstate -->
     <Button
       v-if="canReinstate"
-      label="Reinstate"
+      label="Add Back to Queue"
       icon="pi pi-refresh"
       severity="warning"
       :loading="isReinstating"
       :disabled="isLoading"
       @click="handleReinstate"
+      v-tooltip.top="'Restore this performer to the queue'"
       class="control-button"
     />
-
-    <!-- Help tooltip for disabled start -->
-    <small v-if="canStart && hasCurrentPerformer" class="help-text">
-      <i class="pi pi-info-circle"></i>
-      Complete current performer first
-    </small>
   </div>
 </template>
 
@@ -73,6 +97,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
+  'mark-up-next': [slotId: string]
+  'call-to-stage': [slotId: string]
   start: [slotId: string]
   complete: [slotId: string]
   noShow: [slotId: string]
@@ -81,17 +107,27 @@ const emit = defineEmits<{
 
 const confirm = useConfirm()
 
+const isMarkingUpNext = ref(false)
+const isCallingToStage = ref(false)
 const isStarting = ref(false)
 const isCompleting = ref(false)
 const isNoShowing = ref(false)
 const isReinstating = ref(false)
 
 const isLoading = computed(() => {
-  return isStarting.value || isCompleting.value || isNoShowing.value || isReinstating.value
+  return isMarkingUpNext.value || isCallingToStage.value || isStarting.value || isCompleting.value || isNoShowing.value || isReinstating.value
+})
+
+const canMarkUpNext = computed(() => {
+  return props.slot.status === 'queued'
+})
+
+const canCallToStage = computed(() => {
+  return props.slot.status === 'up_next'
 })
 
 const canStart = computed(() => {
-  return props.slot.status === 'queued'
+  return props.slot.status === 'setting_up'
 })
 
 const canComplete = computed(() => {
@@ -99,12 +135,34 @@ const canComplete = computed(() => {
 })
 
 const canNoShow = computed(() => {
-  return props.slot.status === 'queued' || props.slot.status === 'performing'
+  return props.slot.status === 'queued' || props.slot.status === 'up_next' || props.slot.status === 'setting_up' || props.slot.status === 'performing'
 })
 
 const canReinstate = computed(() => {
   return props.slot.status === 'no_show' || props.slot.status === 'completed'
 })
+
+async function handleMarkUpNext() {
+  isMarkingUpNext.value = true
+  try {
+    emit('mark-up-next', props.slot.slot_id)
+  } finally {
+    setTimeout(() => {
+      isMarkingUpNext.value = false
+    }, 1000)
+  }
+}
+
+async function handleCallToStage() {
+  isCallingToStage.value = true
+  try {
+    emit('call-to-stage', props.slot.slot_id)
+  } finally {
+    setTimeout(() => {
+      isCallingToStage.value = false
+    }, 1000)
+  }
+}
 
 async function handleStart() {
   if (props.hasCurrentPerformer) {

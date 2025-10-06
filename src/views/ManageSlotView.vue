@@ -120,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
@@ -163,7 +163,7 @@ const authenticatedSlotId = ref<string>('')
 const authenticatedPassword = ref<string>('')
 
 // WebSocket for real-time updates
-const { connect } = useWebSocket(eventId, 'public')
+const ws = useWebSocket(eventId, 'public', toast)
 
 const currentEvent = computed(() => eventStore.currentEvent)
 const storedSlotId = computed(() => localStorage.getItem(`slot_${eventId}`) || '')
@@ -329,7 +329,7 @@ onMounted(async () => {
 
   try {
     // Connect to WebSocket for event data
-    connect()
+    ws.connect()
 
     // Wait for initial data
     await new Promise((resolve) => setTimeout(resolve, 1500))
@@ -344,19 +344,37 @@ onMounted(async () => {
     isLoadingEvent.value = false
   }
 })
+
+onUnmounted(() => {
+  ws.disconnect()
+})
 </script>
 
 <style scoped>
 .manage-slot-view {
   min-height: 100vh;
-  background: var(--surface-ground);
+  background-color: var(--surface-ground);
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, var(--surface-ground) 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
   padding-bottom: 2rem;
+  position: relative;
+}
+
+.manage-slot-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .manage-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .manage-header {
@@ -379,13 +397,17 @@ onMounted(async () => {
 }
 
 .position-card {
-  background: var(--surface-card);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .position-info {

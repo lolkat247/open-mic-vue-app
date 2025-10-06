@@ -281,10 +281,16 @@ const isFormValid = computed(() => {
 })
 
 function handleSubmit() {
+  console.log('SignupForm handleSubmit called')
+  console.log('Form data:', formData)
+  console.log('Validating...')
+
   if (!validateAll()) {
+    console.error('Validation failed! Errors:', errors)
     return
   }
 
+  console.log('Validation passed, emitting submit event')
   emit('submit', { ...formData })
 }
 </script>

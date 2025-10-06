@@ -1,18 +1,22 @@
 <template>
   <div class="queue-manager">
     <div class="manager-header">
-      <h3 class="section-title">
-        <i class="pi pi-list"></i>
-        Queue Management
-      </h3>
+      <div class="header-title-section">
+        <h3 class="section-title">
+          <i class="pi pi-list"></i>
+          Up Next in Queue
+        </h3>
+        <p class="section-subtitle">Use ↑↓ buttons to reorder • Click "Call to Stage" to begin</p>
+      </div>
       <div class="header-actions">
         <Button
-          label="Auto-sort by Leave-by"
+          label="Auto-sort by Leave-by Time"
           icon="pi pi-sort-alt"
           text
           size="small"
           @click="handleAutoSort"
           :disabled="sortableSlots.length === 0"
+          v-tooltip.top="'Automatically prioritize performers who need to leave early'"
         />
       </div>
     </div>
@@ -31,7 +35,7 @@
     >
       <template #header>
         <div class="orderlist-header">
-          <span class="header-label">Drag to reorder</span>
+          <span class="header-label">In Queue</span>
           <Badge :value="localSlots.length" severity="info" />
         </div>
       </template>
@@ -42,8 +46,35 @@
             <div class="item-position">
               <span class="position-number">#{{ index + 1 }}</span>
             </div>
+            <div class="reorder-controls">
+              <Button
+                icon="pi pi-chevron-up"
+                text
+                rounded
+                size="small"
+                :disabled="index === 0"
+                @click="moveUp(index)"
+                v-tooltip.top="'Move up in queue'"
+                class="reorder-btn"
+              />
+              <Button
+                icon="pi pi-chevron-down"
+                text
+                rounded
+                size="small"
+                :disabled="index === localSlots.length - 1"
+                @click="moveDown(index)"
+                v-tooltip.top="'Move down in queue'"
+                class="reorder-btn"
+              />
+            </div>
             <div class="item-info">
-              <h4 class="item-name">{{ slot.stage_name }}</h4>
+              <div class="name-row">
+                <h4 class="item-name">{{ slot.stage_name }}</h4>
+                <span v-if="slot.status !== 'queued'" :class="['status-badge', `status-${slot.status}`]">
+                  {{ getStatusLabel(slot.status) }}
+                </span>
+              </div>
               <div class="item-meta">
                 <span class="meta-chip">
                   <i class="pi pi-clock"></i>
@@ -69,6 +100,8 @@
             <SlotControls
               :slot="slot"
               :has-current-performer="hasCurrentPerformer"
+              @mark-up-next="(id) => $emit('mark-up-next', id)"
+              @call-to-stage="(id) => $emit('call-to-stage', id)"
               @start="(id) => $emit('start', id)"
               @complete="(id) => $emit('complete', id)"
               @no-show="(id) => $emit('no-show', id)"
@@ -109,6 +142,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   reorder: [slotIds: string[]]
+  'mark-up-next': [slotId: string]
+  'call-to-stage': [slotId: string]
   start: [slotId: string]
   complete: [slotId: string]
   'no-show': [slotId: string]
@@ -140,6 +175,30 @@ function handleReorder() {
   }, 3000)
 }
 
+function moveUp(index: number) {
+  if (index === 0) return
+
+  const slots = [...localSlots.value]
+  const temp = slots[index]
+  slots[index] = slots[index - 1]
+  slots[index - 1] = temp
+
+  localSlots.value = slots
+  handleReorder()
+}
+
+function moveDown(index: number) {
+  if (index === localSlots.value.length - 1) return
+
+  const slots = [...localSlots.value]
+  const temp = slots[index]
+  slots[index] = slots[index + 1]
+  slots[index + 1] = temp
+
+  localSlots.value = slots
+  handleReorder()
+}
+
 function handleAutoSort() {
   // Sort by leave_by_at (earliest first), then by original position
   const sorted = [...localSlots.value].sort((a, b) => {
@@ -159,13 +218,25 @@ function handleAutoSort() {
   localSlots.value = sorted
   handleReorder()
 }
+
+function getStatusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    'up_next': 'Up Next',
+    'setting_up': 'Setting Up',
+    'performing': 'Performing',
+    'completed': 'Completed',
+    'no_show': 'No Show',
+    'withdrawn': 'Withdrawn'
+  }
+  return labels[status] || status
+}
 </script>
 
 <style scoped>
 .queue-manager {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
 .manager-header {
@@ -174,6 +245,11 @@ function handleAutoSort() {
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.header-title-section {
+  flex: 1;
 }
 
 .section-title {
@@ -183,11 +259,18 @@ function handleAutoSort() {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--text-color);
-  margin: 0;
+  margin: 0 0 0.25rem 0;
 }
 
 .section-title i {
   color: var(--primary-color);
+}
+
+.section-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-color-secondary);
+  font-weight: 400;
 }
 
 .header-actions {
@@ -199,6 +282,8 @@ function handleAutoSort() {
   border: 1px solid var(--surface-border);
   border-radius: 8px;
   background: var(--surface-card);
+  flex: 1;
+  overflow: hidden;
 }
 
 .orderlist-header {
@@ -216,11 +301,32 @@ function handleAutoSort() {
   font-size: 0.9rem;
 }
 
-:deep(.p-orderlist-list) {
-  padding: 0.5rem;
-  min-height: 300px;
-  max-height: 600px;
-  overflow-y: auto;
+/* Hide the built-in controls */
+:deep(.p-orderlist-controls) {
+  display: none;
+}
+
+/* Make OrderList fill available space */
+:deep(.p-orderlist) {
+  height: 100%;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+:deep(.p-orderlist-list-container),
+:deep(.p-listbox-list-container) {
+  flex: 1 !important;
+  overflow: auto !important;
+  min-height: 700px !important; /* Tall enough for 3.5 cards (~200px each) */
+  max-height: none !important; /* Remove any max-height restrictions */
+  height: 100% !important;
+}
+
+:deep(.p-orderlist-list),
+:deep(.p-listbox-list) {
+  padding: 0.5rem !important;
+  min-height: 700px !important;
+  max-height: none !important;
 }
 
 :deep(.p-orderlist-item) {
@@ -252,7 +358,7 @@ function handleAutoSort() {
 
 .item-header {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: flex-start;
 }
 
@@ -267,6 +373,24 @@ function handleAutoSort() {
   border-radius: 50%;
   font-weight: 700;
   font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.reorder-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.reorder-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+}
+
+.reorder-btn:disabled {
+  opacity: 0.3;
 }
 
 .item-info {
@@ -276,11 +400,65 @@ function handleAutoSort() {
   gap: 0.5rem;
 }
 
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .item-name {
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--text-color);
   margin: 0;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-up_next {
+  background: var(--blue-100);
+  color: var(--blue-700);
+  border: 1px solid var(--blue-300);
+}
+
+.status-setting_up {
+  background: var(--orange-100);
+  color: var(--orange-700);
+  border: 1px solid var(--orange-300);
+}
+
+.status-performing {
+  background: var(--green-100);
+  color: var(--green-700);
+  border: 1px solid var(--green-300);
+}
+
+.status-completed {
+  background: var(--gray-100);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+}
+
+.status-no_show {
+  background: var(--red-100);
+  color: var(--red-700);
+  border: 1px solid var(--red-300);
+}
+
+.status-withdrawn {
+  background: var(--purple-100);
+  color: var(--purple-700);
+  border: 1px solid var(--purple-300);
 }
 
 .item-meta {
@@ -343,6 +521,14 @@ function handleAutoSort() {
     align-items: flex-start;
   }
 
+  .header-title-section {
+    width: 100%;
+  }
+
+  .section-subtitle {
+    font-size: 0.8rem;
+  }
+
   .header-actions {
     width: 100%;
   }
@@ -352,11 +538,21 @@ function handleAutoSort() {
   }
 
   .item-header {
-    flex-direction: column;
+    flex-wrap: wrap;
   }
 
-  :deep(.p-orderlist-list) {
-    max-height: 500px;
+  .reorder-controls {
+    flex-direction: row;
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .reorder-btn {
+    width: 40px;
+    height: 40px;
   }
 }
 </style>

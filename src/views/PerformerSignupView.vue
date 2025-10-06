@@ -21,7 +21,7 @@
       <template v-else-if="currentEvent">
         <EventHeader :event="currentEvent" />
 
-        <Message v-if="!signupsEnabled" severity="warn" :closable="false">
+        <Message v-if="signupsEnabled === false" severity="warn" :closable="false">
           <strong>Signups are currently paused</strong>
           <p>The organizer has temporarily paused signups. Please check back later.</p>
         </Message>
@@ -32,10 +32,10 @@
               <i class="pi pi-clock"></i>
               <div>
                 <span class="info-label">Default Slot Duration</span>
-                <span class="info-value">{{ currentEvent.defaults.slot_duration_minutes || 5 }} minutes</span>
+                <span class="info-value">{{ currentEvent.defaults?.slot_duration_minutes || 5 }} minutes</span>
               </div>
             </div>
-            <div v-if="currentEvent.policies.max_slots_per_performer" class="info-item">
+            <div v-if="currentEvent.policies?.max_slots_per_performer" class="info-item">
               <i class="pi pi-users"></i>
               <div>
                 <span class="info-label">Max Slots Per Performer</span>
@@ -50,7 +50,7 @@
           </div>
 
           <SignupForm
-            :default-duration="currentEvent.defaults.slot_duration_minutes || 5"
+            :default-duration="currentEvent.defaults?.slot_duration_minutes || 5"
             :is-submitting="isSubmitting"
             @submit="handleSignup"
           />
@@ -61,64 +61,16 @@
         </div>
       </template>
     </div>
-
-    <!-- Success Dialog -->
-    <Dialog
-      v-model:visible="showSuccessDialog"
-      modal
-      header="🎉 You're Signed Up!"
-      :closable="false"
-      :style="{ width: '90vw', maxWidth: '500px' }"
-    >
-      <div class="success-content">
-        <p class="success-message">
-          You've been added to the queue!
-        </p>
-        <div v-if="createdSlot" class="slot-info">
-          <div class="slot-detail">
-            <strong>Your Position:</strong>
-            <span>#{{ queuePosition }}</span>
-          </div>
-          <div class="slot-detail">
-            <strong>Stage Name:</strong>
-            <span>{{ createdSlot.stage_name }}</span>
-          </div>
-          <div v-if="estimatedWait" class="slot-detail">
-            <strong>Estimated Wait:</strong>
-            <span>~{{ estimatedWait }} minutes</span>
-          </div>
-        </div>
-        <Message severity="info" :closable="false">
-          <strong>Remember:</strong> You'll need your password to manage or cancel your slot.
-        </Message>
-      </div>
-      <template #footer>
-        <Button
-          label="View Queue"
-          icon="pi pi-eye"
-          @click="goToQueue"
-          outlined
-        />
-        <Button
-          label="Done"
-          icon="pi pi-check"
-          @click="showSuccessDialog = false"
-          autofocus
-        />
-      </template>
-    </Dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
-import Dialog from 'primevue/dialog'
 import { useEventStore } from '../stores/event'
-import { useQueueStore } from '../stores/queue'
 import { useAPI } from '../composables/useAPI'
 import { useWebSocket } from '../composables/useWebSocket'
 import EventHeader from '../components/shared/EventHeader.vue'
@@ -131,7 +83,6 @@ const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const eventStore = useEventStore()
-const queueStore = useQueueStore()
 const { apiService } = useAPI()
 
 const eventId = ref<string>('')
@@ -139,27 +90,17 @@ const isLoadingEvent = ref(true)
 const eventError = ref<string | null>(null)
 const isSubmitting = ref(false)
 const submitError = ref<string | null>(null)
-const showSuccessDialog = ref(false)
 const createdSlot = ref<Slot | null>(null)
 
 // WebSocket for real-time updates - will be initialized after we have eventId
 let wsConnect: (() => void) | null = null
+let wsDisconnect: (() => void) | null = null
 
 const currentEvent = computed(() => eventStore.currentEvent)
 const signupsEnabled = computed(() => eventStore.signupsEnabled)
-const queuePosition = computed(() => {
-  if (!createdSlot.value) return 0
-  const queuedSlots = queueStore.queuedSlots
-  const index = queuedSlots.findIndex((slot) => slot.slot_id === createdSlot.value?.slot_id)
-  return index >= 0 ? index + 1 : 0
-})
-const estimatedWait = computed(() => {
-  if (!createdSlot.value) return null
-  const eta = queueStore.etaUpdates.find((e) => e.slot_id === createdSlot.value?.slot_id)
-  return eta?.estimated_wait_minutes
-})
 
 async function handleSignup(formData: SignupFormData) {
+  console.log('handleSignup called with:', formData)
   isSubmitting.value = true
   submitError.value = null
 
@@ -171,6 +112,7 @@ async function handleSignup(formData: SignupFormData) {
     if (!signupData.leave_by_at) delete signupData.leave_by_at
     if (!signupData.notes) delete signupData.notes
 
+    console.log('Sending signup data:', signupData)
     const response = await apiService.createSlot(eventId.value, signupData)
 
     if (response.slot) {
@@ -179,14 +121,15 @@ async function handleSignup(formData: SignupFormData) {
       // Store slot ID in localStorage for quick access
       localStorage.setItem(`slot_${eventId.value}`, response.slot.slot_id)
 
-      showSuccessDialog.value = true
-
       toast.add({
         severity: 'success',
         summary: 'Success!',
         detail: 'You\'ve been added to the queue',
         life: 5000
       })
+
+      // Redirect to queue
+      router.push({ name: 'public-queue', params: { eventId: eventId.value } })
     }
   } catch (error: any) {
     console.error('Signup failed:', error)
@@ -206,10 +149,6 @@ function goBack() {
   router.back()
 }
 
-function goToQueue() {
-  router.push({ name: 'public-queue', params: { eventId: eventId.value } })
-}
-
 onMounted(async () => {
   isLoadingEvent.value = true
   eventError.value = null
@@ -224,8 +163,9 @@ onMounted(async () => {
 
     if (code) {
       // Look up event by code from query parameter
+      const normalizedCode = code.trim().toUpperCase()
       try {
-        const response = await apiService.getEventByCode(code)
+        const response = await apiService.getEventByCode(normalizedCode)
         if (response.event) {
           eventId.value = response.event.event_id
         } else {
@@ -240,27 +180,36 @@ onMounted(async () => {
         return
       }
     } else if (paramEventId) {
+      // Normalize the input (trim and uppercase)
+      const normalizedParam = paramEventId.trim().toUpperCase()
+      console.log('Normalized param:', normalizedParam)
+
       // Check if paramEventId looks like an event code
-      if (isEventCode(paramEventId)) {
+      if (isEventCode(normalizedParam)) {
         // Look up event by code from route parameter
+        console.log('Detected as event code, looking up...')
         try {
-          const response = await apiService.getEventByCode(paramEventId)
+          const response = await apiService.getEventByCode(normalizedParam)
+          console.log('Event lookup response:', response)
           if (response.event) {
             eventId.value = response.event.event_id
+            console.log('Resolved event_id:', eventId.value)
           } else {
-            eventError.value = 'Invalid event code'
+            console.error('Event lookup returned no event')
+            eventError.value = `Event not found with code: ${normalizedParam}`
             isLoadingEvent.value = false
             return
           }
         } catch (error: any) {
           console.error('Failed to look up event by code:', error)
-          eventError.value = error.message || 'Invalid event code'
+          eventError.value = error.message || `Unable to find event with code: ${normalizedParam}`
           isLoadingEvent.value = false
           return
         }
       } else {
         // Use as event ID directly (UUID format)
-        eventId.value = paramEventId
+        console.log('Detected as UUID, using directly')
+        eventId.value = paramEventId.trim()
       }
     } else {
       eventError.value = 'No event ID or code provided'
@@ -269,17 +218,51 @@ onMounted(async () => {
     }
 
     // Initialize WebSocket connection with the resolved eventId
-    const ws = useWebSocket(eventId.value, 'public')
+    console.log('Initializing WebSocket for event_id:', eventId.value)
+    const ws = useWebSocket(eventId.value, 'public', toast)
     wsConnect = ws.connect
+    wsDisconnect = ws.disconnect
 
     // Connect to WebSocket for event data
+    console.log('Connecting to WebSocket...')
     wsConnect()
 
-    // Wait for initial data
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    // Wait for WebSocket connection to establish
+    let attempts = 0
+    while (!ws.isConnected.value && attempts < 50) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      attempts++
+    }
+
+    if (!ws.isConnected.value) {
+      console.error('WebSocket failed to connect after 5 seconds')
+      eventError.value = 'Failed to connect to event. Please try refreshing the page.'
+      isLoadingEvent.value = false
+      return
+    }
+
+    console.log('WebSocket connected! Requesting initial data...')
+
+    // Request full state from server (can't be sent during $connect)
+    ws.requestResync()
+
+    // Wait for event data to load
+    attempts = 0
+    while (!currentEvent.value && attempts < 30) {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      attempts++
+      if (attempts % 10 === 0) {
+        console.log(`Still waiting for event data... (${attempts * 100}ms elapsed)`)
+      }
+    }
+
+    console.log('After waiting, currentEvent:', currentEvent.value)
 
     if (!currentEvent.value) {
-      eventError.value = 'Event not found'
+      console.error('Event data never arrived from WebSocket')
+      eventError.value = 'Event not found. Please check the event code and try again.'
+    } else {
+      console.log('Event loaded successfully:', currentEvent.value.name)
     }
   } catch (error: any) {
     console.error('Failed to load event:', error)
@@ -288,19 +271,39 @@ onMounted(async () => {
     isLoadingEvent.value = false
   }
 })
+
+onUnmounted(() => {
+  if (wsDisconnect) {
+    wsDisconnect()
+  }
+})
 </script>
 
 <style scoped>
 .performer-signup-view {
   min-height: 100vh;
-  background: var(--surface-ground);
+  background-color: var(--surface-ground);
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, var(--surface-ground) 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
   padding-bottom: 2rem;
+  position: relative;
+}
+
+.performer-signup-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .signup-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .signup-header {
@@ -322,13 +325,17 @@ onMounted(async () => {
 }
 
 .info-card {
-  background: var(--surface-card);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .info-item {
@@ -387,50 +394,6 @@ onMounted(async () => {
   color: var(--blue-800);
   margin: 0;
   line-height: 1.6;
-}
-
-.success-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.success-message {
-  font-size: 1.1rem;
-  text-align: center;
-  color: var(--text-color);
-  margin: 0;
-}
-
-.slot-info {
-  background: var(--surface-ground);
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.slot-detail {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--surface-border);
-}
-
-.slot-detail:last-child {
-  border-bottom: none;
-}
-
-.slot-detail strong {
-  color: var(--text-color-secondary);
-  font-weight: 600;
-}
-
-.slot-detail span {
-  color: var(--text-color);
-  font-weight: 500;
 }
 
 @media (max-width: 768px) {

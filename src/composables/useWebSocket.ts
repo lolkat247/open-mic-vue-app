@@ -1,32 +1,37 @@
 // Composable for WebSocket connection management
 
 import { ref, onUnmounted } from 'vue'
-import { WebSocketService } from '../services/websocket'
+import { webSocketManager } from '../services/websocket-manager'
 import { useEventStore } from '../stores/event'
 import { useQueueStore } from '../stores/queue'
-import { useToast } from 'primevue/usetoast'
+import type { ToastServiceMethods } from 'primevue/toastservice'
 import type { WebSocketViewType } from '../types/api'
 import { config } from '../config'
 
-export function useWebSocket(eventId: string, viewType: WebSocketViewType, token: string | null = null) {
+export function useWebSocket(eventId: string, viewType: WebSocketViewType, toast: ToastServiceMethods, token: string | null = null) {
   const eventStore = useEventStore()
   const queueStore = useQueueStore()
-  const toast = useToast()
 
-  const ws = ref<WebSocketService | null>(null)
   const isConnected = ref(false)
   const connectionError = ref<string | null>(null)
 
+  let subscriberId: symbol | null = null
+
   function connect(connectionToken?: string | null) {
-    if (ws.value) {
-      ws.value.disconnect()
+    // If already subscribed, unsubscribe first
+    if (subscriberId) {
+      disconnect()
     }
 
     // Use the provided token, or fall back to the initial token
     const tokenToUse = connectionToken !== undefined ? connectionToken : token
-    ws.value = new WebSocketService(config.websocketUrl, eventId, viewType, tokenToUse)
 
-    ws.value.setHandlers({
+    // Subscribe to the connection manager
+    subscriberId = webSocketManager.subscribe(
+      config.websocketUrl,
+      eventId,
+      viewType,
+      {
       onFullState: (data) => {
         console.log('Received full state:', data)
         if (data.event) {
@@ -86,30 +91,35 @@ export function useWebSocket(eventId: string, viewType: WebSocketViewType, token
         isConnected.value = false
       },
 
-      onError: (error) => {
-        console.error('WebSocket error:', error)
-        connectionError.value = 'Connection error occurred'
-      }
-    })
+        onError: (error) => {
+          console.error('WebSocket error:', error)
+          connectionError.value = 'Connection error occurred'
+        }
+      },
+      tokenToUse
+    )
 
-    ws.value.connect()
+    // Update connection status
+    isConnected.value = webSocketManager.isConnected(eventId, viewType)
   }
 
   function disconnect() {
-    if (ws.value) {
-      ws.value.disconnect()
-      ws.value = null
+    if (subscriberId) {
+      webSocketManager.unsubscribe(eventId, viewType, subscriberId)
+      subscriberId = null
     }
     isConnected.value = false
   }
 
   function requestResync() {
-    if (ws.value) {
-      ws.value.requestResync()
+    const service = webSocketManager.getService(eventId, viewType)
+    if (service) {
+      service.requestResync()
     }
   }
 
-  // Cleanup on unmount
+  // Auto-cleanup on unmount
+  // Note: This will be called when the component using this composable unmounts
   onUnmounted(() => {
     disconnect()
   })
@@ -119,6 +129,12 @@ export function useWebSocket(eventId: string, viewType: WebSocketViewType, token
     disconnect,
     requestResync,
     isConnected,
-    connectionError
+    connectionError,
+    ws: {
+      // Expose value getter for backward compatibility with code that checks ws.value
+      get value() {
+        return webSocketManager.getService(eventId, viewType)
+      }
+    }
   }
 }
