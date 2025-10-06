@@ -9,6 +9,8 @@ import type {
   CreateSlotResponse,
   UpdateSlotRequest,
   WithdrawSlotRequest,
+  VerifySlotRequest,
+  VerifySlotResponse,
   ReorderSlotsRequest,
   APIError
 } from '../types/api'
@@ -134,6 +136,18 @@ export class APIService {
     data: WithdrawSlotRequest
   ): Promise<{ message: string }> {
     return this.apiCall<{ message: string }>(`/events/${eventId}/slots/${slotId}/withdraw`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      authenticated: false
+    })
+  }
+
+  async verifySlot(
+    eventId: string,
+    slotId: string,
+    data: VerifySlotRequest
+  ): Promise<VerifySlotResponse> {
+    return this.apiCall<VerifySlotResponse>(`/events/${eventId}/slots/${slotId}/verify`, {
       method: 'POST',
       body: JSON.stringify(data),
       authenticated: false

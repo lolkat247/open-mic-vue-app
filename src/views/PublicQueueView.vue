@@ -40,6 +40,7 @@
           icon="pi pi-users"
           empty-title="No one in queue yet"
           empty-message="Be the first to sign up and perform!"
+          :show-actions="true"
         >
           <template #empty-action>
             <Button
@@ -48,6 +49,17 @@
               icon="pi pi-user-plus"
               size="large"
               @click="goToSignup"
+            />
+          </template>
+          <template #item-actions="{ slot }">
+            <Button
+              icon="pi pi-cog"
+              label="Manage"
+              severity="secondary"
+              outlined
+              @click="goToManageSlot"
+              aria-label="Manage slot"
+              class="manage-slot-button"
             />
           </template>
         </QueueList>
@@ -66,18 +78,6 @@
       rounded
       @click="goToSignup"
       aria-label="Sign up to perform"
-    />
-
-    <Button
-      v-if="hasUserSlot"
-      class="fab-secondary"
-      icon="pi pi-cog"
-      label="Manage"
-      size="large"
-      rounded
-      severity="secondary"
-      @click="goToManageSlot"
-      aria-label="Manage your slot"
     />
   </div>
 </template>
@@ -120,12 +120,12 @@ const queuedSlots = computed(() => queueStore.queuedSlots)
 const etaUpdates = computed(() => queueStore.etaUpdates)
 const signupsEnabled = computed(() => eventStore.signupsEnabled)
 
-// Check if user has a slot (from localStorage)
-const hasUserSlot = computed(() => {
+// Check if a specific slot belongs to the user (from localStorage)
+function isUserSlot(slotId: string): boolean {
   if (!eventId.value) return false
   const storedSlotId = localStorage.getItem(`slot_${eventId.value}`)
-  return !!storedSlotId
-})
+  return storedSlotId === slotId
+}
 
 // Actions
 function goHome() {
@@ -324,22 +324,19 @@ onUnmounted(() => {
     0 0 30px rgba(0, 206, 144, 0.5);
 }
 
-.fab-secondary {
-  position: fixed;
-  bottom: 24px;
-  right: 140px;
-  z-index: 1000;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.15),
-    0 0 15px rgba(0, 206, 144, 0.2);
-  transition: all 0.3s ease;
+:deep(.manage-slot-button) {
+  height: 100%;
+  min-height: 100%;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-.fab-secondary:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.2),
-    0 0 25px rgba(0, 206, 144, 0.4);
+:deep(.manage-slot-button:hover) {
+  background: rgba(0, 206, 144, 0.1);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  transform: translateX(-2px);
 }
 
 @media (max-width: 768px) {
@@ -353,9 +350,9 @@ onUnmounted(() => {
     right: 16px;
   }
 
-  .fab-secondary {
-    bottom: 80px;
-    right: 16px;
+  :deep(.manage-slot-button) {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
   }
 }
 

@@ -182,29 +182,28 @@ async function handleAuthenticate(data: SlotPasswordAuthData) {
   isAuthenticating.value = true
 
   try {
-    // Try to update the slot with just the password to verify access
-    // We use a minimal update that doesn't change anything
-    await apiService.updateSlot(eventId, data.slot_id, {
-      slot_password: data.slot_password,
-      // Don't include other fields - backend will ignore empty update
+    // Verify the slot password using the dedicated verify endpoint
+    const response = await apiService.verifySlot(eventId, data.slot_id, {
+      slot_password: data.slot_password
     })
 
-    // Authentication successful, now fetch the slot details
-    authenticatedSlotId.value = data.slot_id
-    authenticatedPassword.value = data.slot_password
-    await fetchSlotDetails(data.slot_id)
+    // Authentication successful, set the slot details from the response
+    if (response.slot) {
+      currentSlot.value = response.slot
+      authenticatedSlotId.value = data.slot_id
+      authenticatedPassword.value = data.slot_password
+      isAuthenticated.value = true
 
-    isAuthenticated.value = true
+      // Store slot ID for future access
+      localStorage.setItem(`slot_${eventId}`, data.slot_id)
 
-    // Store slot ID for future access
-    localStorage.setItem(`slot_${eventId}`, data.slot_id)
-
-    toast.add({
-      severity: 'success',
-      summary: 'Access Granted',
-      detail: 'You can now manage your slot',
-      life: 3000
-    })
+      toast.add({
+        severity: 'success',
+        summary: 'Access Granted',
+        detail: 'You can now manage your slot',
+        life: 3000
+      })
+    }
   } catch (error: any) {
     console.error('Authentication failed:', error)
     authComponent.value?.setError(error.message || 'Invalid slot ID or password')
@@ -256,14 +255,17 @@ async function handleUpdate(data: ManageSlotFormData) {
       currentSlot.value = response.slot
       queueStore.updateSlot(response.slot.slot_id, response.slot)
 
-      updateSuccess.value = 'Your slot has been updated successfully'
-
       toast.add({
         severity: 'success',
         summary: 'Updated',
         detail: 'Your slot has been updated',
-        life: 5000
+        life: 3000
       })
+
+      // Redirect to queue page after successful update
+      setTimeout(() => {
+        router.push({ name: 'public-queue', params: { eventId } })
+      }, 1000)
     }
   } catch (error: any) {
     console.error('Update failed:', error)

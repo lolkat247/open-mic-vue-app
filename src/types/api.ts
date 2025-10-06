@@ -120,6 +120,15 @@ export interface WithdrawSlotRequest {
   slot_password: string
 }
 
+export interface VerifySlotRequest {
+  slot_password: string
+}
+
+export interface VerifySlotResponse {
+  message: string
+  slot: Slot
+}
+
 export interface ReorderSlotsRequest {
   slot_order: string[]
 }
