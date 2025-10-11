@@ -536,6 +536,22 @@ function goToAdmin() {
   width: 100%;
 }
 
+:deep(.p-inputtext) {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+:deep(.p-inputtext::placeholder) {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+:deep(.p-inputtext:focus) {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  border-color: rgba(0, 206, 144, 0.6) !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.2) !important;
+}
+
 @media (max-width: 768px) {
   .home-view {
     padding: 0;
