@@ -353,8 +353,8 @@ onUnmounted(() => {
 <style scoped>
 .manage-slot-view {
   min-height: 100vh;
-  background-color: var(--surface-ground);
-  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, var(--surface-ground) 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
+  background-color: #1e1e1e;
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #1e1e1e 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
   padding-bottom: 2rem;
   position: relative;
 }
@@ -387,7 +387,10 @@ onUnmounted(() => {
 .manage-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-color);
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
 }
 
@@ -400,14 +403,16 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 4px 16px rgba(0, 206, 144, 0.15),
+    0 2px 8px rgba(0, 206, 144, 0.1);
 }
 
 .position-info {
@@ -426,7 +431,8 @@ onUnmounted(() => {
 
 .info-item > i {
   font-size: 1.5rem;
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.4));
 }
 
 .info-item > div {
@@ -437,13 +443,13 @@ onUnmounted(() => {
 
 .info-label {
   font-size: 0.85rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
 }
 
 .info-value {
   font-size: 1.5rem;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.95);
   font-weight: 700;
 }
 
@@ -462,18 +468,19 @@ onUnmounted(() => {
 
 .success-icon {
   font-size: 4rem;
-  color: var(--green-500);
+  color: rgba(34, 197, 94, 1);
+  filter: drop-shadow(0 0 15px rgba(34, 197, 94, 0.5));
 }
 
 .success-message {
   font-size: 1.1rem;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.95);
   margin: 0;
 }
 
 .success-note {
   font-size: 0.95rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0;
 }
 

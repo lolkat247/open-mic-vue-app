@@ -273,20 +273,41 @@ function goToLogin() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary-100) 0%, var(--primary-200) 100%);
+  background-color: #1e1e1e;
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #1e1e1e 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
   padding: 2rem;
+  position: relative;
+}
+
+.confirm-email-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .confirm-container {
   width: 100%;
   max-width: 450px;
+  position: relative;
+  z-index: 1;
 }
 
 .confirm-card {
-  background: var(--surface-card);
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: 16px;
   padding: 2.5rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0, 206, 144, 0.2),
+    0 4px 16px rgba(0, 206, 144, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .confirm-header {
@@ -303,28 +324,33 @@ function goToLogin() {
 
 .logo-icon {
   font-size: 4rem;
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
   margin-bottom: 0.5rem;
+  filter: drop-shadow(0 0 15px rgba(0, 206, 144, 0.5));
 }
 
 .confirm-header h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
 }
 
 .subtitle {
   font-size: 0.95rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0.5rem 0 0 0;
 }
 
 .email-display {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
   margin: 0.25rem 0 0 0;
+  filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.3));
 }
 
 .confirm-form {
@@ -341,12 +367,12 @@ function goToLogin() {
 
 .form-field label {
   font-weight: 600;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .form-field label.required::after {
   content: ' *';
-  color: var(--red-500);
+  color: rgba(239, 68, 68, 1);
 }
 
 .code-input {
@@ -358,7 +384,7 @@ function goToLogin() {
 }
 
 .help-text {
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
   text-align: center;
 }
@@ -373,12 +399,12 @@ function goToLogin() {
   align-items: center;
   gap: 0.5rem;
   padding: 1rem 0;
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .resend-text {
   margin: 0;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
 }
 
@@ -387,7 +413,7 @@ function goToLogin() {
 }
 
 .cooldown-text {
-  color: var(--orange-500);
+  color: rgba(251, 146, 60, 1);
   font-size: 0.85rem;
   font-weight: 500;
 }
@@ -407,17 +433,33 @@ function goToLogin() {
 .divider::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid var(--surface-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .divider span {
   padding: 0 1rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.9rem;
 }
 
 .w-full {
   width: 100%;
+}
+
+:deep(.p-inputtext) {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+:deep(.p-inputtext::placeholder) {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+:deep(.p-inputtext:focus) {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  border-color: rgba(0, 206, 144, 0.6) !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.2) !important;
 }
 
 @media (max-width: 768px) {

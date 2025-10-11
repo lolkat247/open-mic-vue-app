@@ -302,21 +302,41 @@ function goBack() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface-ground);
+  background-color: #1e1e1e;
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #1e1e1e 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
   padding: 2rem;
+  position: relative;
+}
+
+.change-password-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .change-container {
   width: 100%;
   max-width: 550px;
+  position: relative;
+  z-index: 1;
 }
 
 .change-card {
-  background: var(--surface-card);
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: 16px;
   padding: 2.5rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0, 206, 144, 0.2),
+    0 4px 16px rgba(0, 206, 144, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .back-button {
@@ -340,20 +360,24 @@ function goBack() {
 
 .header-icon {
   font-size: 3.5rem;
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
   margin-bottom: 0.5rem;
+  filter: drop-shadow(0 0 15px rgba(0, 206, 144, 0.5));
 }
 
 .change-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-color);
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
 }
 
 .subtitle {
   font-size: 1rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0;
 }
 
@@ -371,16 +395,16 @@ function goBack() {
 
 .form-field label {
   font-weight: 600;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .form-field label.required::after {
   content: ' *';
-  color: var(--red-500);
+  color: rgba(239, 68, 68, 1);
 }
 
 .help-text {
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
 }
 
@@ -389,7 +413,7 @@ function goBack() {
 }
 
 .divider-line {
-  border-bottom: 1px solid var(--surface-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .password-requirements {
@@ -406,11 +430,11 @@ function goBack() {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.85rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .password-requirements li.met {
-  color: var(--green-600);
+  color: rgba(34, 197, 94, 1);
 }
 
 .password-requirements li i {
@@ -418,7 +442,7 @@ function goBack() {
 }
 
 .password-requirements li.met i {
-  color: var(--green-600);
+  color: rgba(34, 197, 94, 1);
 }
 
 .form-actions {
@@ -440,14 +464,14 @@ function goBack() {
   gap: 1rem;
   margin-top: 2rem;
   padding: 1.25rem;
-  background: var(--blue-50);
-  border-left: 4px solid var(--blue-500);
+  background: rgba(59, 130, 246, 0.1);
+  border-left: 4px solid rgba(59, 130, 246, 1);
   border-radius: 8px;
 }
 
 .tip-icon {
   font-size: 1.5rem;
-  color: var(--blue-500);
+  color: rgba(96, 165, 250, 1);
   flex-shrink: 0;
   margin-top: 0.25rem;
 }
@@ -457,14 +481,14 @@ function goBack() {
 }
 
 .tip-content strong {
-  color: var(--blue-700);
+  color: rgba(191, 219, 254, 1);
   display: block;
   margin-bottom: 0.5rem;
 }
 
 .tip-content p {
   margin: 0;
-  color: var(--blue-700);
+  color: rgba(191, 219, 254, 0.9);
   font-size: 0.9rem;
   line-height: 1.5;
 }
@@ -479,6 +503,22 @@ function goBack() {
 
 :deep(.p-password input) {
   width: 100%;
+}
+
+:deep(.p-inputtext) {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+:deep(.p-inputtext::placeholder) {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+:deep(.p-inputtext:focus) {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  border-color: rgba(0, 206, 144, 0.6) !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.2) !important;
 }
 
 @media (max-width: 768px) {

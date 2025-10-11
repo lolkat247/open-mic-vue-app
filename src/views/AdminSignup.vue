@@ -347,20 +347,41 @@ function goHome() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary-100) 0%, var(--primary-200) 100%);
+  background-color: #1e1e1e;
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #1e1e1e 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
   padding: 2rem;
+  position: relative;
+}
+
+.admin-signup-view::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .signup-container {
   width: 100%;
   max-width: 500px;
+  position: relative;
+  z-index: 1;
 }
 
 .signup-card {
-  background: var(--surface-card);
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: 16px;
   padding: 2.5rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0, 206, 144, 0.2),
+    0 4px 16px rgba(0, 206, 144, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .signup-header {
@@ -377,20 +398,24 @@ function goHome() {
 
 .logo-icon {
   font-size: 4rem;
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
   margin-bottom: 0.5rem;
+  filter: drop-shadow(0 0 15px rgba(0, 206, 144, 0.5));
 }
 
 .signup-header h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
 }
 
 .subtitle {
   font-size: 1rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0;
 }
 
@@ -408,12 +433,12 @@ function goHome() {
 
 .form-field label {
   font-weight: 600;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .form-field label.required::after {
   content: ' *';
-  color: var(--red-500);
+  color: rgba(239, 68, 68, 1);
 }
 
 .password-requirements {
@@ -430,11 +455,11 @@ function goHome() {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.85rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .password-requirements li.met {
-  color: var(--green-600);
+  color: rgba(34, 197, 94, 1);
 }
 
 .password-requirements li i {
@@ -442,7 +467,7 @@ function goHome() {
 }
 
 .password-requirements li.met i {
-  color: var(--green-600);
+  color: rgba(34, 197, 94, 1);
 }
 
 .checkbox-field {
@@ -454,7 +479,7 @@ function goHome() {
 .checkbox-label {
   margin: 0;
   cursor: pointer;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 0.95rem;
   line-height: 1.4;
 }
@@ -478,29 +503,30 @@ function goHome() {
 .divider::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid var(--surface-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .divider span {
   padding: 0 1rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.9rem;
 }
 
 .login-prompt {
   text-align: center;
   margin: 1rem 0;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .login-link {
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
   text-decoration: none;
   font-weight: 600;
   margin-left: 0.5rem;
 }
 
 .login-link:hover {
+  color: rgba(0, 255, 163, 1);
   text-decoration: underline;
 }
 
@@ -514,19 +540,19 @@ function goHome() {
 
 .success-icon {
   font-size: 4rem;
-  color: var(--green-500);
+  color: rgba(34, 197, 94, 1);
 }
 
 .success-message {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.95);
   margin: 0;
   text-align: center;
 }
 
 .verification-message {
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0;
   text-align: center;
   line-height: 1.6;
@@ -542,6 +568,32 @@ function goHome() {
 
 :deep(.p-password input) {
   width: 100%;
+}
+
+:deep(.p-inputtext) {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+:deep(.p-inputtext::placeholder) {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+:deep(.p-inputtext:focus) {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  border-color: rgba(0, 206, 144, 0.6) !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.2) !important;
+}
+
+:deep(.p-checkbox .p-checkbox-box) {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+:deep(.p-checkbox .p-checkbox-box.p-highlight) {
+  background-color: rgba(0, 206, 144, 1) !important;
+  border-color: rgba(0, 206, 144, 1) !important;
 }
 
 @media (max-width: 768px) {

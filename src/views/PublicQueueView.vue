@@ -269,8 +269,8 @@ onUnmounted(() => {
   min-height: 100vh;
   padding-bottom: 2rem;
   position: relative;
-  background-color: var(--surface-ground);
-  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, var(--surface-ground) 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
+  background-color: #1e1e1e;
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #1e1e1e 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
   display: flex;
   flex-direction: column;
 }
@@ -283,6 +283,13 @@ onUnmounted(() => {
   -webkit-backdrop-filter: blur(1px);
   pointer-events: none;
   z-index: 0;
+}
+
+.back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
 }
 
 .queue-container {
@@ -312,16 +319,16 @@ onUnmounted(() => {
   right: 24px;
   z-index: 1000;
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.15),
-    0 0 20px rgba(0, 206, 144, 0.3);
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(0, 206, 144, 0.4);
   transition: all 0.3s ease;
 }
 
 .fab:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.2),
-    0 0 30px rgba(0, 206, 144, 0.5);
+    0 6px 20px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(0, 206, 144, 0.6);
 }
 
 .fab-secondary {
@@ -330,16 +337,16 @@ onUnmounted(() => {
   right: 140px;
   z-index: 1000;
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.15),
-    0 0 15px rgba(0, 206, 144, 0.2);
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 0 15px rgba(0, 206, 144, 0.3);
   transition: all 0.3s ease;
 }
 
 .fab-secondary:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.2),
-    0 0 25px rgba(0, 206, 144, 0.4);
+    0 6px 20px rgba(0, 0, 0, 0.4),
+    0 0 25px rgba(0, 206, 144, 0.5);
 }
 
 @media (max-width: 768px) {

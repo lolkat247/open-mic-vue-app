@@ -457,18 +457,34 @@ onMounted(() => {
 <style scoped>
 .admin-dashboard {
   min-height: 100vh;
-  background: var(--surface-ground);
+  background-color: #1e1e1e;
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #1e1e1e 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
   padding-bottom: 80px;
+  position: relative;
+}
+
+.admin-dashboard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .dashboard-header {
-  background: var(--surface-card);
-  border-bottom: 1px solid var(--surface-border);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: 1.5rem;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 2px 8px rgba(0, 206, 144, 0.15),
+    0 4px 16px rgba(0, 206, 144, 0.1);
 }
 
 .header-content {
@@ -492,13 +508,17 @@ onMounted(() => {
   gap: 0.75rem;
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-color);
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
 }
 
 .dashboard-title i {
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
   font-size: 1.5rem;
+  filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.4));
 }
 
 :deep(.back-button) {
@@ -514,19 +534,19 @@ onMounted(() => {
 }
 
 :deep(.back-button .p-button-icon), :deep(.back-button .pi) {
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 1.25rem;
   transition: color 120ms ease, opacity 120ms ease, background-color 120ms ease;
   opacity: 0.9;
 }
 
 :deep(.back-button:hover), :deep(.back-button:focus) {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 :deep(.back-button:hover .p-button-icon), :deep(.back-button:focus .p-button-icon),
 :deep(.back-button:hover .pi), :deep(.back-button:focus .pi) {
-  color: var(--green-500);
+  color: rgba(0, 206, 144, 1);
   opacity: 1;
 }
 
@@ -537,11 +557,11 @@ onMounted(() => {
 }
 
 :deep(.back-button.p-button:hover), :deep(.back-button.p-button:focus) {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .user-email {
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
   margin: 0;
 }
@@ -558,13 +578,15 @@ onMounted(() => {
 
 :deep(.user-menu-header) {
   font-weight: 600 !important;
-  color: var(--text-color) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
 }
 
 .dashboard-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .dashboard-controls {
@@ -597,20 +619,21 @@ onMounted(() => {
 
 .empty-icon {
   font-size: 5rem;
-  color: var(--surface-400);
+  color: rgba(0, 206, 144, 0.3);
   margin-bottom: 1.5rem;
+  filter: drop-shadow(0 0 20px rgba(0, 206, 144, 0.2));
 }
 
 .empty-content h2 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.95);
   margin: 0 0 0.75rem 0;
 }
 
 .empty-content p {
   font-size: 1rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0 0 2rem 0;
   line-height: 1.6;
 }
