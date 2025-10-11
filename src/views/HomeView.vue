@@ -170,8 +170,8 @@ function goToAdmin() {
   justify-content: center;
   padding: 2rem;
   position: relative;
-  background-color: #f5f5f5;
-  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #f5f5f5 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
+  background-color: #1e1e1e;
+  background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #1e1e1e 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
 }
 
 .home-view::before {
@@ -182,14 +182,6 @@ function goToAdmin() {
   -webkit-backdrop-filter: blur(1px);
   pointer-events: none;
   z-index: 0;
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .home-view {
-    background-color: #1e1e1e;
-    background-image: repeating-radial-gradient(circle at 0 0, transparent 0, #1e1e1e 40px), repeating-linear-gradient(rgba(0, 206, 144, 0.33), rgb(0, 206, 144));
-  }
 }
 
 .home-container {
@@ -430,6 +422,14 @@ function goToAdmin() {
   background: transparent !important;
 }
 
+.admin-card :deep(.p-card-title) {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.admin-card :deep(.p-card-content p) {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
 .admin-card::before {
   content: '';
   position: absolute;
@@ -481,6 +481,14 @@ function goToAdmin() {
   background: transparent !important;
 }
 
+.action-card :deep(.p-card-title) {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.action-card :deep(.p-card-content p) {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
 .action-card::before {
   content: '';
   position: absolute;
@@ -511,10 +519,11 @@ function goToAdmin() {
 
 .card-icon {
   font-size: 3rem;
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
   padding: 2rem;
   text-align: center;
   display: block;
+  filter: drop-shadow(0 0 10px rgba(0, 206, 144, 0.5));
 }
 
 .card-footer {
