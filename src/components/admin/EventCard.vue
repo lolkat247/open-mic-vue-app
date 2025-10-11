@@ -208,15 +208,38 @@ function confirmDelete() {
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 16px rgba(0, 206, 144, 0.15),
+    0 2px 8px rgba(0, 206, 144, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
 }
 
 .event-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    0 8px 32px rgba(0, 206, 144, 0.3),
+    0 4px 16px rgba(0, 206, 144, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-color: rgba(0, 206, 144, 0.4);
 }
 
 .event-card.signups-paused {
-  border-left: 4px solid var(--orange-500);
+  border-left: 4px solid rgba(251, 146, 60, 1);
+  box-shadow:
+    0 4px 16px rgba(251, 146, 60, 0.2),
+    0 2px 8px rgba(251, 146, 60, 0.15);
+}
+
+.event-card.signups-paused:hover {
+  box-shadow:
+    0 8px 32px rgba(251, 146, 60, 0.3),
+    0 4px 16px rgba(251, 146, 60, 0.2);
 }
 
 .card-header {
@@ -228,6 +251,14 @@ function confirmDelete() {
 
 .status-badge {
   font-size: 0.85rem;
+  background: rgba(0, 206, 144, 0.2) !important;
+  border: 1px solid rgba(0, 206, 144, 0.4);
+  font-weight: 600;
+}
+
+.event-card.signups-paused .status-badge {
+  background: rgba(251, 146, 60, 0.2) !important;
+  border: 1px solid rgba(251, 146, 60, 0.4);
 }
 
 .menu-button {
@@ -235,10 +266,13 @@ function confirmDelete() {
 }
 
 .event-name {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  color: var(--text-color);
-  margin: 0 0 0.5rem 0;
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 0.75rem 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -255,19 +289,20 @@ function confirmDelete() {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
 }
 
 .meta-item i {
   font-size: 0.85rem;
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 4px rgba(0, 206, 144, 0.3));
 }
 
 .event-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  gap: 0.75rem;
   padding: 1rem 0;
 }
 
@@ -277,11 +312,23 @@ function confirmDelete() {
   align-items: center;
   gap: 0.5rem;
   text-align: center;
+  padding: 0.75rem 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+.stat-item:hover {
+  background: rgba(0, 206, 144, 0.1);
+  border-color: rgba(0, 206, 144, 0.3);
+  transform: translateY(-2px);
 }
 
 .stat-icon {
   font-size: 1.5rem;
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.4));
 }
 
 .stat-content {
@@ -293,52 +340,107 @@ function confirmDelete() {
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .stat-label {
-  font-size: 0.75rem;
-  color: var(--text-color-secondary);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-weight: 600;
 }
 
 .card-footer {
   display: flex;
   justify-content: flex-end;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--surface-border);
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .manage-button {
   width: 100%;
+  background: rgba(0, 206, 144, 0.15) !important;
+  border: 1px solid rgba(0, 206, 144, 0.3) !important;
+  color: rgba(0, 206, 144, 1) !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.manage-button:hover {
+  background: rgba(0, 206, 144, 0.25) !important;
+  border-color: rgba(0, 206, 144, 0.5) !important;
+  box-shadow: 0 0 16px rgba(0, 206, 144, 0.3);
+  transform: translateY(-1px);
+}
+
+:deep(.p-card) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 :deep(.p-card-body) {
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: transparent;
+  padding: 1.25rem;
 }
 
 :deep(.p-card-content) {
   flex: 1;
+  padding: 0;
+}
+
+:deep(.p-card-title) {
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
+:deep(.p-card-subtitle) {
+  padding: 0;
+  margin-bottom: 0;
+}
+
+:deep(.p-card-footer) {
+  padding: 1rem 1.25rem;
+  background: transparent;
 }
 
 :deep(.danger-item) {
-  color: var(--red-500);
+  color: rgba(239, 68, 68, 1) !important;
 }
 
 :deep(.danger-item:hover) {
-  background: var(--red-50);
+  background: rgba(239, 68, 68, 0.15) !important;
+}
+
+:deep(.p-menu) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(16px);
+}
+
+:deep(.p-menu-item-content) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-menu-item:not(.p-disabled):hover .p-menu-item-content) {
+  background: rgba(0, 206, 144, 0.2) !important;
 }
 
 @media (max-width: 768px) {
   .event-name {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
   }
 
   .event-stats {
-    gap: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .stat-item {
+    padding: 0.5rem 0.25rem;
   }
 
   .stat-icon {
@@ -347,6 +449,10 @@ function confirmDelete() {
 
   .stat-value {
     font-size: 1.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
   }
 }
 </style>

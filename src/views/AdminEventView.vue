@@ -1099,6 +1099,63 @@ onUnmounted(() => {
   color: rgba(254, 202, 202, 0.95) !important;
 }
 
+/* Badge styling improvements */
+:deep(.p-badge) {
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+:deep(.p-badge-success) {
+  background: rgba(34, 197, 94, 0.8) !important;
+  border: 1px solid rgba(34, 197, 94, 1);
+  color: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+}
+
+:deep(.p-badge-warn) {
+  background: rgba(245, 158, 11, 0.8) !important;
+  border: 1px solid rgba(245, 158, 11, 1);
+  color: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+}
+
+:deep(.p-badge-danger) {
+  background: rgba(239, 68, 68, 0.8) !important;
+  border: 1px solid rgba(239, 68, 68, 1);
+  color: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+:deep(.p-badge-info) {
+  background: rgba(6, 182, 212, 0.8) !important;
+  border: 1px solid rgba(6, 182, 212, 1);
+  color: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.3);
+}
+
+/* Button styling improvements */
+:deep(.p-button) {
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+:deep(.p-button-info) {
+  background: rgba(6, 182, 212, 0.15) !important;
+  border: 1px solid rgba(6, 182, 212, 0.5) !important;
+  color: rgba(103, 232, 249, 1) !important;
+}
+
+:deep(.p-button-info:hover) {
+  background: rgba(6, 182, 212, 0.25) !important;
+  border-color: rgba(6, 182, 212, 0.7) !important;
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.3);
+}
+
+:deep(.p-button:focus) {
+  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.25);
+}
+
 @media (max-width: 1024px) {
   .event-content {
     grid-template-columns: 1fr;

@@ -572,8 +572,28 @@ onMounted(() => {
   align-items: center;
 }
 
+.create-button {
+  background: rgba(0, 206, 144, 0.15) !important;
+  border: 1px solid rgba(0, 206, 144, 0.4) !important;
+  color: rgba(0, 206, 144, 1) !important;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.create-button:hover {
+  background: rgba(0, 206, 144, 0.25) !important;
+  border-color: rgba(0, 206, 144, 0.6) !important;
+  box-shadow: 0 0 20px rgba(0, 206, 144, 0.3);
+  transform: translateY(-2px);
+}
+
 .user-menu-button {
   font-weight: 600;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.user-menu-button:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 
 :deep(.user-menu-header) {
@@ -593,6 +613,15 @@ onMounted(() => {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow:
+    0 2px 8px rgba(0, 206, 144, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .search-bar {
@@ -615,6 +644,15 @@ onMounted(() => {
 .empty-content {
   text-align: center;
   max-width: 500px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  box-shadow:
+    0 4px 16px rgba(0, 206, 144, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .empty-icon {
@@ -642,6 +680,18 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .fab {
@@ -649,8 +699,21 @@ onMounted(() => {
   bottom: 24px;
   right: 24px;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(0, 206, 144, 0.9) !important;
+  border: 2px solid rgba(0, 206, 144, 1) !important;
+  box-shadow:
+    0 4px 16px rgba(0, 206, 144, 0.4),
+    0 8px 32px rgba(0, 206, 144, 0.3);
   display: none;
+  transition: all 0.3s ease;
+}
+
+.fab:hover {
+  background: rgba(0, 206, 144, 1) !important;
+  box-shadow:
+    0 6px 24px rgba(0, 206, 144, 0.5),
+    0 12px 48px rgba(0, 206, 144, 0.4);
+  transform: scale(1.1) translateY(-2px);
 }
 
 .w-full {
@@ -662,15 +725,21 @@ onMounted(() => {
   background: rgba(0, 0, 0, 0.6) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: rgba(255, 255, 255, 0.95) !important;
+  transition: all 0.2s ease;
 }
 
 :deep(.p-inputtext:focus), :deep(.p-select:focus) {
-  border-color: #00ce90 !important;
+  border-color: rgba(0, 206, 144, 0.6) !important;
   box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.25) !important;
+  background: rgba(0, 0, 0, 0.7) !important;
 }
 
 :deep(.p-inputtext::placeholder) {
   color: rgba(255, 255, 255, 0.4) !important;
+}
+
+:deep(.p-iconfield .p-inputicon) {
+  color: rgba(0, 206, 144, 0.7) !important;
 }
 
 /* Select dropdown dark mode */

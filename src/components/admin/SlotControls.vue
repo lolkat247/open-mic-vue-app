@@ -241,16 +241,102 @@ async function handleReinstate() {
   padding: 0.5rem 1rem;
 }
 
+/* Override blue "info" severity with teal/cyan */
+:deep(.p-button-info) {
+  background: rgba(6, 182, 212, 0.15) !important;
+  border: 1px solid rgba(6, 182, 212, 0.5) !important;
+  color: rgba(103, 232, 249, 1) !important;
+  font-weight: 600;
+}
+
+:deep(.p-button-info:hover) {
+  background: rgba(6, 182, 212, 0.25) !important;
+  border-color: rgba(6, 182, 212, 0.7) !important;
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.3);
+}
+
+:deep(.p-button-info:active) {
+  background: rgba(6, 182, 212, 0.3) !important;
+}
+
+/* Improve success button styling */
+:deep(.p-button-success) {
+  background: rgba(34, 197, 94, 0.15) !important;
+  border: 1px solid rgba(34, 197, 94, 0.5) !important;
+  color: rgba(134, 239, 172, 1) !important;
+  font-weight: 600;
+}
+
+:deep(.p-button-success:hover) {
+  background: rgba(34, 197, 94, 0.25) !important;
+  border-color: rgba(34, 197, 94, 0.7) !important;
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.3);
+}
+
+:deep(.p-button-success:active) {
+  background: rgba(34, 197, 94, 0.3) !important;
+}
+
+/* Improve warning button styling */
+:deep(.p-button-warning) {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border: 1px solid rgba(245, 158, 11, 0.5) !important;
+  color: rgba(253, 224, 71, 1) !important;
+  font-weight: 600;
+}
+
+:deep(.p-button-warning:hover) {
+  background: rgba(245, 158, 11, 0.25) !important;
+  border-color: rgba(245, 158, 11, 0.7) !important;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.3);
+}
+
+:deep(.p-button-warning:active) {
+  background: rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Improve danger button styling */
+:deep(.p-button-danger) {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border: 1px solid rgba(239, 68, 68, 0.5) !important;
+  color: rgba(254, 202, 202, 1) !important;
+  font-weight: 600;
+}
+
+:deep(.p-button-danger:hover) {
+  background: rgba(239, 68, 68, 0.25) !important;
+  border-color: rgba(239, 68, 68, 0.7) !important;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.3);
+}
+
+:deep(.p-button-danger:active) {
+  background: rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Outlined danger button */
+:deep(.p-button-danger.p-button-outlined) {
+  background: transparent !important;
+  border: 1px solid rgba(239, 68, 68, 0.5) !important;
+  color: rgba(254, 202, 202, 1) !important;
+}
+
+:deep(.p-button-danger.p-button-outlined:hover) {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.7) !important;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.3);
+}
+
 .help-text {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.85rem;
 }
 
 .help-text i {
-  color: var(--orange-500);
+  color: rgba(251, 146, 60, 1);
+  filter: drop-shadow(0 0 4px rgba(251, 146, 60, 0.4));
 }
 
 @media (max-width: 768px) {

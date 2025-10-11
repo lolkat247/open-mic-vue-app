@@ -110,20 +110,31 @@ onUnmounted(() => {
 
 <style scoped>
 .setting-up-card {
-  background: linear-gradient(135deg, var(--orange-50) 0%, var(--orange-100) 100%);
-  border: 2px solid var(--orange-400);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid rgba(251, 146, 60, 0.5);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
+  box-shadow:
+    0 4px 16px rgba(251, 146, 60, 0.25),
+    0 2px 8px rgba(251, 146, 60, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
+    box-shadow:
+      0 4px 16px rgba(251, 146, 60, 0.25),
+      0 2px 8px rgba(251, 146, 60, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
   50% {
-    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+    box-shadow:
+      0 6px 24px rgba(251, 146, 60, 0.4),
+      0 3px 12px rgba(251, 146, 60, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 }
 
@@ -141,15 +152,18 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--orange-500);
-  color: white;
+  background: rgba(251, 146, 60, 0.8);
+  color: rgba(255, 255, 255, 1);
   border-radius: 20px;
   font-weight: 600;
   font-size: 0.9rem;
+  box-shadow: 0 0 12px rgba(251, 146, 60, 0.4);
+  border: 1px solid rgba(251, 146, 60, 1);
 }
 
 .header-badge i {
   font-size: 1rem;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
 }
 
 .setup-timer {
@@ -157,16 +171,20 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--surface-0);
-  color: var(--orange-700);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(254, 215, 170, 1);
   border-radius: 20px;
   font-weight: 700;
   font-size: 1rem;
-  border: 2px solid var(--orange-300);
+  border: 2px solid rgba(251, 146, 60, 0.5);
+  box-shadow: 0 2px 8px rgba(251, 146, 60, 0.2);
 }
 
 .setup-timer i {
-  color: var(--orange-600);
+  color: rgba(251, 146, 60, 1);
+  filter: drop-shadow(0 0 4px rgba(251, 146, 60, 0.4));
 }
 
 .card-content {
@@ -182,8 +200,12 @@ onUnmounted(() => {
 .performer-name {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--orange-900);
+  background: linear-gradient(135deg, #ffffff 0%, #fb923c 50%, #fdba74 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0;
+  text-shadow: 0 2px 8px rgba(251, 146, 60, 0.3);
 }
 
 .performer-meta {
@@ -197,27 +219,33 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.35rem;
   padding: 0.35rem 0.85rem;
-  background: var(--surface-0);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(251, 146, 60, 0.3);
   border-radius: 14px;
   font-size: 0.9rem;
-  color: var(--text-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .meta-item i {
   font-size: 0.85rem;
-  color: var(--orange-600);
+  color: rgba(251, 146, 60, 1);
+  filter: drop-shadow(0 0 4px rgba(251, 146, 60, 0.4));
 }
 
 .meta-item.warning {
-  background: var(--red-50);
-  color: var(--red-700);
-  border: 1px solid var(--red-200);
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  color: rgba(254, 202, 202, 1);
   font-weight: 600;
 }
 
 .meta-item.warning i {
-  color: var(--red-600);
+  color: rgba(239, 68, 68, 1);
+  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.6));
 }
 
 .urgency-notice {
@@ -225,53 +253,66 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: var(--yellow-50);
-  color: var(--yellow-800);
-  border-left: 4px solid var(--yellow-500);
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(234, 179, 8, 0.5);
+  border-left: 4px solid rgba(234, 179, 8, 1);
   border-radius: 6px;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
+  color: rgba(254, 240, 138, 1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(234, 179, 8, 0.2);
 }
 
 .urgency-notice i {
   font-size: 1.1rem;
+  color: rgba(234, 179, 8, 1);
+  filter: drop-shadow(0 0 6px rgba(234, 179, 8, 0.6));
 }
 
 .notes {
   padding: 0.75rem 1rem;
-  background: var(--surface-0);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   font-size: 0.95rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.85);
   margin: 0;
   font-style: italic;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .card-actions {
-  border-top: 2px solid var(--orange-200);
+  border-top: 2px solid rgba(251, 146, 60, 0.2);
   padding-top: 1rem;
 }
 
 .empty-state {
-  background: var(--surface-ground);
-  border: 2px dashed var(--surface-border);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px dashed rgba(251, 146, 60, 0.3);
   border-radius: 12px;
   padding: 2rem 1.5rem;
   text-align: center;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .empty-state i {
   font-size: 2.5rem;
-  color: var(--orange-300);
+  color: rgba(251, 146, 60, 0.3);
   margin-bottom: 0.75rem;
   display: block;
+  filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.2));
 }
 
 .empty-state p {
   font-size: 1rem;
   margin: 0;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 @media (max-width: 768px) {

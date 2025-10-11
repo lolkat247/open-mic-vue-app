@@ -39,16 +39,18 @@ defineProps<Props>()
 
 <style scoped>
 .compact-stats {
-  background: var(--surface-card);
+  background: transparent;
   border-radius: 12px;
-  padding: 1.25rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 0;
 }
 
 .stats-title {
   font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-color);
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0 0 1rem 0;
 }
 
@@ -62,24 +64,37 @@ defineProps<Props>()
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.875rem;
+  padding: 0.875rem 1rem;
   border-radius: 8px;
   transition: all 0.2s ease;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .stat-badge.primary {
-  background: var(--primary-50);
-  border-left: 4px solid var(--primary-500);
+  border: 1px solid rgba(0, 206, 144, 0.5);
+  border-left: 4px solid rgba(0, 206, 144, 1);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 12px rgba(0, 206, 144, 0.2);
 }
 
 .stat-badge.success {
-  background: var(--green-50);
-  border-left: 4px solid var(--green-500);
+  border: 1px solid rgba(34, 197, 94, 0.5);
+  border-left: 4px solid rgba(34, 197, 94, 1);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 12px rgba(34, 197, 94, 0.2);
 }
 
 .stat-badge.danger {
-  background: var(--red-50);
-  border-left: 4px solid var(--red-500);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  border-left: 4px solid rgba(239, 68, 68, 1);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 12px rgba(239, 68, 68, 0.2);
 }
 
 .stat-badge i {
@@ -88,15 +103,18 @@ defineProps<Props>()
 }
 
 .stat-badge.primary i {
-  color: var(--primary-500);
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.5));
 }
 
 .stat-badge.success i {
-  color: var(--green-500);
+  color: rgba(34, 197, 94, 1);
+  filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.5));
 }
 
 .stat-badge.danger i {
-  color: var(--red-500);
+  color: rgba(239, 68, 68, 1);
+  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.5));
 }
 
 .stat-data {
@@ -109,16 +127,17 @@ defineProps<Props>()
 .stat-number {
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.95);
   line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .stat-label {
   font-size: 0.8rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 @media (max-width: 768px) {
@@ -131,20 +150,23 @@ defineProps<Props>()
     flex-direction: column;
     text-align: center;
     padding: 0.75rem;
-    border-left: none;
+    border-left: 1px solid;
     border-top: 3px solid;
   }
 
   .stat-badge.primary {
-    border-top-color: var(--primary-500);
+    border-top-color: rgba(0, 206, 144, 1);
+    border-left-color: rgba(0, 206, 144, 0.5);
   }
 
   .stat-badge.success {
-    border-top-color: var(--green-500);
+    border-top-color: rgba(34, 197, 94, 1);
+    border-left-color: rgba(34, 197, 94, 0.5);
   }
 
   .stat-badge.danger {
-    border-top-color: var(--red-500);
+    border-top-color: rgba(239, 68, 68, 1);
+    border-left-color: rgba(239, 68, 68, 0.5);
   }
 
   .stat-badge i {
