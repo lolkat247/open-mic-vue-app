@@ -1,28 +1,26 @@
 <template>
-  <div class="projector-view" :class="{ 'fullscreen-active': isFullscreen }">
+  <div class="projector-view">
     <!-- Top Bar -->
     <div class="projector-header">
       <div class="event-info">
-        <h1 v-if="currentEvent" class="event-name">{{ currentEvent.name }}</h1>
-        <div class="event-details">
+        <div class="event-name-container">
+          <h1 v-if="currentEvent" class="event-name">{{ currentEvent.name }}</h1>
           <span v-if="currentEvent" class="event-date">{{ formatDate(currentEvent.date) }}</span>
-          <span v-if="currentEvent?.event_code" class="event-code">Code: {{ currentEvent.event_code }}</span>
         </div>
-      </div>
-      <div class="header-actions">
-        <div v-if="qrCodeDataUrl" class="qr-section">
-          <img :src="qrCodeDataUrl" alt="Queue QR Code" class="qr-code" />
-          <a :href="queueUrl" target="_blank" class="qr-link">{{ queueUrl }}</a>
+        <div v-if="currentEvent" class="join-info">
+          <div class="join-instructions">
+            <div class="instruction-line">Go to <strong class="website-url">openmic.site</strong></div>
+            <div class="instruction-line">{{ currentEvent.event_code ? 'Enter code:' : 'Event ID:' }}</div>
+          </div>
+          <div class="event-code-large">{{ currentEvent.event_code || eventId }}</div>
+          <div v-if="qrCodeDataUrl" class="qr-code-small">
+            <img :src="qrCodeDataUrl" alt="Queue QR Code" />
+          </div>
         </div>
-        <div class="current-time">{{ currentTime }}</div>
-        <Button
-          :icon="isFullscreen ? 'pi pi-window-minimize' : 'pi pi-window-maximize'"
-          text
-          rounded
-          size="large"
-          @click="toggleFullscreen"
-          aria-label="Toggle fullscreen"
-        />
+        <div class="time-info">
+          <div class="current-time">{{ currentTime }}</div>
+          <div v-if="currentEvent" class="curfew-time">Curfew: {{ formatCurfewTime(currentEvent.curfew) }}</div>
+        </div>
       </div>
     </div>
 
@@ -87,7 +85,6 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
-import Button from 'primevue/button'
 import { useEventStore } from '../stores/event'
 import { useQueueStore } from '../stores/queue'
 import { useWebSocket } from '../composables/useWebSocket'
@@ -102,7 +99,6 @@ const queueStore = useQueueStore()
 const { apiService } = useAPI()
 
 const eventId = ref<string>('')
-const isFullscreen = ref(false)
 const currentTime = ref('')
 const elapsedSeconds = ref(0)
 const qrCodeDataUrl = ref<string>('')
@@ -135,13 +131,13 @@ const statusBadge = computed(() => {
   if (currentSlot.value.status === 'setting_up') {
     return {
       text: 'SETTING UP',
-      gradient: 'linear-gradient(90deg, #ff9800, #ff5722)'
+      gradient: 'linear-gradient(90deg, #ffd700, #00ce90)'
     }
   }
 
   return {
     text: 'NOW PERFORMING',
-    gradient: 'linear-gradient(90deg, #00d2ff, #3a7bd5)'
+    gradient: 'linear-gradient(90deg, #00ffa3, #00ce90)'
   }
 })
 
@@ -169,6 +165,14 @@ function updateCurrentTime() {
   })
 }
 
+function formatCurfewTime(curfewTime: string): string {
+  // Curfew time is in format "HH:mm" (24-hour)
+  const [hours, minutes] = curfewTime.split(':').map(Number)
+  const period = hours >= 12 ? 'PM' : 'AM'
+  const displayHours = hours % 12 || 12 // Convert 0 to 12 for midnight
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`
+}
+
 function updateElapsedTime() {
   if (!currentSlot.value) {
     elapsedSeconds.value = 0
@@ -184,24 +188,6 @@ function updateElapsedTime() {
   const start = new Date(startTime).getTime()
   const now = Date.now()
   elapsedSeconds.value = Math.floor((now - start) / 1000)
-}
-
-async function toggleFullscreen() {
-  if (!document.fullscreenElement) {
-    try {
-      await document.documentElement.requestFullscreen()
-      isFullscreen.value = true
-    } catch (error) {
-      console.error('Failed to enter fullscreen:', error)
-    }
-  } else {
-    try {
-      await document.exitFullscreen()
-      isFullscreen.value = false
-    } catch (error) {
-      console.error('Failed to exit fullscreen:', error)
-    }
-  }
 }
 
 async function generateQRCode(eventCode: string) {
@@ -270,6 +256,18 @@ onMounted(async () => {
       return
     }
 
+    // Fetch full event details to get event_code and other properties
+    console.log('[Projector] Fetching event details for:', eventId.value)
+    try {
+      const response = await apiService.getEvent(eventId.value)
+      if (response.event) {
+        console.log('[Projector] Event details received:', response.event)
+        eventStore.setEvent(response.event)
+      }
+    } catch (error) {
+      console.error('[Projector] Failed to fetch event details:', error)
+    }
+
     // Initialize WebSocket connection with the resolved eventId
     ws.value = useWebSocket(eventId.value, 'projector', toast)
 
@@ -291,11 +289,6 @@ onMounted(async () => {
     updateElapsedTime()
     elapsedInterval = window.setInterval(updateElapsedTime, 1000)
 
-    // Listen for fullscreen changes
-    document.addEventListener('fullscreenchange', () => {
-      isFullscreen.value = !!document.fullscreenElement
-    })
-
     // Request wake lock to prevent screen sleep
     if ('wakeLock' in navigator) {
       try {
@@ -304,13 +297,6 @@ onMounted(async () => {
         console.error('Wake lock failed:', error)
       }
     }
-
-    // Auto-enter fullscreen after 3 seconds
-    setTimeout(() => {
-      if (!isFullscreen.value) {
-        toggleFullscreen()
-      }
-    }, 3000)
   } catch (error) {
     console.error('Failed to initialize projector view:', error)
   }
@@ -324,8 +310,12 @@ onUnmounted(() => {
 
 // Watch for event code and generate QR code
 watch(() => currentEvent.value?.event_code, (eventCode) => {
+  console.log('[Projector] Event code changed:', eventCode)
+  console.log('[Projector] Current event:', currentEvent.value)
   if (eventCode) {
     generateQRCode(eventCode)
+  } else {
+    console.warn('[Projector] No event code available - QR code will not be displayed')
   }
 }, { immediate: true })
 </script>
@@ -333,7 +323,7 @@ watch(() => currentEvent.value?.event_code, (eventCode) => {
 <style scoped>
 .projector-view {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(180deg, #1e1e1e 0%, #252525 100%);
   color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -342,95 +332,124 @@ watch(() => currentEvent.value?.event_code, (eventCode) => {
 }
 
 .projector-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2rem 3rem;
+  padding: 0.75rem 2rem;
   background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 2px 8px rgba(0, 206, 144, 0.15),
+    0 4px 16px rgba(0, 206, 144, 0.1);
 }
 
 .event-info {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.event-name-container {
+  display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
+  flex-shrink: 0;
 }
 
 .event-name {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
   color: #ffffff;
-}
-
-.event-details {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  white-space: nowrap;
 }
 
 .event-date {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
+  white-space: nowrap;
 }
 
-.event-code {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
-  font-family: 'Courier New', monospace;
-  background: rgba(58, 123, 213, 0.3);
-  padding: 0.25rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid rgba(58, 123, 213, 0.5);
-}
-
-.header-actions {
+.join-info {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(0, 206, 144, 0.1);
+  border-radius: 12px;
+  border: 2px solid rgba(0, 206, 144, 0.5);
+  box-shadow:
+    0 4px 20px rgba(0, 206, 144, 0.3),
+    0 0 40px rgba(0, 206, 144, 0.15);
+  flex-shrink: 0;
 }
 
-.qr-section {
+.join-instructions {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  align-items: flex-start;
+  gap: 0.1rem;
 }
 
-.qr-code {
-  width: 200px;
-  height: 200px;
+.instruction-line {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.website-url {
+  color: rgba(0, 206, 144, 1);
+  font-size: 1rem;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(0, 206, 144, 0.5);
+}
+
+.event-code-large {
+  font-size: 2rem;
+  font-weight: 900;
+  font-family: 'Courier New', monospace;
+  color: #ffffff;
+  letter-spacing: 0.4rem;
+  background: rgba(0, 206, 144, 0.8);
+  padding: 0.5rem 1.25rem;
   border-radius: 8px;
+  border: 2px solid rgba(0, 206, 144, 1);
+  box-shadow: 0 0 30px rgba(0, 206, 144, 0.4);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-.qr-link {
-  font-size: 0.9rem;
-  color: #3a7bd5;
-  text-decoration: none;
-  font-weight: 600;
-  word-break: break-all;
-  text-align: center;
-  max-width: 200px;
-  transition: color 0.2s ease;
+.qr-code-small img {
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  border: 2px solid rgba(0, 206, 144, 0.3);
 }
 
-.qr-link:hover {
-  color: #00d2ff;
-  text-decoration: underline;
+.time-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex-shrink: 0;
 }
 
 .current-time {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 2rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+.curfew-time {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .projector-content {
@@ -493,7 +512,8 @@ watch(() => currentEvent.value?.event_code, (eventCode) => {
 
 .performer-meta i {
   font-size: 2.25rem;
-  color: #3a7bd5;
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 10px rgba(0, 206, 144, 0.5));
 }
 
 .waiting-section {
@@ -507,9 +527,10 @@ watch(() => currentEvent.value?.event_code, (eventCode) => {
 
 .waiting-icon {
   font-size: 8rem;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(0, 206, 144, 0.3);
   margin-bottom: 2rem;
   animation: pulse 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(0, 206, 144, 0.2));
 }
 
 .waiting-message {
@@ -526,10 +547,15 @@ watch(() => currentEvent.value?.event_code, (eventCode) => {
 }
 
 .queue-section {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   padding: 2rem 3rem;
-  backdrop-filter: blur(10px);
+  box-shadow:
+    0 4px 16px rgba(0, 206, 144, 0.15),
+    0 2px 8px rgba(0, 206, 144, 0.1);
 }
 
 .queue-title {
@@ -545,7 +571,8 @@ watch(() => currentEvent.value?.event_code, (eventCode) => {
 
 .queue-title i {
   font-size: 2.25rem;
-  color: #3a7bd5;
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 10px rgba(0, 206, 144, 0.5));
 }
 
 .queue-preview {
@@ -560,15 +587,16 @@ watch(() => currentEvent.value?.event_code, (eventCode) => {
   align-items: center;
   gap: 2rem;
   padding: 1.25rem 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 12px;
   border-left: 4px solid transparent;
   transition: all 0.3s ease;
 }
 
 .queue-preview-item.up-next {
-  background: rgba(58, 123, 213, 0.2);
-  border-left-color: #3a7bd5;
+  background: rgba(0, 206, 144, 0.15);
+  border-left-color: rgba(0, 206, 144, 1);
+  box-shadow: 0 0 20px rgba(0, 206, 144, 0.2);
 }
 
 .queue-name {
@@ -655,19 +683,6 @@ watch(() => currentEvent.value?.event_code, (eventCode) => {
 
 .list-move {
   transition: transform 0.4s ease;
-}
-
-/* Fullscreen optimizations */
-.fullscreen-active {
-  cursor: none;
-}
-
-.fullscreen-active .projector-header {
-  padding: 1.5rem 2.5rem;
-}
-
-.fullscreen-active .performer-name {
-  font-size: 8rem;
 }
 
 @media (max-width: 1200px) {
