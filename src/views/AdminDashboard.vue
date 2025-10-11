@@ -657,6 +657,70 @@ onMounted(() => {
   width: 100%;
 }
 
+/* Input field dark mode styling */
+:deep(.p-inputtext), :deep(.p-select) {
+  background: rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.p-inputtext:focus), :deep(.p-select:focus) {
+  border-color: #00ce90 !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.25) !important;
+}
+
+:deep(.p-inputtext::placeholder) {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Select dropdown dark mode */
+:deep(.p-select-overlay) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+:deep(.p-select-option) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-select-option:hover) {
+  background: rgba(0, 206, 144, 0.2) !important;
+}
+
+/* Menu dark mode */
+:deep(.p-menu) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-menu-item) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-menu-item:not(.p-disabled):hover) {
+  background: rgba(0, 206, 144, 0.2) !important;
+}
+
+:deep(.p-menu-separator) {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Error message styling */
+:deep(.p-message-error) {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  color: rgba(254, 202, 202, 0.95) !important;
+}
+
+:deep(.p-message-error .p-message-icon) {
+  color: #ef4444 !important;
+}
+
+:deep(.p-message-error .p-message-text) {
+  color: rgba(254, 202, 202, 0.95) !important;
+}
+
 @media (max-width: 1024px) {
   .events-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

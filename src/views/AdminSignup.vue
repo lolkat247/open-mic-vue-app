@@ -562,6 +562,15 @@ function goHome() {
   width: 100%;
 }
 
+/* Validation error styling - red and prominent */
+.p-error {
+  color: #ef4444 !important;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 0.5rem;
+}
+
 :deep(.p-password) {
   width: 100%;
 }
@@ -594,6 +603,54 @@ function goHome() {
 :deep(.p-checkbox .p-checkbox-box.p-highlight) {
   background-color: rgba(0, 206, 144, 1) !important;
   border-color: rgba(0, 206, 144, 1) !important;
+}
+
+/* Password panel dark mode */
+:deep(.p-password-overlay) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Error message styling */
+:deep(.p-message-error) {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  color: rgba(254, 202, 202, 0.95) !important;
+}
+
+:deep(.p-message-error .p-message-icon) {
+  color: #ef4444 !important;
+}
+
+:deep(.p-message-error .p-message-text) {
+  color: rgba(254, 202, 202, 0.95) !important;
+}
+
+/* Dialog dark mode (for success dialog) */
+:deep(.p-dialog) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+:deep(.p-dialog-header) {
+  background: rgba(0, 206, 144, 0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.p-dialog-title) {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.p-dialog-content) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-dialog-footer) {
+  background: rgba(0, 206, 144, 0.05) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 @media (max-width: 768px) {

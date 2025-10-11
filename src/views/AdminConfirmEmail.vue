@@ -446,6 +446,15 @@ function goToLogin() {
   width: 100%;
 }
 
+/* Validation error styling - red and prominent */
+.p-error {
+  color: #ef4444 !important;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 0.5rem;
+}
+
 :deep(.p-inputtext) {
   background-color: rgba(0, 0, 0, 0.6) !important;
   color: rgba(255, 255, 255, 0.95) !important;
@@ -460,6 +469,36 @@ function goToLogin() {
   background-color: rgba(0, 0, 0, 0.7) !important;
   border-color: rgba(0, 206, 144, 0.6) !important;
   box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.2) !important;
+}
+
+/* Error message styling */
+:deep(.p-message-error) {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  color: rgba(254, 202, 202, 0.95) !important;
+}
+
+:deep(.p-message-error .p-message-icon) {
+  color: #ef4444 !important;
+}
+
+:deep(.p-message-error .p-message-text) {
+  color: rgba(254, 202, 202, 0.95) !important;
+}
+
+/* Success message styling */
+:deep(.p-message-success) {
+  background: rgba(34, 197, 94, 0.15) !important;
+  border: 1px solid rgba(34, 197, 94, 0.4) !important;
+  color: rgba(134, 239, 172, 0.95) !important;
+}
+
+:deep(.p-message-success .p-message-icon) {
+  color: #22c55e !important;
+}
+
+:deep(.p-message-success .p-message-text) {
+  color: rgba(134, 239, 172, 0.95) !important;
 }
 
 @media (max-width: 768px) {

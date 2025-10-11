@@ -302,21 +302,30 @@ function handleSubmit() {
 }
 
 .form-section {
-  background: var(--surface-card);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  box-shadow:
+    0 4px 16px rgba(0, 206, 144, 0.15),
+    0 2px 8px rgba(0, 206, 144, 0.1);
 }
 
 .section-title {
   font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-color);
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0 0 0.5rem 0;
 }
 
 .section-description {
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.95rem;
   margin: 0 0 1rem 0;
 }
@@ -333,18 +342,18 @@ function handleSubmit() {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .form-field label.required::after {
   content: ' *';
-  color: var(--red-500);
+  color: #ef4444;
 }
 
 .help-text {
   display: block;
   margin-top: 0.25rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
 }
 
@@ -374,12 +383,86 @@ function handleSubmit() {
   width: 100%;
 }
 
+/* Validation error styling - red and prominent */
+:deep(.p-error) {
+  color: #ef4444 !important;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+/* Input field dark mode styling */
+:deep(.p-inputtext),
+:deep(.p-inputnumber-input),
+:deep(.p-password input),
+:deep(.p-select),
+:deep(.p-textarea) {
+  background: rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.p-inputtext:focus),
+:deep(.p-inputnumber-input:focus),
+:deep(.p-password input:focus),
+:deep(.p-select:focus),
+:deep(.p-textarea:focus) {
+  border-color: #00ce90 !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.25) !important;
+}
+
+:deep(.p-inputtext::placeholder),
+:deep(.p-inputnumber-input::placeholder),
+:deep(.p-password input::placeholder),
+:deep(.p-textarea::placeholder) {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
 :deep(.p-password) {
   width: 100%;
 }
 
 :deep(.p-password input) {
   width: 100%;
+}
+
+/* Select dropdown dark mode */
+:deep(.p-select-overlay) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+:deep(.p-select-option) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-select-option:hover) {
+  background: rgba(0, 206, 144, 0.2) !important;
+}
+
+/* Password strength meter */
+:deep(.p-password-meter) {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+:deep(.p-password-strength-weak) {
+  background: #ef4444 !important;
+}
+
+:deep(.p-password-strength-medium) {
+  background: #f59e0b !important;
+}
+
+:deep(.p-password-strength-strong) {
+  background: #00ce90 !important;
+}
+
+/* Password panel dark mode */
+:deep(.p-password-overlay) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 @media (max-width: 768px) {

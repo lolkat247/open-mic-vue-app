@@ -160,10 +160,15 @@ defineExpose({
 .slot-password-auth {
   max-width: 500px;
   margin: 0 auto;
-  background: var(--surface-card);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 4px 16px rgba(0, 206, 144, 0.15),
+    0 2px 8px rgba(0, 206, 144, 0.1);
 }
 
 .auth-header {
@@ -173,19 +178,23 @@ defineExpose({
 
 .header-icon {
   font-size: 3rem;
-  color: var(--primary-color);
+  color: #00ce90;
   margin-bottom: 1rem;
+  filter: drop-shadow(0 0 12px rgba(0, 206, 144, 0.5));
 }
 
 .auth-header h3 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-color);
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0 0 0.5rem 0;
 }
 
 .auth-description {
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.5;
@@ -205,11 +214,11 @@ defineExpose({
 
 .form-field label {
   font-weight: 600;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .help-text {
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
 }
 
@@ -223,15 +232,61 @@ defineExpose({
 
 .auth-help :deep(.p-message) {
   font-size: 0.9rem;
+  background: rgba(59, 130, 246, 0.1) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  color: rgba(191, 219, 254, 0.95) !important;
+}
+
+.auth-help :deep(.p-message-icon) {
+  color: rgba(96, 165, 250, 1) !important;
+}
+
+.auth-help :deep(.p-message-text) {
+  color: rgba(191, 219, 254, 0.95) !important;
 }
 
 .auth-help :deep(.p-message p) {
   margin: 0.5rem 0 0 0;
   font-size: 0.85rem;
+  color: rgba(191, 219, 254, 0.9) !important;
 }
 
 .w-full {
   width: 100%;
+}
+
+/* Validation error styling - red and prominent */
+:deep(.p-error) {
+  color: #ef4444 !important;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+/* Input field dark mode styling */
+:deep(.p-inputtext),
+:deep(.p-password input) {
+  background: rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.p-inputtext:focus),
+:deep(.p-password input:focus) {
+  border-color: #00ce90 !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.25) !important;
+}
+
+:deep(.p-inputtext::placeholder),
+:deep(.p-password input::placeholder) {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+:deep(.p-inputtext:disabled) {
+  background: rgba(0, 0, 0, 0.4) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  opacity: 0.7;
 }
 
 :deep(.p-password) {
@@ -240,6 +295,21 @@ defineExpose({
 
 :deep(.p-password input) {
   width: 100%;
+}
+
+/* Error message styling */
+:deep(.p-message-error) {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  color: rgba(254, 202, 202, 0.95) !important;
+}
+
+:deep(.p-message-error .p-message-icon) {
+  color: #ef4444 !important;
+}
+
+:deep(.p-message-error .p-message-text) {
+  color: rgba(254, 202, 202, 0.95) !important;
 }
 
 @media (max-width: 768px) {

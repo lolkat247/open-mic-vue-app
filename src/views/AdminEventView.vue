@@ -1023,6 +1023,82 @@ onUnmounted(() => {
   width: 100%;
 }
 
+/* Textarea dark mode styling */
+:deep(.p-textarea) {
+  background: rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.p-textarea:focus) {
+  border-color: #00ce90 !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.25) !important;
+}
+
+:deep(.p-textarea::placeholder) {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Dialog dark mode */
+:deep(.p-dialog) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+:deep(.p-dialog-header) {
+  background: rgba(0, 206, 144, 0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.p-dialog-title) {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.p-dialog-content) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-dialog-footer) {
+  background: rgba(0, 206, 144, 0.05) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Menu dark mode */
+:deep(.p-menu) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-menu-item) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-menu-item:not(.p-disabled):hover) {
+  background: rgba(0, 206, 144, 0.2) !important;
+}
+
+:deep(.p-menu-separator) {
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Error message styling */
+:deep(.p-message-error) {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  color: rgba(254, 202, 202, 0.95) !important;
+}
+
+:deep(.p-message-error .p-message-icon) {
+  color: #ef4444 !important;
+}
+
+:deep(.p-message-error .p-message-text) {
+  color: rgba(254, 202, 202, 0.95) !important;
+}
+
 @media (max-width: 1024px) {
   .event-content {
     grid-template-columns: 1fr;

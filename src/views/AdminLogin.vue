@@ -398,6 +398,15 @@ function goHome() {
   width: 100%;
 }
 
+/* Validation error styling - red and prominent */
+.p-error {
+  color: #ef4444 !important;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 0.5rem;
+}
+
 :deep(.p-password) {
   width: 100%;
 }
@@ -430,6 +439,21 @@ function goHome() {
 :deep(.p-checkbox .p-checkbox-box.p-highlight) {
   background-color: rgba(0, 206, 144, 1) !important;
   border-color: rgba(0, 206, 144, 1) !important;
+}
+
+/* Error message styling */
+:deep(.p-message-error) {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border: 1px solid rgba(239, 68, 68, 0.4) !important;
+  color: rgba(254, 202, 202, 0.95) !important;
+}
+
+:deep(.p-message-error .p-message-icon) {
+  color: #ef4444 !important;
+}
+
+:deep(.p-message-error .p-message-text) {
+  color: rgba(254, 202, 202, 0.95) !important;
 }
 
 @media (max-width: 768px) {

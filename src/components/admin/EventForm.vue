@@ -381,9 +381,15 @@ function resetForm() {
 }
 
 .form-section {
-  background: var(--surface-ground);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   padding: 1.25rem;
+  box-shadow:
+    0 4px 16px rgba(0, 206, 144, 0.15),
+    0 2px 8px rgba(0, 206, 144, 0.1);
 }
 
 .section-title {
@@ -391,14 +397,18 @@ function resetForm() {
   align-items: center;
   gap: 0.75rem;
   font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-color);
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0 0 1rem 0;
 }
 
 .section-title i {
-  color: var(--primary-color);
+  color: #00ce90;
   font-size: 1.25rem;
+  filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.4));
 }
 
 .form-field {
@@ -413,12 +423,12 @@ function resetForm() {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .form-field label.required::after {
   content: ' *';
-  color: var(--red-500);
+  color: #ef4444;
 }
 
 .form-row {
@@ -430,17 +440,45 @@ function resetForm() {
 .help-text {
   display: block;
   margin-top: 0.25rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
 }
 
+/* Validation error styling - red and prominent */
 .p-error {
-  color: #ef4444;
-  font-size: 0.85rem;
+  color: #ef4444 !important;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: block;
+  margin-top: 0.5rem;
 }
 
 .w-full {
   width: 100%;
+}
+
+/* Input field dark mode styling */
+:deep(.p-inputtext),
+:deep(.p-inputnumber-input),
+:deep(.p-textarea),
+:deep(.p-datepicker-input) {
+  background: rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.p-inputtext:focus),
+:deep(.p-inputnumber-input:focus),
+:deep(.p-textarea:focus),
+:deep(.p-datepicker-input:focus) {
+  border-color: #00ce90 !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.25) !important;
+}
+
+:deep(.p-inputtext::placeholder),
+:deep(.p-inputnumber-input::placeholder),
+:deep(.p-textarea::placeholder) {
+  color: rgba(255, 255, 255, 0.4) !important;
 }
 
 :deep(.p-datepicker) {
@@ -453,6 +491,76 @@ function resetForm() {
 
 :deep(.p-inputnumber input) {
   width: 100%;
+}
+
+/* DatePicker panel dark mode */
+:deep(.p-datepicker-panel) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-datepicker-header) {
+  background: rgba(0, 206, 144, 0.1) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-datepicker-title) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-datepicker-day) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-datepicker-day:hover) {
+  background: rgba(0, 206, 144, 0.2) !important;
+}
+
+:deep(.p-datepicker-day.p-datepicker-day-selected) {
+  background: #00ce90 !important;
+  color: #1e1e1e !important;
+}
+
+:deep(.p-datepicker-weekday) {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+:deep(.p-datepicker-prev-button),
+:deep(.p-datepicker-next-button) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-datepicker-prev-button:hover),
+:deep(.p-datepicker-next-button:hover) {
+  background: rgba(0, 206, 144, 0.2) !important;
+}
+
+/* Dialog dark mode */
+:deep(.p-dialog) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+:deep(.p-dialog-header) {
+  background: rgba(0, 206, 144, 0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.p-dialog-title) {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+:deep(.p-dialog-content) {
+  background: rgba(30, 30, 30, 0.98) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.p-dialog-footer) {
+  background: rgba(0, 206, 144, 0.05) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 @media (max-width: 768px) {
