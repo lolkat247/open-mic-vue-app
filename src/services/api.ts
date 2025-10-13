@@ -140,6 +140,18 @@ export class APIService {
     })
   }
 
+  async verifySlot(
+    eventId: string,
+    slotId: string,
+    data: { slot_password: string }
+  ): Promise<{ message: string; slot: any }> {
+    return this.apiCall<{ message: string; slot: any }>(`/events/${eventId}/slots/${slotId}/verify`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      authenticated: false
+    })
+  }
+
   // Staff Queue Management APIs (Authenticated)
 
   async markUpNext(eventId: string, slotId: string): Promise<{ slot: any }> {

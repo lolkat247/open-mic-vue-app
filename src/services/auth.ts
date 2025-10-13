@@ -26,7 +26,8 @@ export class AuthService {
   constructor(userPoolId: string, clientId: string) {
     this.userPool = new CognitoUserPool({
       UserPoolId: userPoolId,
-      ClientId: clientId
+      ClientId: clientId,
+      Storage: sessionStorage
     })
   }
 

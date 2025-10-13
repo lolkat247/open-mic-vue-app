@@ -36,10 +36,12 @@
         <QueueList
           :slots="queuedSlots"
           :eta-updates="etaUpdates"
+          :user-slot-id="userSlotId"
           title="Up Next"
           icon="pi pi-users"
           empty-title="No one in queue yet"
           empty-message="Be the first to sign up and perform!"
+          @manage="goToManageSlot"
         >
           <template #empty-action>
             <Button
@@ -56,7 +58,7 @@
 
     <Footer />
 
-    <!-- Floating Action Buttons -->
+    <!-- Floating Action Button -->
     <Button
       v-if="signupsEnabled && !isLoadingEvent && currentEvent"
       class="fab"
@@ -66,18 +68,6 @@
       rounded
       @click="goToSignup"
       aria-label="Sign up to perform"
-    />
-
-    <Button
-      v-if="hasUserSlot"
-      class="fab-secondary"
-      icon="pi pi-cog"
-      label="Manage"
-      size="large"
-      rounded
-      severity="secondary"
-      @click="goToManageSlot"
-      aria-label="Manage your slot"
     />
   </div>
 </template>
@@ -120,12 +110,14 @@ const queuedSlots = computed(() => queueStore.queuedSlots)
 const etaUpdates = computed(() => queueStore.etaUpdates)
 const signupsEnabled = computed(() => eventStore.signupsEnabled)
 
-// Check if user has a slot (from localStorage)
-const hasUserSlot = computed(() => {
-  if (!eventId.value) return false
-  const storedSlotId = localStorage.getItem(`slot_${eventId.value}`)
-  return !!storedSlotId
+// Get user's slot ID (from localStorage)
+const userSlotId = computed(() => {
+  if (!eventId.value) return null
+  return localStorage.getItem(`slot_${eventId.value}`)
 })
+
+// Check if user has a slot (from localStorage)
+const hasUserSlot = computed(() => !!userSlotId.value)
 
 // Actions
 function goHome() {
@@ -331,24 +323,6 @@ onUnmounted(() => {
     0 0 30px rgba(0, 206, 144, 0.6);
 }
 
-.fab-secondary {
-  position: fixed;
-  bottom: 24px;
-  right: 140px;
-  z-index: 1000;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.3),
-    0 0 15px rgba(0, 206, 144, 0.3);
-  transition: all 0.3s ease;
-}
-
-.fab-secondary:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.4),
-    0 0 25px rgba(0, 206, 144, 0.5);
-}
-
 @media (max-width: 768px) {
   .queue-container {
     padding: 1rem;
@@ -357,11 +331,6 @@ onUnmounted(() => {
 
   .fab {
     bottom: 16px;
-    right: 16px;
-  }
-
-  .fab-secondary {
-    bottom: 80px;
     right: 16px;
   }
 }

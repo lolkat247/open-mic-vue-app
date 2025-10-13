@@ -45,6 +45,11 @@
     <div v-if="showActions" class="queue-actions">
       <slot name="actions" :slot="slot"></slot>
     </div>
+
+    <button v-if="slot.status === 'queued'" class="manage-button" @click="$emit('manage', slot.slot_id)">
+      <i class="pi pi-cog"></i>
+      <span>Manage</span>
+    </button>
   </div>
 </template>
 
@@ -61,13 +66,19 @@ interface Props {
   showETA?: boolean
   showNotes?: boolean
   showActions?: boolean
+  isUserSlot?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showETA: true,
   showNotes: false,
-  showActions: false
+  showActions: false,
+  isUserSlot: false
 })
+
+defineEmits<{
+  manage: [slotId: string]
+}>()
 
 const statusLabel = computed(() => {
   switch (props.slot.status) {
@@ -198,7 +209,7 @@ const statusSeverity = computed(() => {
 .performer-name {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.95);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -216,7 +227,7 @@ const statusSeverity = computed(() => {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.75);
   font-size: 0.9rem;
 }
 
@@ -255,7 +266,7 @@ const statusSeverity = computed(() => {
   border-radius: 4px;
   margin-top: 0.75rem;
   font-size: 0.85rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .performer-notes i {
@@ -269,6 +280,46 @@ const statusSeverity = computed(() => {
   display: flex;
   align-items: center;
   flex-shrink: 0;
+}
+
+.manage-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  min-width: 80px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(0, 206, 144, 0.5);
+  border-radius: 0 12px 12px 0;
+  color: rgba(0, 206, 144, 1);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: stretch;
+  flex-shrink: 0;
+  margin: -1rem -1rem -1rem 0;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.manage-button:hover {
+  background: rgba(0, 206, 144, 0.15);
+  border-color: rgba(0, 206, 144, 0.7);
+  box-shadow: -2px 0 12px rgba(0, 206, 144, 0.2);
+}
+
+.manage-button i {
+  font-size: 1.5rem;
+  color: rgba(0, 206, 144, 1);
+}
+
+.manage-button span {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 @media (max-width: 768px) {
@@ -293,6 +344,11 @@ const statusSeverity = computed(() => {
   .detail-item {
     font-size: 0.85rem;
   }
+
+  .manage-button {
+    margin: -0.875rem -0.875rem -0.875rem 0;
+    min-width: 70px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -307,6 +363,14 @@ const statusSeverity = computed(() => {
   .performer-header {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .manage-button {
+    margin: 0.5rem -0.875rem -0.875rem -0.875rem;
+    border-radius: 0 0 12px 12px;
+    min-height: 60px;
+    flex-direction: row;
+    width: calc(100% + 1.75rem);
   }
 }
 </style>

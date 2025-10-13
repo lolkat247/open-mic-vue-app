@@ -182,17 +182,20 @@ async function handleAuthenticate(data: SlotPasswordAuthData) {
   isAuthenticating.value = true
 
   try {
-    // Try to update the slot with just the password to verify access
-    // We use a minimal update that doesn't change anything
-    await apiService.updateSlot(eventId, data.slot_id, {
-      slot_password: data.slot_password,
-      // Don't include other fields - backend will ignore empty update
+    // Verify the slot password using the dedicated verify endpoint
+    const response = await apiService.verifySlot(eventId, data.slot_id, {
+      slot_password: data.slot_password
     })
 
-    // Authentication successful, now fetch the slot details
+    // Authentication successful, set the slot from response
     authenticatedSlotId.value = data.slot_id
     authenticatedPassword.value = data.slot_password
-    await fetchSlotDetails(data.slot_id)
+
+    if (response.slot) {
+      currentSlot.value = response.slot
+    } else {
+      await fetchSlotDetails(data.slot_id)
+    }
 
     isAuthenticated.value = true
 

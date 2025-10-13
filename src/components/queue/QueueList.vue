@@ -28,6 +28,8 @@
           :show-eta="showETA"
           :show-notes="showNotes"
           :show-actions="showActions"
+          :is-user-slot="slot.slot_id === userSlotId"
+          @manage="$emit('manage', $event)"
         >
           <template v-if="showActions" #actions="{ slot: slotData }">
             <slot name="item-actions" :slot="slotData"></slot>
@@ -63,6 +65,7 @@ interface Props {
   emptyTitle?: string
   emptyMessage?: string
   emptyIcon?: string
+  userSlotId?: string | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -75,8 +78,13 @@ const props = withDefaults(defineProps<Props>(), {
   loadingMessage: 'Loading queue...',
   emptyTitle: 'No one in queue',
   emptyMessage: 'Be the first to sign up!',
-  emptyIcon: 'pi pi-users'
+  emptyIcon: 'pi pi-users',
+  userSlotId: null
 })
+
+defineEmits<{
+  manage: [slotId: string]
+}>()
 
 // Create a reactive map of slot IDs to ETAs for better reactivity
 const etaMap = computed(() => {

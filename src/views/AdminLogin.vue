@@ -44,14 +44,6 @@
           </div>
 
           <div class="form-options">
-            <div class="checkbox-field">
-              <Checkbox
-                id="rememberMe"
-                v-model="formData.rememberMe"
-                :binary="true"
-              />
-              <label for="rememberMe" class="checkbox-label">Remember me</label>
-            </div>
             <a href="#" class="forgot-link" @click.prevent="handleForgotPassword">
               Forgot password?
             </a>
@@ -101,7 +93,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
-import Checkbox from 'primevue/checkbox'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import { useAuthStore } from '../stores/auth'
@@ -114,8 +105,7 @@ const authStore = useAuthStore()
 
 const formData = reactive({
   email: '',
-  password: '',
-  rememberMe: false
+  password: ''
 })
 
 const errors = reactive<Record<string, string>>({})

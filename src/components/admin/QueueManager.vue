@@ -237,6 +237,7 @@ function getStatusLabel(status: string): string {
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: transparent;
 }
 
 .manager-header {
@@ -245,7 +246,8 @@ function getStatusLabel(status: string): string {
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 1rem;
+  padding: 1rem 1rem 0 1rem;
+  background: transparent;
 }
 
 .header-title-section {
@@ -284,14 +286,12 @@ function getStatusLabel(status: string): string {
 }
 
 .queue-orderlist {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  flex: 1;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   overflow: hidden;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  flex: 1;
 }
 
 .orderlist-header {
@@ -299,8 +299,8 @@ function getStatusLabel(status: string): string {
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: rgba(0, 0, 0, 0.5) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .header-label {
@@ -311,193 +311,107 @@ function getStatusLabel(status: string): string {
   letter-spacing: 0.5px;
 }
 
-/* Force dark theme on PrimeVue components */
-:deep(.p-orderlist-header) {
-  background: rgba(0, 0, 0, 0.5) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  padding: 0.75rem 1rem !important;
+/* Minimal PrimeVue styling - make framework transparent */
+:deep(.p-orderlist) {
+  background: transparent;
+  border: none !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-:deep(.p-listbox) {
-  background: transparent !important;
+:deep(.p-orderlist.p-component) {
   border: none !important;
 }
 
-/* Additional overrides to remove white backgrounds */
-:deep(.queue-orderlist .p-component) {
-  background: transparent !important;
+:deep(.p-orderlist-header) {
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.75rem 1rem;
 }
 
-:deep(.p-orderlist .p-orderlist-list) {
-  background: rgba(30, 30, 30, 0.95) !important;
-}
-
-/* Override PrimeVue surface colors within queue */
-:deep(.queue-orderlist *) {
-  --p-surface-0: rgba(0, 0, 0, 0.3) !important;
-  --p-surface-50: rgba(0, 0, 0, 0.3) !important;
-  --p-surface-100: rgba(0, 0, 0, 0.3) !important;
-  --p-surface-card: rgba(0, 0, 0, 0.3) !important;
-  --p-surface-ground: rgba(30, 30, 30, 0.95) !important;
-}
-
-/* Hide the built-in controls */
 :deep(.p-orderlist-controls) {
   display: none;
 }
 
-/* Make OrderList fill available space */
-:deep(.p-orderlist) {
+:deep(.p-listbox.p-component) {
+  background: rgba(40, 40, 40, 1);
+}
+
+:deep(.p-orderlist-list-container) {
+  flex: 1;
+  overflow: auto;
+  background: transparent;
   height: 100%;
-  display: flex !important;
-  flex-direction: column !important;
-  background: transparent !important;
-  border: none !important;
 }
 
-:deep(.p-orderlist-list-container),
 :deep(.p-listbox-list-container) {
-  flex: 1 !important;
-  overflow: auto !important;
-  min-height: 700px !important; /* Tall enough for 3.5 cards (~200px each) */
-  max-height: none !important; /* Remove any max-height restrictions */
-  height: 100% !important;
-  background: rgba(30, 30, 30, 0.95) !important;
-  border: none !important;
+  flex: 1;
+  overflow: auto;
+  height: 100%;
+  max-height: none !important;
 }
 
-:deep(.p-orderlist-list),
-:deep(.p-listbox-list) {
-  padding: 0.5rem !important;
-  min-height: 700px !important;
-  max-height: none !important;
-  background: rgba(30, 30, 30, 0.95) !important;
+:deep(.p-orderlist-list) {
+  background: transparent;
+  padding: 0.75rem 0;
+  list-style: none;
+  width: 100%;
 }
 
 :deep(.p-orderlist-item) {
-  padding: 0 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 8px !important;
-  margin-bottom: 0.5rem !important;
-  cursor: move !important;
-  transition: all 0.2s ease !important;
-  background: rgba(0, 0, 0, 0.3) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  list-style: none;
+  width: 100%;
+  cursor: default;
+  user-select: none;
 }
 
-:deep(.p-orderlist-item > *) {
-  background: transparent !important;
+:deep(.p-orderlist-item[draggable]) {
+  cursor: default !important;
+  -webkit-user-drag: none !important;
 }
 
-:deep(.p-orderlist-item-content) {
-  background: transparent !important;
+:deep(.p-orderlist-item:not(:last-child)) {
+  margin-bottom: 0.75rem;
 }
 
-:deep(.p-listbox-item) {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 8px !important;
-  margin-bottom: 0.5rem !important;
-}
-
-:deep(.p-listbox-item:hover) {
-  background: rgba(0, 0, 0, 0.4) !important;
-}
-
-/* Nuclear option - catch all white/light backgrounds */
-:deep(.p-orderlist-item div[style*="background"]) {
-  background: transparent !important;
-}
-
-:deep(.p-orderlist-item [style*="background: white"]),
-:deep(.p-orderlist-item [style*="background: #fff"]),
-:deep(.p-orderlist-item [style*="background: rgb(255"]),
-:deep(.p-orderlist-item [style*="background-color: white"]),
-:deep(.p-orderlist-item [style*="background-color: #fff"]),
-:deep(.p-orderlist-item [style*="background-color: rgb(255"]) {
-  background: rgba(0, 0, 0, 0.3) !important;
-  background-color: rgba(0, 0, 0, 0.3) !important;
-}
-
-:deep(.p-orderlist-item:hover) {
-  border-color: rgba(0, 206, 144, 0.6) !important;
-  box-shadow: 0 2px 12px rgba(0, 206, 144, 0.2) !important;
-  background: rgba(0, 0, 0, 0.4) !important;
-}
-
+:deep(.p-orderlist-item:hover),
 :deep(.p-orderlist-item.p-highlight) {
-  background: rgba(0, 206, 144, 0.15) !important;
-  border-color: rgba(0, 206, 144, 0.6) !important;
-  box-shadow: 0 0 16px rgba(0, 206, 144, 0.3) !important;
-}
-
-:deep(.p-orderlist-item:focus) {
-  outline: none !important;
-  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.3) !important;
+  background: transparent !important;
 }
 
 .queue-item {
+  /* THIS is the visual card - all styling goes here */
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 1.25rem;
+  padding: 1.5rem;
   width: 100%;
-  background: transparent !important;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid rgba(0, 206, 144, 0.5);
+  border-radius: 12px;
+  box-shadow:
+    0 4px 16px rgba(0, 206, 144, 0.25),
+    0 2px 8px rgba(0, 206, 144, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  box-sizing: border-box;
 }
 
-/* Force all children to be transparent, except styled components */
-.queue-item * {
-  background: transparent !important;
-}
-
-/* Restore intentional backgrounds for specific components */
-.queue-item .item-position {
-  background: rgba(0, 206, 144, 0.8) !important;
-}
-
-.queue-item .meta-chip {
-  background: rgba(0, 0, 0, 0.4) !important;
-}
-
-.queue-item .meta-chip.warning {
-  background: rgba(251, 146, 60, 0.15) !important;
-}
-
-.queue-item .item-urgency {
-  background: rgba(234, 179, 8, 0.15) !important;
-}
-
-.queue-item .item-notes {
-  background: rgba(0, 0, 0, 0.3) !important;
-}
-
-.queue-item .status-badge {
-  /* Status badges keep their specific backgrounds defined below */
-}
-
-.queue-item .status-up_next {
-  background: rgba(6, 182, 212, 0.2) !important;
-}
-
-.queue-item .status-setting_up {
-  background: rgba(251, 146, 60, 0.2) !important;
-}
-
-.queue-item .status-performing {
-  background: rgba(34, 197, 94, 0.2) !important;
-}
-
-.queue-item .status-completed {
-  background: rgba(156, 163, 175, 0.2) !important;
-}
-
-.queue-item .status-no_show {
-  background: rgba(239, 68, 68, 0.2) !important;
-}
-
-.queue-item .status-withdrawn {
-  background: rgba(168, 85, 247, 0.2) !important;
+.queue-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 206, 144, 0.7);
+  box-shadow:
+    0 8px 24px rgba(0, 206, 144, 0.35),
+    0 4px 12px rgba(0, 206, 144, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .item-header {
@@ -510,13 +424,13 @@ function getStatusLabel(status: string): string {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 40px;
+  min-width: 46px;
+  height: 46px;
   background: rgba(0, 206, 144, 0.8);
   color: rgba(255, 255, 255, 1);
   border-radius: 50%;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 1.1rem;
   flex-shrink: 0;
   border: 2px solid rgba(0, 206, 144, 1);
   box-shadow: 0 0 12px rgba(0, 206, 144, 0.4);
@@ -553,12 +467,15 @@ function getStatusLabel(status: string): string {
   flex-wrap: wrap;
 }
 
-.item-name {
-  font-size: 1.1rem;
+.queue-item .name-row .item-name {
+  font-size: 1.5rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.95);
   margin: 0;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .status-badge {
@@ -614,21 +531,21 @@ function getStatusLabel(status: string): string {
 .item-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .meta-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.25rem 0.75rem;
+  padding: 0.35rem 0.85rem;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(0, 206, 144, 0.3);
-  border-radius: 12px;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.95);
   font-weight: 500;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
@@ -686,8 +603,8 @@ function getStatusLabel(status: string): string {
 }
 
 .item-actions {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 1rem;
+  border-top: 2px solid rgba(0, 206, 144, 0.2);
+  padding-top: 1.25rem;
 }
 
 /* Message styling */
@@ -747,12 +664,6 @@ function getStatusLabel(status: string): string {
   font-weight: 600 !important;
 }
 
-/* Drag preview styling */
-:deep(.p-orderlist-item.p-dragging) {
-  background: rgba(0, 0, 0, 0.5) !important;
-  border-color: rgba(0, 206, 144, 0.8) !important;
-  box-shadow: 0 4px 20px rgba(0, 206, 144, 0.4) !important;
-}
 
 @media (max-width: 768px) {
   .manager-header {
