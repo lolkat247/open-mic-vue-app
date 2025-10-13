@@ -91,7 +91,7 @@
               </div>
               <div v-if="slot.leave_by_at" class="item-urgency">
                 <i class="pi pi-stopwatch"></i>
-                Leave by {{ formatTime(slot.leave_by_at) }}
+                Leave by {{ formatTime24to12(slot.leave_by_at) }}
               </div>
               <p v-if="slot.notes" class="item-notes">{{ slot.notes }}</p>
             </div>
@@ -127,7 +127,6 @@ import Badge from 'primevue/badge'
 import Message from 'primevue/message'
 import SlotControls from './SlotControls.vue'
 import type { Slot } from '../../types/api'
-import { formatTime } from '../../utils/time'
 
 interface Props {
   slots: Slot[]
@@ -152,6 +151,32 @@ const emit = defineEmits<{
 
 const localSlots = ref<Slot[]>([])
 const hasReordered = ref(false)
+
+// Helper function to format 24-hour time to 12-hour with AM/PM
+function formatTime24to12(timeStr: string): string {
+  const parts = timeStr.split(':')
+  if (parts.length !== 2) return timeStr
+
+  let hours = parseInt(parts[0], 10)
+  const minutes = parts[1]
+  const period = hours >= 12 ? 'PM' : 'AM'
+
+  if (hours === 0) hours = 12
+  else if (hours > 12) hours -= 12
+
+  return `${hours}:${minutes} ${period}`
+}
+
+// Helper function to compare two "HH:MM" time strings
+function compareTimeStrings(timeA: string, timeB: string): number {
+  const partsA = timeA.split(':').map(Number)
+  const partsB = timeB.split(':').map(Number)
+
+  const minutesA = (partsA[0] || 0) * 60 + (partsA[1] || 0)
+  const minutesB = (partsB[0] || 0) * 60 + (partsB[1] || 0)
+
+  return minutesA - minutesB
+}
 
 // Only include queued slots for reordering
 const sortableSlots = computed(() => {
@@ -206,9 +231,9 @@ function handleAutoSort() {
     if (a.leave_by_at && !b.leave_by_at) return -1
     if (!a.leave_by_at && b.leave_by_at) return 1
 
-    // Both have leave_by_at, sort by time
+    // Both have leave_by_at, sort by time using proper time string comparison
     if (a.leave_by_at && b.leave_by_at) {
-      return new Date(a.leave_by_at).getTime() - new Date(b.leave_by_at).getTime()
+      return compareTimeStrings(a.leave_by_at, b.leave_by_at)
     }
 
     // Neither has leave_by_at, maintain original order

@@ -26,7 +26,7 @@
         </div>
         <div v-if="slot.leave_by_at" class="urgency-notice">
           <i class="pi pi-stopwatch"></i>
-          Needs to leave by {{ formatTime(slot.leave_by_at) }}
+          Needs to leave by {{ formatTime24to12(slot.leave_by_at) }}
         </div>
         <p v-if="slot.notes" class="notes">{{ slot.notes }}</p>
       </div>
@@ -56,7 +56,21 @@
 import { computed } from 'vue'
 import SlotControls from './SlotControls.vue'
 import type { Slot } from '../../types/api'
-import { formatTime } from '../../utils/time'
+
+// Helper function to format 24-hour time to 12-hour with AM/PM
+function formatTime24to12(timeStr: string): string {
+  const parts = timeStr.split(':')
+  if (parts.length !== 2) return timeStr
+
+  let hours = parseInt(parts[0], 10)
+  const minutes = parts[1]
+  const period = hours >= 12 ? 'PM' : 'AM'
+
+  if (hours === 0) hours = 12
+  else if (hours > 12) hours -= 12
+
+  return `${hours}:${minutes} ${period}`
+}
 
 interface Props {
   slot?: Slot

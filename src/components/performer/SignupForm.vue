@@ -103,18 +103,13 @@
 
       <!-- Leave By Time -->
       <div class="form-field">
-        <label for="leaveBy">Need to Leave By (Time)</label>
-        <InputMask
-          id="leaveBy"
+        <TimePickerInput
           v-model="formData.leave_by_at"
-          mask="99:99"
-          placeholder="HH:MM (e.g., 22:30)"
-          :class="{ 'p-invalid': errors.leave_by_at }"
+          label="Need to Leave By (Time)"
+          :error="errors.leave_by_at"
+          help-text="If you need to leave by a certain time"
           @blur="validateField('leave_by_at')"
-          class="w-full"
         />
-        <small v-if="errors.leave_by_at" class="p-error">{{ errors.leave_by_at }}</small>
-        <small v-else class="help-text">If you need to leave by a certain time</small>
       </div>
 
       <!-- Extra Setup -->
@@ -168,8 +163,8 @@ import Password from 'primevue/password'
 import Select from 'primevue/select'
 import Checkbox from 'primevue/checkbox'
 import Textarea from 'primevue/textarea'
-import InputMask from 'primevue/inputmask'
 import Button from 'primevue/button'
+import TimePickerInput from '../shared/TimePickerInput.vue'
 import {
   validateStageName,
   validateActType,
