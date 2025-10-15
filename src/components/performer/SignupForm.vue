@@ -189,14 +189,14 @@ const emit = defineEmits<{
 }>()
 
 const actTypes = [
-  'Acoustic',
-  'Electric',
-  'Comedy',
-  'Poetry',
-  'Spoken Word',
+  'Jazz',
+  'Karaoke',
   'Dance',
-  'Magic',
-  'Other'
+  'Comedy',
+  'Slam Poetry',
+  'Live Music',
+  'Carlos',
+  'Trolling'
 ]
 
 const formData = reactive<SignupFormData>({
