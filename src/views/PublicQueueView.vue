@@ -29,6 +29,12 @@
 
       <!-- Queue Content -->
       <template v-else-if="currentEvent">
+        <!-- House Rules -->
+        <div v-if="currentEvent.house_rules" class="house-rules">
+          <h3><i class="pi pi-info-circle"></i> House Rules</h3>
+          <p>{{ currentEvent.house_rules }}</p>
+        </div>
+
         <!-- Current Performer -->
         <CurrentPerformer :slot="currentSlot" />
 
@@ -303,6 +309,34 @@ onUnmounted(() => {
 
 .connection-message i {
   font-size: 1.25rem;
+}
+
+.house-rules {
+  background: rgba(59, 130, 246, 0.1);
+  border-left: 4px solid rgba(59, 130, 246, 1);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.house-rules h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(191, 219, 254, 1);
+  margin: 0 0 0.75rem 0;
+}
+
+.house-rules h3 i {
+  color: rgba(96, 165, 250, 1);
+}
+
+.house-rules p {
+  color: rgba(191, 219, 254, 0.9);
+  margin: 0;
+  line-height: 1.6;
 }
 
 .fab {
