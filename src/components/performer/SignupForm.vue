@@ -32,6 +32,20 @@
         <small v-if="errors.act_type" class="p-error">{{ errors.act_type }}</small>
       </div>
 
+      <!-- YouTube Link (Karaoke only) -->
+      <div v-if="formData.act_type === 'Karaoke'" class="form-field karaoke-field">
+        <label for="youtubeLink">YouTube Link</label>
+        <InputText
+          id="youtubeLink"
+          v-model="formData.youtube_link"
+          placeholder="https://www.youtube.com/watch?v=..."
+          :class="{ 'p-invalid': errors.youtube_link }"
+          @blur="validateField('youtube_link')"
+        />
+        <small v-if="errors.youtube_link" class="p-error">{{ errors.youtube_link }}</small>
+        <small v-else class="help-text">Provide the YouTube link for your karaoke track so we can pull it up for you</small>
+      </div>
+
       <!-- Estimated Time -->
       <div class="form-field">
         <label for="estimatedTime" class="required">Estimated Performance Time (minutes)</label>
@@ -199,7 +213,7 @@ const actTypes = [
   'Trolling'
 ]
 
-const formData = reactive<SignupFormData>({
+const formData = reactive<SignupFormData & { youtube_link?: string }>({
   stage_name: '',
   act_type: '',
   self_est_min: props.defaultDuration,
@@ -207,12 +221,13 @@ const formData = reactive<SignupFormData>({
   confirm_password: '',
   leave_by_at: '',
   extra_setup: false,
-  notes: ''
+  notes: '',
+  youtube_link: ''
 })
 
-const errors = reactive<Partial<Record<keyof SignupFormData, string>>>({})
+const errors = reactive<Partial<Record<keyof SignupFormData | 'youtube_link', string>>>({})
 
-function validateField(field: keyof SignupFormData) {
+function validateField(field: keyof SignupFormData | 'youtube_link') {
   delete errors[field]
 
   switch (field) {
@@ -248,6 +263,19 @@ function validateField(field: keyof SignupFormData) {
       }
       break
     }
+    case 'youtube_link': {
+      if (formData.youtube_link && formData.youtube_link.trim()) {
+        try {
+          const url = new URL(formData.youtube_link.trim())
+          if (!url.hostname.includes('youtube.com') && !url.hostname.includes('youtu.be')) {
+            errors.youtube_link = 'Please provide a valid YouTube URL'
+          }
+        } catch {
+          errors.youtube_link = 'Please provide a valid URL'
+        }
+      }
+      break
+    }
   }
 }
 
@@ -280,13 +308,33 @@ function handleSubmit() {
   console.log('Form data:', formData)
   console.log('Validating...')
 
+  // Validate youtube_link if provided
+  if (formData.youtube_link && formData.youtube_link.trim()) {
+    validateField('youtube_link')
+  }
+
   if (!validateAll()) {
     console.error('Validation failed! Errors:', errors)
     return
   }
 
   console.log('Validation passed, emitting submit event')
-  emit('submit', { ...formData })
+
+  // Prepare submission data
+  const submitData = { ...formData }
+
+  // If Karaoke and YouTube link provided, append it to notes
+  if (formData.act_type === 'Karaoke' && formData.youtube_link && formData.youtube_link.trim()) {
+    const youtubeNote = `YouTube: ${formData.youtube_link.trim()}`
+    submitData.notes = submitData.notes
+      ? `${youtubeNote}\n\n${submitData.notes}`
+      : youtubeNote
+  }
+
+  // Remove youtube_link from submission data (frontend-only field)
+  delete submitData.youtube_link
+
+  emit('submit', submitData)
 }
 </script>
 
@@ -458,6 +506,21 @@ function handleSubmit() {
   background: rgba(30, 30, 30, 0.98) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Karaoke YouTube link field highlight */
+.karaoke-field {
+  background: rgba(255, 140, 0, 0.08);
+  border-left: 3px solid rgba(255, 140, 0, 0.7);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-left: -0.5rem;
+  padding-left: 1.5rem;
+}
+
+.karaoke-field .help-text {
+  color: rgba(255, 165, 80, 0.95);
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {
