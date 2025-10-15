@@ -122,15 +122,33 @@ npm run build
 
 ## 🚢 Deployment
 
-```bash
-# Build for production
-npm run build
+### AWS CDK Deployment (Recommended)
 
-# The dist/ folder is ready to deploy to:
-# - Netlify
-# - Vercel
-# - AWS S3 + CloudFront
-# - Any static hosting service
+Deploy to **https://openmic.site** with AWS infrastructure and Squarespace DNS.
+
+**Quick Start:**
+```bash
+npm run deploy:full
+```
+
+**See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment guide** including:
+- AWS setup and configuration
+- Squarespace DNS record setup
+- SSL certificate validation
+- Troubleshooting tips
+
+**What Gets Deployed:**
+- S3 + CloudFront for global, fast hosting
+- Free SSL certificate (auto-renewing)
+- Uses your existing Squarespace DNS (email forwarding keeps working!)
+
+**Monthly Cost:** ~$0.42-0.56/month (150 users, 2 events)
+
+### Other Options
+
+The `dist/` folder can be deployed to any static host:
+```bash
+npm run build  # Creates dist/ folder
 ```
 
 ## 📝 License
