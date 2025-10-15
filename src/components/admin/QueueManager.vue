@@ -6,7 +6,7 @@
           <i class="pi pi-list"></i>
           Up Next in Queue
         </h3>
-        <p class="section-subtitle">Use ↑↓ buttons to reorder • Click "Call to Stage" to begin</p>
+        <p class="section-subtitle">Use ↑↓ buttons to reorder • Click "Mark as Up Next" to begin</p>
       </div>
       <div class="header-actions">
         <Button
@@ -88,6 +88,10 @@
                   <i class="pi pi-wrench"></i>
                   Setup
                 </span>
+                <span class="meta-chip signup-time">
+                  <i class="pi pi-calendar-plus"></i>
+                  Signed up {{ formatTime(slot.created_at) }}
+                </span>
               </div>
               <div v-if="slot.leave_by_at" class="item-urgency">
                 <i class="pi pi-stopwatch"></i>
@@ -127,6 +131,7 @@ import Badge from 'primevue/badge'
 import Message from 'primevue/message'
 import SlotControls from './SlotControls.vue'
 import type { Slot } from '../../types/api'
+import { formatTime } from '../../utils/time'
 
 interface Props {
   slots: Slot[]
@@ -272,6 +277,7 @@ function getStatusLabel(status: string): string {
   gap: 1rem;
   flex-wrap: wrap;
   padding: 1rem 1rem 0 1rem;
+  margin-bottom: 1.5rem;
   background: transparent;
 }
 
@@ -393,11 +399,20 @@ function getStatusLabel(status: string): string {
   width: 100%;
   cursor: default;
   user-select: none;
+  pointer-events: none; /* Disable selection entirely */
 }
 
 :deep(.p-orderlist-item[draggable]) {
   cursor: default !important;
   -webkit-user-drag: none !important;
+}
+
+/* Re-enable pointer events on interactive elements inside cards */
+:deep(.p-orderlist-item) .queue-item,
+:deep(.p-orderlist-item) button,
+:deep(.p-orderlist-item) a,
+:deep(.p-orderlist-item) input {
+  pointer-events: auto;
 }
 
 :deep(.p-orderlist-item:not(:last-child)) {
@@ -407,6 +422,19 @@ function getStatusLabel(status: string): string {
 :deep(.p-orderlist-item:hover),
 :deep(.p-orderlist-item.p-highlight) {
   background: transparent !important;
+}
+
+/* Override PrimeVue listbox default white hover/select/focus effects */
+:deep(.p-listbox-list .p-listbox-option:hover),
+:deep(.p-listbox-list .p-listbox-option.p-highlight),
+:deep(.p-listbox-list .p-listbox-option.p-focus),
+:deep(.p-listbox-list .p-listbox-option:focus),
+:deep(.p-listbox-list .p-listbox-option[aria-selected="true"]),
+:deep(.p-orderlist-item.p-focus),
+:deep(.p-orderlist-item:focus) {
+  background: rgba(255, 255, 255, 0.10) !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .queue-item {
@@ -437,6 +465,12 @@ function getStatusLabel(status: string): string {
     0 8px 24px rgba(0, 206, 144, 0.35),
     0 4px 12px rgba(0, 206, 144, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.queue-item:focus,
+.queue-item:focus-visible,
+.queue-item:focus-within {
+  outline: none !important;
 }
 
 .item-header {
@@ -591,6 +625,17 @@ function getStatusLabel(status: string): string {
 .meta-chip.warning i {
   color: rgba(251, 146, 60, 1);
   filter: drop-shadow(0 0 6px rgba(251, 146, 60, 0.6));
+}
+
+.meta-chip.signup-time {
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: rgba(103, 232, 249, 0.95);
+}
+
+.meta-chip.signup-time i {
+  color: rgba(6, 182, 212, 1);
+  filter: drop-shadow(0 0 4px rgba(6, 182, 212, 0.4));
 }
 
 .item-urgency {

@@ -227,6 +227,10 @@
         />
       </template>
     </Dialog>
+
+    <div class="footer-container">
+      <Footer />
+    </div>
   </div>
 </template>
 
@@ -247,6 +251,7 @@ import { useAuthStore } from '../stores/auth'
 import { useAPI } from '../composables/useAPI'
 import { useWebSocket } from '../composables/useWebSocket'
 import LoadingState from '../components/shared/LoadingState.vue'
+import Footer from '../components/shared/Footer.vue'
 import PerformerTimer from '../components/admin/PerformerTimer.vue'
 import QueueManager from '../components/admin/QueueManager.vue'
 import CompactStats from '../components/admin/CompactStats.vue'
@@ -830,8 +835,6 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
 }
 
 .content-section {
@@ -1154,6 +1157,15 @@ onUnmounted(() => {
 
 :deep(.p-button:focus) {
   box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.25);
+}
+
+/* Footer container */
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem 2rem 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 1024px) {
