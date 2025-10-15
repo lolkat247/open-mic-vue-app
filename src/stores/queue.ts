@@ -13,7 +13,9 @@ export const useQueueStore = defineStore('queue', () => {
 
   // Getters
   const queuedSlots = computed(() =>
-    slots.value.filter((slot) => slot.status === 'queued').sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0))
+    slots.value
+      .filter((slot) => slot.status === 'queued' || slot.status === 'up_next' || slot.status === 'setting_up')
+      .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0))
   )
 
   const currentSlot = computed(() =>
