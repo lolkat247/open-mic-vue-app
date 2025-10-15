@@ -124,7 +124,7 @@ const leaveByWarning = computed(() => {
 
 .eta-label {
   font-size: 0.85rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
 }
 
@@ -139,11 +139,13 @@ const leaveByWarning = computed(() => {
   gap: 0.5rem;
   margin-top: 0.5rem;
   font-size: 0.9rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .eta-time i {
   font-size: 0.9rem;
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 4px rgba(0, 206, 144, 0.4));
 }
 
 .leave-by-warning {
@@ -151,56 +153,67 @@ const leaveByWarning = computed(() => {
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  background: var(--orange-50);
-  border-left: 3px solid var(--orange-500);
-  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  background: rgba(251, 146, 60, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-left: 4px solid rgba(251, 146, 60, 1);
+  border-radius: 6px;
   font-size: 0.85rem;
-  color: var(--orange-800);
+  color: rgba(254, 215, 170, 1);
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .leave-by-warning i {
   font-size: 1rem;
-  color: var(--orange-600);
+  color: rgba(251, 146, 60, 1);
+  filter: drop-shadow(0 0 6px rgba(251, 146, 60, 0.6));
   flex-shrink: 0;
 }
 
 /* Urgency styles */
 .urgency-high {
-  color: var(--red-700);
+  color: rgba(254, 202, 202, 1);
 }
 
 .urgency-high .eta-icon {
-  color: var(--red-600);
+  color: rgba(239, 68, 68, 1);
+  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
   animation: pulse 2s ease-in-out infinite;
 }
 
 .urgency-high .eta-value {
-  color: var(--red-700);
+  color: rgba(239, 68, 68, 1);
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
 }
 
 .urgency-medium {
-  color: var(--orange-700);
+  color: rgba(254, 215, 170, 1);
 }
 
 .urgency-medium .eta-icon {
-  color: var(--orange-600);
+  color: rgba(251, 146, 60, 1);
+  filter: drop-shadow(0 0 6px rgba(251, 146, 60, 0.5));
 }
 
 .urgency-medium .eta-value {
-  color: var(--orange-700);
+  color: rgba(251, 146, 60, 1);
+  text-shadow: 0 0 6px rgba(251, 146, 60, 0.4);
 }
 
 .urgency-low {
-  color: var(--green-700);
+  color: rgba(187, 247, 208, 1);
 }
 
 .urgency-low .eta-icon {
-  color: var(--green-600);
+  color: rgba(34, 197, 94, 1);
+  filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.5));
 }
 
 .urgency-low .eta-value {
-  color: var(--green-700);
+  color: rgba(34, 197, 94, 1);
+  text-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
 }
 
 @keyframes pulse {
@@ -225,6 +238,11 @@ const leaveByWarning = computed(() => {
 
   .eta-value {
     font-size: 1rem;
+  }
+
+  .leave-by-warning {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.85rem;
   }
 }
 </style>

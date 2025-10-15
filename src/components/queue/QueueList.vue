@@ -112,11 +112,13 @@ function getETAForSlot(slotId: string): ETAUpdate | undefined {
   margin-bottom: 1.5rem;
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid rgba(0, 206, 144, 0.3);
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    0 2px 8px rgba(0, 206, 144, 0.15);
 }
 
 .queue-title {
@@ -133,8 +135,9 @@ function getETAForSlot(slotId: string): ETAUpdate | undefined {
 }
 
 .queue-title i {
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
   font-size: 1.75rem;
+  filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.4));
 }
 
 .queue-count {
@@ -144,11 +147,13 @@ function getETAForSlot(slotId: string): ETAUpdate | undefined {
   min-width: 32px;
   height: 32px;
   padding: 0 0.75rem;
-  background: var(--primary-color);
-  color: white;
+  background: rgba(0, 206, 144, 0.8);
+  color: rgba(255, 255, 255, 1);
   border-radius: 16px;
   font-weight: 700;
   font-size: 0.95rem;
+  border: 1px solid rgba(0, 206, 144, 1);
+  box-shadow: 0 0 12px rgba(0, 206, 144, 0.4);
 }
 
 .empty-queue {
@@ -157,8 +162,10 @@ function getETAForSlot(slotId: string): ETAUpdate | undefined {
   justify-content: center;
   min-height: 300px;
   padding: 2rem;
-  background: var(--surface-ground);
-  border: 2px dashed var(--surface-border);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px dashed rgba(0, 206, 144, 0.3);
   border-radius: 12px;
 }
 
@@ -169,20 +176,21 @@ function getETAForSlot(slotId: string): ETAUpdate | undefined {
 
 .empty-icon {
   font-size: 4rem;
-  color: var(--surface-400);
+  color: rgba(0, 206, 144, 0.3);
   margin-bottom: 1rem;
+  filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.2));
 }
 
 .empty-content h3 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.9);
   margin: 0 0 0.5rem 0;
 }
 
 .empty-content p {
   font-size: 1rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0 0 1.5rem 0;
 }
 
@@ -203,7 +211,7 @@ function getETAForSlot(slotId: string): ETAUpdate | undefined {
   justify-content: center;
   gap: 1rem;
   padding: 2rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* Transition animations */
@@ -229,6 +237,7 @@ function getETAForSlot(slotId: string): ETAUpdate | undefined {
 @media (max-width: 768px) {
   .queue-header {
     margin-bottom: 1rem;
+    padding: 1.25rem;
   }
 
   .queue-title {

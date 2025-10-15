@@ -136,12 +136,14 @@ onUnmounted(() => {
 <style scoped>
 .current-performer {
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid rgba(0, 206, 144, 0.3);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.2),
+    0 4px 12px rgba(0, 206, 144, 0.15);
   margin-bottom: 1.5rem;
   position: relative;
   overflow: hidden;
@@ -154,16 +156,19 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   height: 4px;
-  background: var(--primary-color);
+  background: linear-gradient(90deg, rgba(0, 206, 144, 1), rgba(0, 255, 163, 1));
+  box-shadow: 0 0 12px rgba(0, 206, 144, 0.6);
 }
 
 .current-performer.status-setting_up::before {
-  background: linear-gradient(90deg, var(--orange-400), var(--orange-600));
+  background: linear-gradient(90deg, rgba(251, 146, 60, 1), rgba(234, 88, 12, 1));
   animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(251, 146, 60, 0.6);
 }
 
 .current-performer.status-performing::before {
-  background: linear-gradient(90deg, var(--green-400), var(--green-600));
+  background: linear-gradient(90deg, rgba(34, 197, 94, 1), rgba(22, 163, 74, 1));
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
 }
 
 .status-badge {
@@ -171,16 +176,19 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background: var(--primary-100);
-  color: var(--primary-700);
+  background: rgba(0, 206, 144, 0.8);
+  color: rgba(255, 255, 255, 1);
   border-radius: 20px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   margin-bottom: 1rem;
+  box-shadow: 0 0 12px rgba(0, 206, 144, 0.4);
+  border: 1px solid rgba(0, 206, 144, 1);
 }
 
 .status-badge i {
   font-size: 1rem;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
 }
 
 .performer-info {
@@ -190,27 +198,36 @@ onUnmounted(() => {
 .stage-name {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-color);
+  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0 0 0.5rem 0;
   line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 206, 144, 0.3);
 }
 
 .act-type {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 1.1rem;
+}
+
+.act-type i {
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 4px rgba(0, 206, 144, 0.4));
 }
 
 .performance-time {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-  padding: 1rem;
-  background: var(--surface-ground);
-  border-radius: 8px;
+  padding: 1.25rem 0;
   margin-bottom: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
 }
 
 .time-info,
@@ -223,20 +240,21 @@ onUnmounted(() => {
 }
 
 .time-info i {
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 4px rgba(0, 206, 144, 0.4));
 }
 
 .label,
 .elapsed-label,
 .est-label {
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
 }
 
 .value,
 .elapsed-value,
 .est-value {
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.95);
   font-weight: 600;
 }
 
@@ -245,38 +263,47 @@ onUnmounted(() => {
 }
 
 .elapsed-time.time-good .elapsed-value {
-  color: var(--green-600);
+  color: rgba(34, 197, 94, 1);
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
 }
 
 .elapsed-time.time-warning .elapsed-value {
-  color: var(--orange-600);
+  color: rgba(251, 146, 60, 1);
+  text-shadow: 0 0 8px rgba(251, 146, 60, 0.5);
 }
 
 .elapsed-time.time-over .elapsed-value {
-  color: var(--red-600);
+  color: rgba(239, 68, 68, 1);
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
   animation: pulse 2s ease-in-out infinite;
 }
 
 .performer-notes {
   display: flex;
   gap: 0.5rem;
-  padding: 0.75rem;
-  background: var(--blue-50);
-  border-left: 3px solid var(--blue-500);
-  border-radius: 4px;
-  color: var(--text-color-secondary);
+  padding: 0.75rem 1rem;
+  background: rgba(59, 130, 246, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-left: 3px solid rgba(59, 130, 246, 1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.85);
   font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .performer-notes i {
-  color: var(--blue-500);
+  color: rgba(96, 165, 250, 1);
+  filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.4));
   flex-shrink: 0;
   margin-top: 0.1rem;
 }
 
 .current-performer.empty {
-  background: var(--surface-ground);
-  border: 2px dashed var(--surface-border);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px dashed rgba(0, 206, 144, 0.3);
   min-height: 200px;
   display: flex;
   align-items: center;
@@ -285,25 +312,27 @@ onUnmounted(() => {
 
 .empty-state {
   text-align: center;
-  color: var(--text-color-secondary);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .empty-icon {
   font-size: 3rem;
-  color: var(--surface-400);
+  color: rgba(0, 206, 144, 0.3);
   margin-bottom: 1rem;
+  filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.2));
 }
 
 .empty-state h3 {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
-  color: var(--text-color);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .empty-state p {
   margin: 0;
   font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 @keyframes pulse {
@@ -325,8 +354,25 @@ onUnmounted(() => {
   }
 
   .performance-time {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+
+  .time-info {
+    grid-column: 1 / -1;
+  }
+
+  .elapsed-time,
+  .estimated-time {
     flex-direction: column;
-    gap: 0.75rem;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .elapsed-time {
+    font-size: 1rem;
   }
 }
 </style>

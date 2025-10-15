@@ -124,52 +124,26 @@ const statusSeverity = computed(() => {
 <style scoped>
 .queue-item {
   display: flex;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 0.75rem;
+  padding: 0.875rem;
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .queue-item:hover {
-  border-color: rgba(0, 206, 144, 0.3);
+  border-color: rgba(0, 206, 144, 0.5);
   box-shadow:
-    0 6px 16px rgba(0, 0, 0, 0.1),
-    0 0 20px rgba(0, 206, 144, 0.15);
+    0 6px 20px rgba(0, 0, 0, 0.2),
+    0 0 24px rgba(0, 206, 144, 0.2);
   transform: translateY(-2px);
 }
 
-.queue-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  border-radius: 12px 0 0 12px;
-  background: rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
-.queue-item.status-up_next::before {
-  background: linear-gradient(180deg, var(--orange-400), var(--orange-600));
-  box-shadow: 0 0 8px rgba(255, 165, 0, 0.3);
-}
-
-.queue-item.status-setting_up::before {
-  background: linear-gradient(180deg, var(--blue-400), var(--blue-600));
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
-}
-
-.queue-item.status-performing::before {
-  background: linear-gradient(180deg, rgba(0, 206, 144, 1), rgba(0, 255, 163, 1));
-  box-shadow: 0 0 8px rgba(0, 206, 144, 0.5);
-}
 
 .queue-position {
   display: flex;
@@ -182,15 +156,16 @@ const statusSeverity = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   background: linear-gradient(135deg, rgba(0, 206, 144, 0.2), rgba(0, 255, 163, 0.2));
   color: rgba(0, 206, 144, 1);
-  border: 2px solid rgba(0, 206, 144, 0.3);
+  border: 2px solid rgba(0, 206, 144, 0.5);
   border-radius: 50%;
   font-weight: 700;
   font-size: 1.1rem;
-  box-shadow: 0 0 12px rgba(0, 206, 144, 0.2);
+  box-shadow: 0 0 16px rgba(0, 206, 144, 0.3);
+  text-shadow: 0 0 8px rgba(0, 206, 144, 0.5);
 }
 
 .queue-content {
@@ -202,8 +177,8 @@ const statusSeverity = computed(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .performer-name {
@@ -219,8 +194,8 @@ const statusSeverity = computed(() => {
 .performer-details {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+  margin-bottom: 0;
 }
 
 .detail-item {
@@ -232,45 +207,53 @@ const statusSeverity = computed(() => {
 }
 
 .detail-item i {
-  font-size: 0.85rem;
-  color: var(--primary-color);
+  font-size: 0.9rem;
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 4px rgba(0, 206, 144, 0.4));
 }
 
 .detail-item.extra-setup {
-  color: var(--orange-600);
+  color: rgba(254, 215, 170, 1);
 }
 
 .detail-item.extra-setup i {
-  color: var(--orange-600);
+  color: rgba(251, 146, 60, 1);
+  filter: drop-shadow(0 0 4px rgba(251, 146, 60, 0.5));
 }
 
 .detail-item.leave-by {
-  color: var(--blue-600);
+  color: rgba(191, 219, 254, 1);
 }
 
 .detail-item.leave-by i {
-  color: var(--blue-600);
+  color: rgba(96, 165, 250, 1);
+  filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.5));
 }
 
 .queue-eta {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--surface-border);
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .performer-notes {
   display: flex;
   gap: 0.5rem;
-  padding: 0.75rem;
-  background: var(--surface-ground);
-  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
   margin-top: 0.75rem;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .performer-notes i {
-  color: var(--primary-color);
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 4px rgba(0, 206, 144, 0.4));
   flex-shrink: 0;
   margin-top: 0.1rem;
   font-size: 0.9rem;
@@ -288,13 +271,12 @@ const statusSeverity = computed(() => {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 1rem;
-  min-width: 80px;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 2px solid rgba(0, 206, 144, 0.5);
-  border-radius: 0 12px 12px 0;
+  padding: 0.875rem 0.75rem;
+  min-width: 70px;
+  background: transparent;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0;
   color: rgba(0, 206, 144, 1);
   font-size: 0.9rem;
   font-weight: 600;
@@ -302,19 +284,18 @@ const statusSeverity = computed(() => {
   transition: all 0.3s ease;
   align-self: stretch;
   flex-shrink: 0;
-  margin: -1rem -1rem -1rem 0;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  margin: -0.875rem -0.875rem -0.875rem 0.5rem;
 }
 
 .manage-button:hover {
-  background: rgba(0, 206, 144, 0.15);
-  border-color: rgba(0, 206, 144, 0.7);
-  box-shadow: -2px 0 12px rgba(0, 206, 144, 0.2);
+  background: rgba(0, 206, 144, 0.1);
+  border-left-color: rgba(0, 206, 144, 0.5);
 }
 
 .manage-button i {
   font-size: 1.5rem;
   color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 6px rgba(0, 206, 144, 0.5));
 }
 
 .manage-button span {
@@ -325,12 +306,24 @@ const statusSeverity = computed(() => {
 @media (max-width: 768px) {
   .queue-item {
     padding: 0.875rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+  }
+
+  .queue-position {
+    grid-row: 1 / 3;
+    align-self: start;
   }
 
   .position-number {
-    width: 36px;
-    height: 36px;
-    font-size: 1rem;
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+
+  .queue-content {
+    grid-column: 2;
   }
 
   .performer-name {
@@ -338,39 +331,55 @@ const statusSeverity = computed(() => {
   }
 
   .performer-details {
-    gap: 0.75rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
   }
 
   .detail-item {
-    font-size: 0.85rem;
+    font-size: 0.875rem;
   }
 
   .manage-button {
+    grid-column: 3;
+    grid-row: 1 / 3;
     margin: -0.875rem -0.875rem -0.875rem 0;
-    min-width: 70px;
+    min-width: 68px;
+    padding: 0.75rem 0.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .queue-item {
-    flex-direction: column;
+    grid-template-columns: auto 1fr;
+    padding: 0.875rem;
   }
 
   .queue-position {
-    justify-content: flex-start;
+    grid-row: 1;
+  }
+
+  .queue-content {
+    grid-column: 2;
   }
 
   .performer-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.5rem;
   }
 
   .manage-button {
+    grid-column: 1 / -1;
+    grid-row: 3;
     margin: 0.5rem -0.875rem -0.875rem -0.875rem;
-    border-radius: 0 0 12px 12px;
-    min-height: 60px;
+    border-radius: 0;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    min-height: 56px;
     flex-direction: row;
     width: calc(100% + 1.75rem);
+    padding: 0.875rem;
   }
 }
 </style>
