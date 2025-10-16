@@ -122,9 +122,6 @@ const userSlotId = computed(() => {
   return localStorage.getItem(`slot_${eventId.value}`)
 })
 
-// Check if user has a slot (from localStorage)
-const hasUserSlot = computed(() => !!userSlotId.value)
-
 // Actions
 function goHome() {
   router.push({ name: 'home' })

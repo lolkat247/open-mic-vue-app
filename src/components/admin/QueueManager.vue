@@ -162,8 +162,8 @@ function formatTime24to12(timeStr: string): string {
   const parts = timeStr.split(':')
   if (parts.length !== 2) return timeStr
 
-  let hours = parseInt(parts[0], 10)
-  const minutes = parts[1]
+  let hours = parseInt(parts[0] || '0', 10)
+  const minutes = parts[1] || '00'
   const period = hours >= 12 ? 'PM' : 'AM'
 
   if (hours === 0) hours = 12
@@ -209,8 +209,8 @@ function moveUp(index: number) {
   if (index === 0) return
 
   const slots = [...localSlots.value]
-  const temp = slots[index]
-  slots[index] = slots[index - 1]
+  const temp = slots[index]!
+  slots[index] = slots[index - 1]!
   slots[index - 1] = temp
 
   localSlots.value = slots
@@ -221,8 +221,8 @@ function moveDown(index: number) {
   if (index === localSlots.value.length - 1) return
 
   const slots = [...localSlots.value]
-  const temp = slots[index]
-  slots[index] = slots[index + 1]
+  const temp = slots[index]!
+  slots[index] = slots[index + 1]!
   slots[index + 1] = temp
 
   localSlots.value = slots

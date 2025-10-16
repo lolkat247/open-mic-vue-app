@@ -240,7 +240,6 @@ import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
 import Badge from 'primevue/badge'
-import Card from 'primevue/card'
 import Menu from 'primevue/menu'
 import Message from 'primevue/message'
 import Dialog from 'primevue/dialog'
@@ -257,7 +256,7 @@ import QueueManager from '../components/admin/QueueManager.vue'
 import CompactStats from '../components/admin/CompactStats.vue'
 import UpNextCard from '../components/admin/UpNextCard.vue'
 import SettingUpCard from '../components/admin/SettingUpCard.vue'
-import { formatDate, formatTime } from '../utils/time'
+import { formatDate } from '../utils/time'
 
 const route = useRoute()
 const router = useRouter()

@@ -65,8 +65,8 @@ function formatTime24to12(timeStr: string): string {
   const parts = timeStr.split(':')
   if (parts.length !== 2) return timeStr
 
-  let hours = parseInt(parts[0], 10)
-  const minutes = parts[1]
+  let hours = parseInt(parts[0] || '0', 10)
+  const minutes = parts[1] || '00'
   const period = hours >= 12 ? 'PM' : 'AM'
 
   if (hours === 0) hours = 12

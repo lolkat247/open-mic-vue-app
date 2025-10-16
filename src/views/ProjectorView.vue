@@ -167,7 +167,9 @@ function updateCurrentTime() {
 
 function formatCurfewTime(curfewTime: string): string {
   // Curfew time is in format "HH:mm" (24-hour)
-  const [hours, minutes] = curfewTime.split(':').map(Number)
+  const parts = curfewTime.split(':').map(Number)
+  const hours = parts[0] ?? 0
+  const minutes = parts[1] ?? 0
   const period = hours >= 12 ? 'PM' : 'AM'
   const displayHours = hours % 12 || 12 // Convert 0 to 12 for midnight
   return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`
@@ -272,12 +274,13 @@ onMounted(async () => {
     ws.value = useWebSocket(eventId.value, 'projector', toast)
 
     // Connect to WebSocket and request initial state
-    ws.value.connect()
+    ws.value?.connect()
 
     // Wait a moment for connection to establish, then request full state
     setTimeout(() => {
-      if (ws.value) {
-        ws.value.requestResync()
+      const wsInstance = ws.value
+      if (wsInstance) {
+        wsInstance.requestResync()
       }
     }, 500)
 

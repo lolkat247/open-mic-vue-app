@@ -120,9 +120,6 @@ export class WebSocketService {
       case 'pong':
         // Pong received, connection is alive
         break
-      case 'error':
-        console.error('WebSocket error message:', (message as any).message)
-        break
       default:
         console.warn('Unknown message type:', message)
     }

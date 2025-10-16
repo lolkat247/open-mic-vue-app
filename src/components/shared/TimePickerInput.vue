@@ -68,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 
 interface Props {
   modelValue?: string // HH:MM format (24-hour)
@@ -107,8 +107,8 @@ function parseTime(timeStr: string) {
   const parts = timeStr.split(':')
   if (parts.length !== 2) return
 
-  const hours24 = parseInt(parts[0], 10)
-  const mins = parseInt(parts[1], 10)
+  const hours24 = parseInt(parts[0] || '0', 10)
+  const mins = parseInt(parts[1] || '0', 10)
 
   if (isNaN(hours24) || isNaN(mins)) return
 

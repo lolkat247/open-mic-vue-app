@@ -95,7 +95,7 @@ export function validateEventDate(dateString: string): { valid: boolean; message
   }
 
   // Compare date strings directly to avoid timezone issues
-  const todayString = new Date().toISOString().split('T')[0]
+  const todayString = new Date().toISOString().split('T')[0]!
 
   if (dateString < todayString) {
     return { valid: false, message: 'Event date cannot be in the past' }
