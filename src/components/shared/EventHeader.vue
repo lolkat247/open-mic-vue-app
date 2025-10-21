@@ -38,7 +38,7 @@ defineProps<Props>()
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px 16px 0 0;
-  padding: 2rem 1.5rem;
+  padding: 2rem 1.5rem 2rem 4rem;
   margin-bottom: 1.5rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -97,7 +97,7 @@ defineProps<Props>()
 
 @media (max-width: 768px) {
   .event-header {
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 1rem 1.5rem 3.5rem;
     border-radius: 0;
   }
 
