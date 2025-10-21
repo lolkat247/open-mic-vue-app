@@ -5,14 +5,12 @@ import type {
   WebSocketOutboundMessage,
   WebSocketViewType,
   FullStateMessage,
-  DeltaMessage,
-  BannerMessage
+  DeltaMessage
 } from '../types/api'
 
 export type WebSocketEventHandlers = {
   onFullState?: (data: FullStateMessage['data']) => void
   onDelta?: (message: DeltaMessage) => void
-  onBanner?: (message: BannerMessage) => void
   onConnected?: () => void
   onDisconnected?: () => void
   onError?: (error: Event) => void
@@ -113,9 +111,6 @@ export class WebSocketService {
         break
       case 'delta':
         this.handlers.onDelta?.(message)
-        break
-      case 'banner':
-        this.handlers.onBanner?.(message)
         break
       case 'pong':
         // Pong received, connection is alive

@@ -199,44 +199,6 @@
       </div>
     </div>
 
-    <!-- Send Banner Dialog -->
-    <Dialog
-      v-model:visible="showBannerDialog"
-      modal
-      header="Send Banner Message"
-      :style="{ width: '90vw', maxWidth: '500px' }"
-    >
-      <div class="banner-form">
-        <div class="form-field">
-          <label for="bannerMessage">Message</label>
-          <Textarea
-            id="bannerMessage"
-            v-model="bannerMessage"
-            rows="3"
-            :maxlength="200"
-            placeholder="Important announcement for all viewers..."
-            class="w-full"
-          />
-          <small class="help-text">{{ bannerMessage.length }}/200 characters</small>
-        </div>
-      </div>
-      <template #footer>
-        <Button
-          label="Cancel"
-          icon="pi pi-times"
-          text
-          @click="showBannerDialog = false"
-        />
-        <Button
-          label="Send"
-          icon="pi pi-send"
-          @click="handleSendBanner"
-          :disabled="!bannerMessage.trim()"
-          :loading="isSendingBanner"
-        />
-      </template>
-    </Dialog>
-
     <!-- Edit Slot Dialog -->
     <AdminSlotEditDialog
       v-if="editingSlot"
@@ -262,7 +224,6 @@ import Badge from 'primevue/badge'
 import Menu from 'primevue/menu'
 import Message from 'primevue/message'
 import Dialog from 'primevue/dialog'
-import Textarea from 'primevue/textarea'
 import { useEventStore } from '../stores/event'
 import { useQueueStore } from '../stores/queue'
 import { useAuthStore } from '../stores/auth'
@@ -292,9 +253,6 @@ const isLoading = ref(true)
 const error = ref<string | null>(null)
 const isReordering = ref(false)
 const showHistory = ref(false)
-const showBannerDialog = ref(false)
-const bannerMessage = ref('')
-const isSendingBanner = ref(false)
 const menu = ref()
 const showEditDialog = ref(false)
 const editingSlot = ref<Slot | null>(null)
@@ -346,11 +304,6 @@ const menuItems = computed(() => [
     label: currentEvent.value?.signups_enabled === false ? 'Resume Signups' : 'Pause Signups',
     icon: currentEvent.value?.signups_enabled === false ? 'pi pi-play' : 'pi pi-pause',
     command: () => handleToggleSignups()
-  },
-  {
-    label: 'Send Banner',
-    icon: 'pi pi-megaphone',
-    command: () => showBannerDialog.value = true
   },
   {
     separator: true
@@ -562,38 +515,6 @@ async function handleReinstate(slotId: string) {
       detail: err.message || 'Failed to reinstate slot',
       life: 5000
     })
-  }
-}
-
-async function handleSendBanner() {
-  if (!bannerMessage.value.trim()) return
-
-  isSendingBanner.value = true
-
-  try {
-    await apiService.sendBanner(eventId.value, {
-      message: bannerMessage.value.trim()
-    })
-
-    toast.add({
-      severity: 'success',
-      summary: 'Banner Sent',
-      detail: 'Message has been sent to all viewers',
-      life: 3000
-    })
-
-    showBannerDialog.value = false
-    bannerMessage.value = ''
-  } catch (err: any) {
-    console.error('Failed to send banner:', err)
-    toast.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: err.message || 'Failed to send banner',
-      life: 5000
-    })
-  } finally {
-    isSendingBanner.value = false
   }
 }
 
@@ -1074,10 +995,6 @@ onUnmounted(() => {
   transform: scale(1.1);
 }
 
-.banner-form {
-  padding: 1rem 0;
-}
-
 .form-field {
   display: flex;
   flex-direction: column;
@@ -1096,22 +1013,6 @@ onUnmounted(() => {
 
 .w-full {
   width: 100%;
-}
-
-/* Textarea dark mode styling */
-:deep(.p-textarea) {
-  background: rgba(0, 0, 0, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: rgba(255, 255, 255, 0.95) !important;
-}
-
-:deep(.p-textarea:focus) {
-  border-color: #00ce90 !important;
-  box-shadow: 0 0 0 0.2rem rgba(0, 206, 144, 0.25) !important;
-}
-
-:deep(.p-textarea::placeholder) {
-  color: rgba(255, 255, 255, 0.4) !important;
 }
 
 /* Dialog dark mode */

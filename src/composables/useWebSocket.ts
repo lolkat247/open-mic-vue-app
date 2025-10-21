@@ -65,21 +65,6 @@ export function useWebSocket(eventId: string, viewType: WebSocketViewType, toast
         }
       },
 
-      onBanner: (message) => {
-        console.log('Received banner:', message)
-
-        const severity = message.level === 'error' ? 'error'
-          : message.level === 'warning' ? 'warn'
-          : 'info'
-
-        toast.add({
-          severity,
-          summary: message.level.charAt(0).toUpperCase() + message.level.slice(1),
-          detail: message.message,
-          life: message.auto_dismiss || 5000
-        })
-      },
-
       onConnected: () => {
         console.log('WebSocket connected')
         isConnected.value = true

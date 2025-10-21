@@ -216,13 +216,4 @@ export class APIService {
     })
   }
 
-  async sendBanner(
-    eventId: string,
-    data: { message: string; level?: 'info' | 'warning' | 'error' }
-  ): Promise<{ message: string }> {
-    return this.apiCall<{ message: string }>(`/events/${eventId}/banner`, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
-  }
 }

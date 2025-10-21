@@ -130,9 +130,7 @@ export interface APIError {
 
 export type WebSocketViewType = 'staff' | 'projector' | 'public'
 
-export type WebSocketMessageType = 'full_state' | 'delta' | 'banner' | 'ping' | 'pong' | 'request_resync'
-
-export type BannerLevel = 'info' | 'warning' | 'error'
+export type WebSocketMessageType = 'full_state' | 'delta' | 'ping' | 'pong' | 'request_resync'
 
 export type DeltaAction =
   | 'slot_created'
@@ -167,14 +165,6 @@ export interface DeltaMessage {
   timestamp: string
 }
 
-export interface BannerMessage {
-  type: 'banner'
-  event_id: string
-  level: BannerLevel
-  message: string
-  auto_dismiss?: number // milliseconds
-}
-
 export interface PingMessage {
   type: 'ping'
 }
@@ -191,7 +181,6 @@ export interface RequestResyncMessage {
 export type WebSocketMessage =
   | FullStateMessage
   | DeltaMessage
-  | BannerMessage
   | PongMessage
 
 export type WebSocketOutboundMessage = PingMessage | RequestResyncMessage
