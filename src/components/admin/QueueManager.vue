@@ -95,7 +95,7 @@
               </div>
               <div v-if="slot.leave_by_at" class="item-urgency">
                 <i class="pi pi-stopwatch"></i>
-                Leave by {{ formatTime24to12(slot.leave_by_at) }}
+                Must perform before {{ formatTime24to12(slot.leave_by_at) }}
               </div>
               <p v-if="slot.notes" class="item-notes">{{ slot.notes }}</p>
             </div>
