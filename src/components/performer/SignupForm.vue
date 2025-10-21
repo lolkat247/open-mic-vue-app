@@ -462,6 +462,21 @@ function handleSubmit() {
   color: rgba(255, 255, 255, 0.4) !important;
 }
 
+/* Select value text color */
+:deep(.p-select-label) {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Select placeholder text */
+:deep(.p-select-label.p-placeholder) {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Select dropdown trigger icon */
+:deep(.p-select-dropdown) {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
 :deep(.p-password) {
   width: 100%;
 }
