@@ -309,7 +309,9 @@ onUnmounted(() => {
 }
 
 .house-rules {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(59, 130, 246, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-left: 4px solid rgba(59, 130, 246, 1);
   border-radius: 8px;
   padding: 1.25rem;
@@ -322,7 +324,7 @@ onUnmounted(() => {
   gap: 0.5rem;
   font-size: 1rem;
   font-weight: 600;
-  color: rgba(191, 219, 254, 1);
+  color: rgba(230, 240, 255, 1);
   margin: 0 0 0.75rem 0;
 }
 
@@ -331,9 +333,11 @@ onUnmounted(() => {
 }
 
 .house-rules p {
-  color: rgba(191, 219, 254, 0.9);
+  color: rgba(230, 240, 255, 0.95);
   margin: 0;
   line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .fab {
