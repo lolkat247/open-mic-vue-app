@@ -38,13 +38,12 @@
 
     <div class="card-actions">
       <Button
+        label="Edit Slot"
         icon="pi pi-pencil"
-        text
-        rounded
+        severity="secondary"
         size="small"
         @click="$emit('edit', slot.slot_id)"
         v-tooltip.top="'Edit slot details'"
-        class="edit-btn"
       />
       <SlotControls
         :slot="slot"

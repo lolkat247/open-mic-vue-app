@@ -102,13 +102,12 @@
           </div>
           <div class="item-actions">
             <Button
+              label="Edit Slot"
               icon="pi pi-pencil"
-              text
-              rounded
+              severity="secondary"
               size="small"
               @click="$emit('edit', slot.slot_id)"
               v-tooltip.top="'Edit slot details'"
-              class="edit-btn"
             />
             <SlotControls
               :slot="slot"
@@ -684,6 +683,7 @@ function getStatusLabel(status: string): string {
 
 .item-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
   border-top: 2px solid rgba(0, 206, 144, 0.2);
