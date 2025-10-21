@@ -186,6 +186,7 @@ import {
   validatePassword,
   validateTimeFormat
 } from '../../utils/validation'
+import { ACT_TYPES } from '../../utils/constants'
 import type { SignupFormData } from '../../types/views'
 
 interface Props {
@@ -202,16 +203,7 @@ const emit = defineEmits<{
   submit: [data: SignupFormData]
 }>()
 
-const actTypes = [
-  'Jazz',
-  'Karaoke',
-  'Dance',
-  'Comedy',
-  'Slam Poetry',
-  'Live Music',
-  'Carlos',
-  'Trolling'
-]
+const actTypes = ACT_TYPES
 
 const formData = reactive<SignupFormData & { youtube_link?: string }>({
   stage_name: '',

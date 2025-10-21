@@ -146,6 +146,7 @@ import Divider from 'primevue/divider'
 import TimePickerInput from '../shared/TimePickerInput.vue'
 import { validateEstimatedMinutes, validateTimeFormat } from '../../utils/validation'
 import { formatTime } from '../../utils/time'
+import { ACT_TYPES } from '../../utils/constants'
 import type { Slot } from '../../types/api'
 
 interface Props {
@@ -185,16 +186,7 @@ const formData = reactive<AdminUpdateSlotData>({
 
 const errors = reactive<Partial<Record<keyof AdminUpdateSlotData, string>>>({})
 
-const actTypes = [
-  'Jazz',
-  'Karaoke',
-  'Dance',
-  'Comedy',
-  'Slam Poetry',
-  'Live Music',
-  'Carlos',
-  'Trolling'
-]
+const actTypes = ACT_TYPES
 
 const statusOptions = [
   { label: 'Queued', value: 'queued' },
