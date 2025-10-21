@@ -225,6 +225,8 @@ onMounted(async () => {
         const response = await apiService.getEventByCode(code)
         if (response.event) {
           eventId.value = response.event.event_id
+          // Store event data immediately - no need to fetch again
+          eventStore.setEvent(response.event)
         } else {
           console.error('Invalid event code')
           return
@@ -241,6 +243,8 @@ onMounted(async () => {
           const response = await apiService.getEventByCode(paramEventId)
           if (response.event) {
             eventId.value = response.event.event_id
+            // Store event data immediately - no need to fetch again
+            eventStore.setEvent(response.event)
           } else {
             console.error('Invalid event code')
             return
@@ -258,16 +262,19 @@ onMounted(async () => {
       return
     }
 
-    // Fetch full event details to get event_code and other properties
-    console.log('[Projector] Fetching event details for:', eventId.value)
-    try {
-      const response = await apiService.getEvent(eventId.value)
-      if (response.event) {
-        console.log('[Projector] Event details received:', response.event)
-        eventStore.setEvent(response.event)
+    // Only fetch full event details if we haven't already loaded it via getEventByCode
+    // (getEventByCode is public and works without auth, getEvent requires authentication)
+    if (!currentEvent.value) {
+      console.log('[Projector] Fetching event details for:', eventId.value)
+      try {
+        const response = await apiService.getEvent(eventId.value)
+        if (response.event) {
+          console.log('[Projector] Event details received:', response.event)
+          eventStore.setEvent(response.event)
+        }
+      } catch (error) {
+        console.error('[Projector] Failed to fetch event details:', error)
       }
-    } catch (error) {
-      console.error('[Projector] Failed to fetch event details:', error)
     }
 
     // Initialize WebSocket connection with the resolved eventId

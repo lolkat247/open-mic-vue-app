@@ -107,6 +107,7 @@
                 :is-reordering="isReordering"
                 :has-current-performer="!!currentPerformer"
                 @reorder="handleReorder"
+                @edit="handleEdit"
                 @mark-up-next="handleMarkUpNext"
                 @call-to-stage="handleCallToStage"
                 @start="handleStart"
@@ -167,23 +168,31 @@
 
             <div v-if="showHistory" class="history-list">
               <div
-                v-for="slot in inactiveSlots.slice(0, 5)"
+                v-for="slot in inactiveSlots"
                 :key="slot.slot_id"
                 class="history-item"
                 :class="{ 'no-show': slot.status === 'no_show' }"
               >
                 <div class="history-info">
                   <h4 class="history-name">{{ slot.stage_name }}</h4>
-                  <Badge
-                    :value="slot.status === 'completed' ? 'Done' : 'No Show'"
-                    :severity="slot.status === 'completed' ? 'success' : 'danger'"
-                    size="small"
-                  />
+                  <div class="history-actions">
+                    <Badge
+                      :value="slot.status === 'completed' ? 'Done' : 'No Show'"
+                      :severity="slot.status === 'completed' ? 'success' : 'danger'"
+                      size="small"
+                    />
+                    <Button
+                      icon="pi pi-pencil"
+                      text
+                      rounded
+                      size="small"
+                      @click="handleEdit(slot.slot_id)"
+                      v-tooltip.top="'Edit slot details'"
+                      class="history-edit-btn"
+                    />
+                  </div>
                 </div>
               </div>
-              <small v-if="inactiveSlots.length > 5" class="history-more">
-                +{{ inactiveSlots.length - 5 }} more
-              </small>
             </div>
           </div>
         </div>
@@ -228,6 +237,16 @@
       </template>
     </Dialog>
 
+    <!-- Edit Slot Dialog -->
+    <AdminSlotEditDialog
+      v-if="editingSlot"
+      :slot="editingSlot"
+      :visible="showEditDialog"
+      :is-updating="isUpdatingSlot"
+      @update="handleUpdateSlot"
+      @close="handleCloseEditDialog"
+    />
+
     <div class="footer-container">
       <Footer />
     </div>
@@ -256,7 +275,9 @@ import QueueManager from '../components/admin/QueueManager.vue'
 import CompactStats from '../components/admin/CompactStats.vue'
 import UpNextCard from '../components/admin/UpNextCard.vue'
 import SettingUpCard from '../components/admin/SettingUpCard.vue'
+import AdminSlotEditDialog from '../components/admin/AdminSlotEditDialog.vue'
 import { formatDate } from '../utils/time'
+import type { Slot } from '../types/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -275,6 +296,9 @@ const showBannerDialog = ref(false)
 const bannerMessage = ref('')
 const isSendingBanner = ref(false)
 const menu = ref()
+const showEditDialog = ref(false)
+const editingSlot = ref<Slot | null>(null)
+const isUpdatingSlot = ref(false)
 
 // WebSocket for real-time updates - will be initialized after we resolve eventId
 let wsConnect: (() => void) | null = null
@@ -571,6 +595,49 @@ async function handleSendBanner() {
   } finally {
     isSendingBanner.value = false
   }
+}
+
+function handleEdit(slotId: string) {
+  const slot = queueStore.slots.find(s => s.slot_id === slotId)
+  if (slot) {
+    editingSlot.value = slot
+    showEditDialog.value = true
+  }
+}
+
+async function handleUpdateSlot(data: any) {
+  if (!editingSlot.value) return
+
+  isUpdatingSlot.value = true
+
+  try {
+    await apiService.updateSlotAsStaff(eventId.value, editingSlot.value.slot_id, data)
+
+    toast.add({
+      severity: 'success',
+      summary: 'Slot Updated',
+      detail: 'Slot details have been updated successfully',
+      life: 3000
+    })
+
+    showEditDialog.value = false
+    editingSlot.value = null
+  } catch (err: any) {
+    console.error('Failed to update slot:', err)
+    toast.add({
+      severity: 'error',
+      summary: 'Update Failed',
+      detail: err.message || 'Failed to update slot details',
+      life: 5000
+    })
+  } finally {
+    isUpdatingSlot.value = false
+  }
+}
+
+function handleCloseEditDialog() {
+  showEditDialog.value = false
+  editingSlot.value = null
 }
 
 function goBack() {
@@ -956,8 +1023,6 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
-  max-height: 300px;
-  overflow-y: auto;
 }
 
 .history-item {
@@ -993,12 +1058,20 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
-.history-more {
-  display: block;
-  text-align: center;
-  padding: 0.5rem;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.85rem;
+.history-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.history-edit-btn {
+  color: rgba(0, 206, 144, 1) !important;
+  transition: all 0.2s ease;
+}
+
+.history-edit-btn:hover {
+  background: rgba(0, 206, 144, 0.15) !important;
+  transform: scale(1.1);
 }
 
 .banner-form {
@@ -1228,10 +1301,6 @@ onUnmounted(() => {
 
   .queue-section {
     min-height: 500px;
-  }
-
-  .history-list {
-    max-height: 250px;
   }
 
   .empty-performer {

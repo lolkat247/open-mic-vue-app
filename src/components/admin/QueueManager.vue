@@ -101,6 +101,15 @@
             </div>
           </div>
           <div class="item-actions">
+            <Button
+              icon="pi pi-pencil"
+              text
+              rounded
+              size="small"
+              @click="$emit('edit', slot.slot_id)"
+              v-tooltip.top="'Edit slot details'"
+              class="edit-btn"
+            />
             <SlotControls
               :slot="slot"
               :has-current-performer="hasCurrentPerformer"
@@ -146,6 +155,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   reorder: [slotIds: string[]]
+  edit: [slotId: string]
   'mark-up-next': [slotId: string]
   'call-to-stage': [slotId: string]
   start: [slotId: string]
@@ -673,8 +683,21 @@ function getStatusLabel(status: string): string {
 }
 
 .item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   border-top: 2px solid rgba(0, 206, 144, 0.2);
   padding-top: 1.25rem;
+}
+
+.edit-btn {
+  color: rgba(0, 206, 144, 1) !important;
+  transition: all 0.2s ease;
+}
+
+.edit-btn:hover {
+  background: rgba(0, 206, 144, 0.15) !important;
+  transform: scale(1.1);
 }
 
 /* Message styling */

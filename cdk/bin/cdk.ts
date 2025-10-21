@@ -6,7 +6,7 @@ const app = new cdk.App();
 
 new FrontendStack(app, 'OpenMicFrontendStack', {
   domainName: 'openmic.site',
-  buildPath: '../dist',
+  buildPath: '../../dist',
 
   // IMPORTANT: ACM certificates for CloudFront must be in us-east-1
   env: {

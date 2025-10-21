@@ -197,6 +197,25 @@ export class APIService {
     })
   }
 
+  async updateSlotAsStaff(
+    eventId: string,
+    slotId: string,
+    data: {
+      stage_name?: string
+      act_type?: string
+      status?: 'queued' | 'up_next' | 'setting_up' | 'performing' | 'completed' | 'no_show' | 'withdrawn'
+      self_est_min?: number
+      leave_by_at?: string
+      extra_setup?: boolean
+      notes?: string
+    }
+  ): Promise<{ slot: any }> {
+    return this.apiCall<{ slot: any }>(`/events/${eventId}/slots/${slotId}/admin-update`, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    })
+  }
+
   async sendBanner(
     eventId: string,
     data: { message: string; level?: 'info' | 'warning' | 'error' }

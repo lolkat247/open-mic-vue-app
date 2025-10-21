@@ -21,3 +21,40 @@ body {
   width: 100%;
   min-height: 100vh;
 }
+
+/* Global PrimeVue Dialog Dark Mode Styling */
+.p-dialog {
+  background: rgba(30, 30, 30, 0.98) !important;
+  background-color: rgba(30, 30, 30, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.p-dialog-header {
+  background: rgba(30, 30, 30, 0.98) !important;
+  background-color: rgba(30, 30, 30, 0.98) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.p-dialog-title {
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-weight: 700;
+}
+
+.p-dialog-content {
+  background: rgba(30, 30, 30, 0.98) !important;
+  background-color: rgba(30, 30, 30, 0.98) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.p-dialog-footer {
+  background: rgba(30, 30, 30, 0.98) !important;
+  background-color: rgba(30, 30, 30, 0.98) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.p-dialog-mask {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
