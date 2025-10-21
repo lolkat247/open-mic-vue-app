@@ -22,7 +22,6 @@ export interface Event {
   }
   policies: {
     max_slots_per_performer?: number
-    signup_deadline_hours?: number
     [key: string]: any
   }
   house_rules: string
@@ -77,7 +76,6 @@ export interface CreateEventRequest {
   }
   policies?: {
     max_slots_per_performer?: number
-    signup_deadline_hours?: number
     [key: string]: any
   }
   house_rules?: string

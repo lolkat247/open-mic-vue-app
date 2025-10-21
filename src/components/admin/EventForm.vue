@@ -49,17 +49,13 @@
           </div>
 
           <div class="form-field">
-            <label for="curfew" class="required">Curfew Time</label>
-            <InputMask
-              id="curfew"
+            <TimePickerInput
               v-model="formData.curfew"
-              mask="99:99"
-              placeholder="HH:MM (e.g., 23:00)"
-              :class="{ 'p-invalid': errors.curfew }"
+              label="Curfew Time"
+              :error="errors.curfew"
+              :required="true"
               @blur="validateField('curfew')"
-              class="w-full"
             />
-            <small v-if="errors.curfew" class="p-error">{{ errors.curfew }}</small>
           </div>
         </div>
 
@@ -126,38 +122,20 @@
           Policies
         </h3>
 
-        <div class="form-row">
-          <div class="form-field">
-            <label for="maxSlots">Max Slots Per Performer</label>
-            <InputNumber
-              id="maxSlots"
-              v-model="formData.max_slots_per_performer"
-              :min="0"
-              :max="10"
-              :class="{ 'p-invalid': errors.max_slots_per_performer }"
-              @blur="validateField('max_slots_per_performer')"
-              showButtons
-              class="w-full"
-            />
-            <small v-if="errors.max_slots_per_performer" class="p-error">{{ errors.max_slots_per_performer }}</small>
-            <small v-else class="help-text">0 = unlimited</small>
-          </div>
-
-          <div class="form-field">
-            <label for="signupDeadline">Signup Deadline (hours before)</label>
-            <InputNumber
-              id="signupDeadline"
-              v-model="formData.signup_deadline_hours"
-              :min="0"
-              :max="72"
-              :class="{ 'p-invalid': errors.signup_deadline_hours }"
-              @blur="validateField('signup_deadline_hours')"
-              showButtons
-              class="w-full"
-            />
-            <small v-if="errors.signup_deadline_hours" class="p-error">{{ errors.signup_deadline_hours }}</small>
-            <small v-else class="help-text">0 = no deadline</small>
-          </div>
+        <div class="form-field">
+          <label for="maxSlots">Max Slots Per Performer</label>
+          <InputNumber
+            id="maxSlots"
+            v-model="formData.max_slots_per_performer"
+            :min="0"
+            :max="10"
+            :class="{ 'p-invalid': errors.max_slots_per_performer }"
+            @blur="validateField('max_slots_per_performer')"
+            showButtons
+            class="w-full"
+          />
+          <small v-if="errors.max_slots_per_performer" class="p-error">{{ errors.max_slots_per_performer }}</small>
+          <small v-else class="help-text">0 = unlimited</small>
         </div>
       </div>
     </form>
@@ -187,9 +165,9 @@ import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
-import InputMask from 'primevue/inputmask'
 import DatePicker from 'primevue/datepicker'
 import Button from 'primevue/button'
+import TimePickerInput from '../shared/TimePickerInput.vue'
 import { validateEventName, validateEventDate, validateTimeFormat } from '../../utils/validation'
 import type { Event } from '../../types/api'
 import type { EventFormData } from '../../types/views'
@@ -219,7 +197,6 @@ const formData = reactive<EventFormData>({
   slot_duration_minutes: 5,
   setup_time_minutes: 2,
   max_slots_per_performer: 1,
-  signup_deadline_hours: 2,
   house_rules: ''
 })
 
@@ -249,8 +226,7 @@ const isFormValid = computed(() => {
     validateTimeFormat(formData.curfew) &&
     formData.slot_duration_minutes > 0 &&
     formData.setup_time_minutes >= 0 &&
-    formData.max_slots_per_performer >= 0 &&
-    formData.signup_deadline_hours >= 0
+    formData.max_slots_per_performer >= 0
   )
 })
 
@@ -270,7 +246,6 @@ watch(() => props.event, (newEvent) => {
     formData.slot_duration_minutes = newEvent.defaults?.slot_duration_minutes || 5
     formData.setup_time_minutes = newEvent.defaults?.setup_time_minutes || 2
     formData.max_slots_per_performer = newEvent.policies?.max_slots_per_performer || 1
-    formData.signup_deadline_hours = newEvent.policies?.signup_deadline_hours || 2
     formData.house_rules = newEvent.house_rules || ''
   }
 }, { immediate: true })
@@ -326,12 +301,6 @@ function validateField(field: keyof EventFormData) {
       }
       break
     }
-    case 'signup_deadline_hours': {
-      if (formData.signup_deadline_hours < 0) {
-        errors.signup_deadline_hours = 'Cannot be negative'
-      }
-      break
-    }
   }
 }
 
@@ -342,8 +311,7 @@ function validateAll(): boolean {
     'curfew',
     'slot_duration_minutes',
     'setup_time_minutes',
-    'max_slots_per_performer',
-    'signup_deadline_hours'
+    'max_slots_per_performer'
   ]
   fields.forEach(validateField)
   return Object.keys(errors).length === 0
@@ -371,7 +339,6 @@ function resetForm() {
   formData.slot_duration_minutes = 5
   formData.setup_time_minutes = 2
   formData.max_slots_per_performer = 1
-  formData.signup_deadline_hours = 2
   formData.house_rules = ''
   Object.keys(errors).forEach(key => delete errors[key as keyof typeof errors])
 }
@@ -403,17 +370,15 @@ function resetForm() {
   gap: 0.75rem;
   font-size: 1.1rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #ffffff 0%, #00ce90 50%, #00ffa3 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   margin: 0 0 1rem 0;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .section-title i {
-  color: #00ce90;
+  color: #00ce90 !important;
   font-size: 1.25rem;
   filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.4));
+  -webkit-text-fill-color: #00ce90 !important;
 }
 
 .form-field {

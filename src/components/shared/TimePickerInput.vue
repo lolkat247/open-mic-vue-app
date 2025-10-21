@@ -8,24 +8,24 @@
       <div class="time-inputs">
         <input
           :id="inputId"
-          type="number"
-          v-model.number="hour"
+          type="text"
+          inputmode="numeric"
+          v-model="hourDisplay"
           @input="handleHourInput"
-          @blur="handleBlur"
-          min="1"
-          max="12"
+          @blur="handleHourBlur"
+          maxlength="2"
           placeholder="12"
           class="hour-input"
           aria-label="Hour"
         />
         <span class="time-separator">:</span>
         <input
-          type="number"
-          v-model.number="minute"
+          type="text"
+          inputmode="numeric"
+          v-model="minuteDisplay"
           @input="handleMinuteInput"
-          @blur="handleBlur"
-          min="0"
-          max="59"
+          @blur="handleMinuteBlur"
+          maxlength="2"
           placeholder="00"
           class="minute-input"
           aria-label="Minute"
@@ -52,7 +52,7 @@
       </div>
 
       <button
-        v-if="hour !== null"
+        v-if="hourDisplay !== '' || minuteDisplay !== ''"
         type="button"
         class="clear-btn"
         @click="clearTime"
@@ -95,6 +95,11 @@ const hour = ref<number | null>(null)
 const minute = ref<number | null>(null)
 const period = ref<'AM' | 'PM'>('PM') // Default to PM
 
+// Display values for text inputs
+const hourDisplay = ref<string>('')
+const minuteDisplay = ref<string>('')
+const isInternalUpdate = ref(false)
+
 // Parse incoming 24-hour time to 12-hour format
 function parseTime(timeStr: string) {
   if (!timeStr) {
@@ -132,8 +137,12 @@ function parseTime(timeStr: string) {
 
 // Convert 12-hour format to 24-hour HH:MM
 function emitTime() {
+  isInternalUpdate.value = true
+
   if (hour.value === null || minute.value === null) {
     emit('update:modelValue', '')
+    // Reset flag after a brief delay to let watcher process
+    setTimeout(() => { isInternalUpdate.value = false }, 0)
     return
   }
 
@@ -150,54 +159,95 @@ function emitTime() {
   const minStr = minute.value.toString().padStart(2, '0')
 
   emit('update:modelValue', `${hourStr}:${minStr}`)
+  // Reset flag after a brief delay to let watcher process
+  setTimeout(() => { isInternalUpdate.value = false }, 0)
 }
 
 // Handle hour input validation
 function handleHourInput() {
-  if (hour.value === null) return
+  // Allow only digits
+  hourDisplay.value = hourDisplay.value.replace(/\D/g, '')
 
-  if (hour.value < 1) hour.value = 1
-  if (hour.value > 12) hour.value = 12
+  if (hourDisplay.value === '') {
+    hour.value = null
+    emitTime()
+    return
+  }
+
+  const numValue = parseInt(hourDisplay.value, 10)
+  if (numValue >= 1 && numValue <= 12) {
+    hour.value = numValue
+  } else if (numValue > 12) {
+    hour.value = 12
+    hourDisplay.value = '12'
+  } else {
+    hour.value = null
+  }
 
   emitTime()
 }
 
 // Handle minute input validation
 function handleMinuteInput() {
-  if (minute.value === null) {
-    minute.value = 0
+  // Allow only digits
+  minuteDisplay.value = minuteDisplay.value.replace(/\D/g, '')
+
+  if (minuteDisplay.value === '') {
+    minute.value = null
+    emitTime()
     return
   }
 
-  if (minute.value < 0) minute.value = 0
-  if (minute.value > 59) minute.value = 59
+  const numValue = parseInt(minuteDisplay.value, 10)
+  if (numValue >= 0 && numValue <= 59) {
+    minute.value = numValue
+  } else if (numValue > 59) {
+    minute.value = 59
+    minuteDisplay.value = '59'
+  }
 
   emitTime()
 }
 
 function setPeriod(newPeriod: 'AM' | 'PM') {
   period.value = newPeriod
+  // emitTime() will set isInternalUpdate flag
   emitTime()
 }
 
 function clearTime() {
+  isInternalUpdate.value = true
   hour.value = null
   minute.value = null
+  hourDisplay.value = ''
+  minuteDisplay.value = ''
   period.value = 'PM'
   emit('update:modelValue', '')
+  setTimeout(() => { isInternalUpdate.value = false }, 0)
 }
 
-function handleBlur() {
-  // Pad minute with leading zero if needed
-  if (minute.value !== null && minute.value < 10) {
-    minute.value = parseInt(minute.value.toString().padStart(2, '0'), 10)
+function handleHourBlur() {
+  // No special formatting needed for hours
+  emit('blur')
+}
+
+function handleMinuteBlur() {
+  // Ensure minute is padded to 2 digits when user leaves the field
+  if (minute.value !== null && minuteDisplay.value.length > 0) {
+    minuteDisplay.value = minuteDisplay.value.padStart(2, '0')
   }
   emit('blur')
 }
 
 // Watch for external changes to modelValue
 watch(() => props.modelValue, (newValue) => {
-  parseTime(newValue)
+  // Only update if this is an external change, not from our own emitTime()
+  if (!isInternalUpdate.value) {
+    parseTime(newValue)
+    // Update display values from parsed state
+    hourDisplay.value = hour.value !== null ? hour.value.toString() : ''
+    minuteDisplay.value = minute.value !== null ? minute.value.toString().padStart(2, '0') : ''
+  }
 }, { immediate: true })
 </script>
 

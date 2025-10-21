@@ -114,3 +114,15 @@ export function timeStringToISO(timeString: string, dateString?: string): string
   date.setHours(hours, minutes, 0, 0)
   return date.toISOString()
 }
+
+/**
+ * Format 24-hour time (HH:MM) to 12-hour format with AM/PM
+ */
+export function format12Hour(time24: string): string {
+  const parts = time24.split(':').map(Number)
+  const hours = parts[0] ?? 0
+  const minutes = parts[1] ?? 0
+  const period = hours >= 12 ? 'PM' : 'AM'
+  const displayHours = hours % 12 || 12 // Convert 0 to 12 for midnight
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`
+}

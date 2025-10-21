@@ -19,7 +19,7 @@
         </div>
         <div class="time-info">
           <div class="current-time">{{ currentTime }}</div>
-          <div v-if="currentEvent" class="curfew-time">Curfew: {{ formatCurfewTime(currentEvent.curfew) }}</div>
+          <div v-if="currentEvent" class="curfew-time">Curfew: {{ format12Hour(currentEvent.curfew) }}</div>
         </div>
       </div>
     </div>
@@ -89,7 +89,7 @@ import { useEventStore } from '../stores/event'
 import { useQueueStore } from '../stores/queue'
 import { useWebSocket } from '../composables/useWebSocket'
 import { useAPI } from '../composables/useAPI'
-import { formatDate } from '../utils/time'
+import { formatDate, format12Hour } from '../utils/time'
 import QRCode from 'qrcode'
 
 const route = useRoute()
@@ -163,16 +163,6 @@ function updateCurrentTime() {
     minute: '2-digit',
     hour12: true
   })
-}
-
-function formatCurfewTime(curfewTime: string): string {
-  // Curfew time is in format "HH:mm" (24-hour)
-  const parts = curfewTime.split(':').map(Number)
-  const hours = parts[0] ?? 0
-  const minutes = parts[1] ?? 0
-  const period = hours >= 12 ? 'PM' : 'AM'
-  const displayHours = hours % 12 || 12 // Convert 0 to 12 for midnight
-  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`
 }
 
 function updateElapsedTime() {

@@ -31,7 +31,6 @@ export interface EventFormData {
   slot_duration_minutes: number
   setup_time_minutes: number
   max_slots_per_performer: number
-  signup_deadline_hours: number
   house_rules: string
 }
 

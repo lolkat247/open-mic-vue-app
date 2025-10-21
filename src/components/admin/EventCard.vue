@@ -32,7 +32,7 @@
         </div>
         <div class="meta-item">
           <i class="pi pi-clock"></i>
-          <span>Curfew: {{ event.curfew }}</span>
+          <span>Curfew: {{ format12Hour(event.curfew) }}</span>
         </div>
         <div v-if="event.event_code" class="meta-item">
           <i class="pi pi-key"></i>
@@ -90,7 +90,7 @@ import Badge from 'primevue/badge'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import type { Event } from '../../types/api'
-import { formatDate } from '../../utils/time'
+import { formatDate, format12Hour } from '../../utils/time'
 
 interface Props {
   event: Event
@@ -354,8 +354,8 @@ function confirmDelete() {
 .card-footer {
   display: flex;
   justify-content: flex-end;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 0.5rem;
+  border-top: none;
 }
 
 .manage-button {
@@ -404,7 +404,7 @@ function confirmDelete() {
 }
 
 :deep(.p-card-footer) {
-  padding: 1rem 1.25rem;
+  padding: 0;
   background: transparent;
 }
 

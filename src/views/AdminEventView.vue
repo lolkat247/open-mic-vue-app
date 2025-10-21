@@ -22,7 +22,7 @@
             </span>
             <span class="meta-item">
               <i class="pi pi-clock"></i>
-              Curfew: {{ currentEvent?.curfew }}
+              Curfew: {{ currentEvent?.curfew ? format12Hour(currentEvent.curfew) : '' }}
             </span>
             <Badge
               :value="signupStatus"
@@ -276,7 +276,7 @@ import CompactStats from '../components/admin/CompactStats.vue'
 import UpNextCard from '../components/admin/UpNextCard.vue'
 import SettingUpCard from '../components/admin/SettingUpCard.vue'
 import AdminSlotEditDialog from '../components/admin/AdminSlotEditDialog.vue'
-import { formatDate } from '../utils/time'
+import { formatDate, format12Hour } from '../utils/time'
 import type { Slot } from '../types/api'
 
 const route = useRoute()

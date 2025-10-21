@@ -298,8 +298,7 @@ async function handleSubmit(formData: EventFormData) {
           setup_time_minutes: formData.setup_time_minutes
         },
         policies: {
-          max_slots_per_performer: formData.max_slots_per_performer,
-          signup_deadline_hours: formData.signup_deadline_hours
+          max_slots_per_performer: formData.max_slots_per_performer
         },
         house_rules: formData.house_rules
       })
@@ -327,8 +326,7 @@ async function handleSubmit(formData: EventFormData) {
           setup_time_minutes: formData.setup_time_minutes
         },
         policies: {
-          max_slots_per_performer: formData.max_slots_per_performer,
-          signup_deadline_hours: formData.signup_deadline_hours
+          max_slots_per_performer: formData.max_slots_per_performer
         },
         house_rules: formData.house_rules
       })

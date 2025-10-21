@@ -32,7 +32,7 @@ body {
 .p-dialog-header {
   background: rgba(30, 30, 30, 0.98) !important;
   background-color: rgba(30, 30, 30, 0.98) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-bottom: none !important;
   color: rgba(255, 255, 255, 0.95) !important;
 }
 
@@ -50,7 +50,7 @@ body {
 .p-dialog-footer {
   background: rgba(30, 30, 30, 0.98) !important;
   background-color: rgba(30, 30, 30, 0.98) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-top: none !important;
 }
 
 .p-dialog-mask {

@@ -94,8 +94,12 @@ export function validateEventDate(dateString: string): { valid: boolean; message
     return { valid: false, message: 'Invalid date format (use YYYY-MM-DD)' }
   }
 
-  // Compare date strings directly to avoid timezone issues
-  const todayString = new Date().toISOString().split('T')[0]!
+  // Get today's date in local timezone
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+  const todayString = `${year}-${month}-${day}`
 
   if (dateString < todayString) {
     return { valid: false, message: 'Event date cannot be in the past' }
