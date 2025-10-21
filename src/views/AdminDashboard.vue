@@ -3,7 +3,7 @@
     <div class="dashboard-header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="dashboard-title">
+          <div class="title-row">
             <Button
               icon="pi pi-arrow-left"
               text
@@ -12,10 +12,11 @@
               aria-label="Back to home"
               class="back-button"
             />
-            <i class="pi pi-shield" aria-hidden="true"></i>
-            Admin Dashboard
-          </h1>
-          <p v-if="userEmail" class="user-email">{{ userEmail }}</p>
+            <h1 class="dashboard-title">
+              <i class="pi pi-shield" aria-hidden="true"></i>
+              Admin Dashboard
+            </h1>
+          </div>
         </div>
         <div class="header-actions">
           <Button
@@ -500,6 +501,12 @@ onMounted(() => {
   gap: 0.25rem;
 }
 
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .dashboard-title {
   display: flex;
   align-items: center;
@@ -514,48 +521,36 @@ onMounted(() => {
 }
 
 .dashboard-title i {
-  color: rgba(0, 206, 144, 1);
+  color: #00ce90 !important;
   font-size: 1.5rem;
   filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.4));
+  -webkit-text-fill-color: #00ce90 !important;
 }
 
 :deep(.back-button) {
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: none;
-  margin-right: 0.5rem;
-  padding: 0.25rem;
-  border-radius: 6px;
+  background: transparent !important;
+  border: none !important;
+  padding: 0.5rem !important;
+  border-radius: 9999px !important;
   cursor: pointer;
+  transition: background-color 200ms ease !important;
 }
 
 :deep(.back-button .p-button-icon), :deep(.back-button .pi) {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.7) !important;
   font-size: 1.25rem;
-  transition: color 120ms ease, opacity 120ms ease, background-color 120ms ease;
-  opacity: 0.9;
+  transition: color 200ms ease !important;
 }
 
-:deep(.back-button:hover), :deep(.back-button:focus) {
-  background: rgba(255, 255, 255, 0.1);
+:deep(.back-button:hover) {
+  background: rgba(255, 255, 255, 0.1) !important;
 }
 
-:deep(.back-button:hover .p-button-icon), :deep(.back-button:focus .p-button-icon),
-:deep(.back-button:hover .pi), :deep(.back-button:focus .pi) {
-  color: rgba(0, 206, 144, 1);
-  opacity: 1;
-}
-
-/* Ensure the PrimeVue button root is rounded and clips the hover background */
-:deep(.back-button.p-button) {
-  border-radius: 9999px !important;
-  overflow: hidden;
-}
-
-:deep(.back-button.p-button:hover), :deep(.back-button.p-button:focus) {
-  background: rgba(255, 255, 255, 0.1);
+:deep(.back-button:hover .p-button-icon), :deep(.back-button:hover .pi) {
+  color: rgba(0, 206, 144, 1) !important;
 }
 
 .user-email {
