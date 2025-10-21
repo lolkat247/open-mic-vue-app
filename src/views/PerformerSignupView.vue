@@ -400,6 +400,8 @@ onUnmounted(() => {
   color: rgba(191, 219, 254, 0.9);
   margin: 0;
   line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 @media (max-width: 768px) {
