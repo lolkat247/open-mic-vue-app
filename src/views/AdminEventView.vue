@@ -76,6 +76,7 @@
             <SettingUpCard
               :slot="settingUpSlot"
               :has-current-performer="!!currentPerformer"
+              @edit="handleEdit"
               @mark-up-next="handleMarkUpNext"
               @call-to-stage="handleCallToStage"
               @start="handleStart"
@@ -90,6 +91,7 @@
             <UpNextCard
               :slot="upNextSlot"
               :has-current-performer="!!currentPerformer"
+              @edit="handleEdit"
               @mark-up-next="handleMarkUpNext"
               @call-to-stage="handleCallToStage"
               @start="handleStart"
@@ -130,6 +132,7 @@
             <div v-if="currentPerformer" class="current-performer-container">
               <PerformerTimer
                 :slot="currentPerformer"
+                @edit="handleEdit"
                 @complete="handleComplete"
               />
             </div>

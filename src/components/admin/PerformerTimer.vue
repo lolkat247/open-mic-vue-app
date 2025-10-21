@@ -39,6 +39,15 @@
 
     <div class="timer-actions">
       <Button
+        icon="pi pi-pencil"
+        text
+        rounded
+        size="small"
+        @click="$emit('edit', slot.slot_id)"
+        v-tooltip.top="'Edit slot details'"
+        class="edit-btn"
+      />
+      <Button
         label="Finish Performance"
         icon="pi pi-check"
         severity="info"
@@ -64,6 +73,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
+  edit: [slotId: string]
   complete: [slotId: string]
 }>()
 

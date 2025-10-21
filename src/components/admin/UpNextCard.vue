@@ -33,6 +33,15 @@
     </div>
 
     <div class="card-actions">
+      <Button
+        icon="pi pi-pencil"
+        text
+        rounded
+        size="small"
+        @click="$emit('edit', slot.slot_id)"
+        v-tooltip.top="'Edit slot details'"
+        class="edit-btn"
+      />
       <SlotControls
         :slot="slot"
         :has-current-performer="hasCurrentPerformer"
@@ -53,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import Button from 'primevue/button'
 import SlotControls from './SlotControls.vue'
 import type { Slot } from '../../types/api'
 
@@ -81,6 +91,7 @@ withDefaults(defineProps<Props>(), {
 })
 
 defineEmits<{
+  edit: [slotId: string]
   'mark-up-next': [slotId: string]
   'call-to-stage': [slotId: string]
   start: [slotId: string]
@@ -226,6 +237,10 @@ defineEmits<{
 }
 
 .card-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
   border-top: 2px solid rgba(0, 206, 144, 0.2);
   padding-top: 1rem;
 }
