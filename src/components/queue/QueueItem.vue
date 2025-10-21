@@ -18,7 +18,7 @@
 
         <div class="detail-item">
           <i class="pi pi-clock"></i>
-          <span>~{{ slot.self_est_min }} min</span>
+          <span>Act Length: ~{{ slot.self_est_min }} min</span>
         </div>
 
         <div v-if="slot.extra_setup" class="detail-item extra-setup">
