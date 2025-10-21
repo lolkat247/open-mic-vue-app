@@ -259,8 +259,13 @@ watch(() => props.event, (newEvent) => {
   if (newEvent) {
     formData.name = newEvent.name
     formData.date = newEvent.date
-    // Convert string date to Date object for DatePicker
-    dateValue.value = newEvent.date ? new Date(newEvent.date) : null
+    // Convert string date to Date object for DatePicker (local timezone)
+    if (newEvent.date) {
+      const [year, month, day] = newEvent.date.split('-').map(Number)
+      dateValue.value = new Date(year, month - 1, day)
+    } else {
+      dateValue.value = null
+    }
     formData.curfew = newEvent.curfew
     formData.slot_duration_minutes = newEvent.defaults?.slot_duration_minutes || 5
     formData.setup_time_minutes = newEvent.defaults?.setup_time_minutes || 2

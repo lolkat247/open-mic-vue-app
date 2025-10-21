@@ -16,7 +16,16 @@ export function formatTime(isoString: string): string {
  * Format ISO timestamp to local date string
  */
 export function formatDate(isoString: string): string {
-  const date = new Date(isoString)
+  // Parse date in local timezone to avoid UTC/local timezone issues
+  // For date-only strings (YYYY-MM-DD), parse as local instead of UTC
+  let date: Date
+  if (/^\d{4}-\d{2}-\d{2}$/.test(isoString)) {
+    const [year, month, day] = isoString.split('-').map(Number)
+    date = new Date(year, month - 1, day)
+  } else {
+    date = new Date(isoString)
+  }
+
   return date.toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
