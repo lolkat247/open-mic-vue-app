@@ -22,12 +22,27 @@ export interface SignUpData {
 
 export class AuthService {
   private userPool: CognitoUserPool
+  private userPoolId: string
+  private clientId: string
 
-  constructor(userPoolId: string, clientId: string) {
+  constructor(userPoolId: string, clientId: string, useLocalStorage: boolean = false) {
+    this.userPoolId = userPoolId
+    this.clientId = clientId
     this.userPool = new CognitoUserPool({
       UserPoolId: userPoolId,
       ClientId: clientId,
-      Storage: sessionStorage
+      Storage: useLocalStorage ? localStorage : sessionStorage
+    })
+  }
+
+  /**
+   * Update storage type and reinitialize user pool
+   */
+  setStorage(useLocalStorage: boolean) {
+    this.userPool = new CognitoUserPool({
+      UserPoolId: this.userPoolId,
+      ClientId: this.clientId,
+      Storage: useLocalStorage ? localStorage : sessionStorage
     })
   }
 

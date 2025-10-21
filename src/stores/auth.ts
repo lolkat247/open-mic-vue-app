@@ -6,9 +6,20 @@ import { AuthService } from '../services/auth'
 import { config } from '../config'
 import type { AuthTokens, SignUpData } from '../services/auth'
 
+const REMEMBER_ME_KEY = 'openmic-remember-me'
+
 export const useAuthStore = defineStore('auth', () => {
+  // Check if user has "remember me" preference
+  const getRememberMePreference = (): boolean => {
+    return localStorage.getItem(REMEMBER_ME_KEY) === 'true'
+  }
+
   // State
-  const authService = new AuthService(config.userPoolId, config.userPoolClientId)
+  const authService = new AuthService(
+    config.userPoolId,
+    config.userPoolClientId,
+    getRememberMePreference()
+  )
   const idToken = ref<string | null>(null)
   const accessToken = ref<string | null>(null)
   const userEmail = ref<string | null>(null)
@@ -20,10 +31,20 @@ export const useAuthStore = defineStore('auth', () => {
   const token = computed(() => idToken.value)
 
   // Actions
-  async function signIn(email: string, password: string) {
+  async function signIn(email: string, password: string, rememberMe: boolean = false) {
     isLoading.value = true
     error.value = null
     try {
+      // Store remember me preference
+      if (rememberMe) {
+        localStorage.setItem(REMEMBER_ME_KEY, 'true')
+      } else {
+        localStorage.removeItem(REMEMBER_ME_KEY)
+      }
+
+      // Update auth service storage based on preference
+      authService.setStorage(rememberMe)
+
       const tokens: AuthTokens = await authService.signIn(email, password)
       idToken.value = tokens.idToken
       accessToken.value = tokens.accessToken
@@ -70,6 +91,8 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = null
     userEmail.value = null
     error.value = null
+    // Clear remember me preference on sign out
+    localStorage.removeItem(REMEMBER_ME_KEY)
   }
 
   async function restoreSession() {
