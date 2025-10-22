@@ -118,9 +118,6 @@ async function handleSignup(formData: SignupFormData) {
     if (response.slot) {
       createdSlot.value = response.slot
 
-      // Store slot ID in localStorage for quick access
-      localStorage.setItem(`slot_${eventId.value}`, response.slot.slot_id)
-
       toast.add({
         severity: 'success',
         summary: 'Success!',

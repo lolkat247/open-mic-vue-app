@@ -167,12 +167,8 @@ const ws = useWebSocket(eventId, 'public', toast)
 
 const currentEvent = computed(() => eventStore.currentEvent)
 const storedSlotId = computed(() => {
-  // First check route query for slotId (from manage button click)
-  const querySlotId = route.query.slotId as string | undefined
-  if (querySlotId) return querySlotId
-
-  // Fall back to localStorage
-  return localStorage.getItem(`slot_${eventId}`) || ''
+  // Get slot ID from route query parameter
+  return (route.query.slotId as string | undefined) || ''
 })
 const queuePosition = computed(() => {
   if (!currentSlot.value) return 0
@@ -205,9 +201,6 @@ async function handleAuthenticate(data: SlotPasswordAuthData) {
     }
 
     isAuthenticated.value = true
-
-    // Store slot ID for future access
-    localStorage.setItem(`slot_${eventId}`, data.slot_id)
 
     toast.add({
       severity: 'success',
@@ -299,9 +292,6 @@ async function handleWithdraw(password: string) {
     await apiService.withdrawSlot(eventId, currentSlot.value.slot_id, {
       slot_password: password
     })
-
-    // Remove from localStorage
-    localStorage.removeItem(`slot_${eventId}`)
 
     showWithdrawSuccessDialog.value = true
 

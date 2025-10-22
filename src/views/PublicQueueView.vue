@@ -125,11 +125,8 @@ const queuedSlots = computed(() => queueStore.queuedSlots)
 const etaUpdates = computed(() => queueStore.etaUpdates)
 const signupsEnabled = computed(() => eventStore.signupsEnabled)
 
-// Get user's slot ID (from localStorage)
-const userSlotId = computed(() => {
-  if (!eventId.value) return null
-  return localStorage.getItem(`slot_${eventId.value}`)
-})
+// User slot ID - no longer tracked
+const userSlotId = computed(() => null)
 
 // Actions
 function goHome() {
