@@ -71,6 +71,8 @@ export function useWebSocket(eventId: string, viewType: WebSocketViewType, _toas
         console.log('WebSocket connected')
         isConnected.value = true
         connectionError.value = null
+        // Automatically request resync to ensure we're up to date
+        requestResync()
       },
 
       onDisconnected: () => {

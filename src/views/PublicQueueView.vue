@@ -8,7 +8,9 @@
       aria-label="Back to home"
       class="back-button"
     />
-    <EventHeader v-if="currentEvent" :event="currentEvent" />
+    <!-- Event Header or Skeleton -->
+    <EventHeaderSkeleton v-if="isLoadingEvent" />
+    <EventHeader v-else-if="currentEvent" :event="currentEvent" />
 
     <div class="queue-container">
       <!-- Connection Status -->
@@ -19,8 +21,10 @@
         </div>
       </Message>
 
-      <!-- Loading State -->
-      <LoadingState v-if="isLoadingEvent" message="Loading event..." />
+      <!-- Loading State with Skeletons -->
+      <template v-if="isLoadingEvent">
+        <SlotCardSkeleton v-for="i in 5" :key="i" />
+      </template>
 
       <!-- Error State -->
       <Message v-else-if="error" severity="error" :closable="false">
@@ -92,9 +96,10 @@ import { useQueueStore } from '../stores/queue'
 import { useWebSocket } from '../composables/useWebSocket'
 import { useAPI } from '../composables/useAPI'
 import EventHeader from '../components/shared/EventHeader.vue'
-import LoadingState from '../components/shared/LoadingState.vue'
+import EventHeaderSkeleton from '../components/shared/EventHeaderSkeleton.vue'
 import CurrentPerformer from '../components/queue/CurrentPerformer.vue'
 import QueueList from '../components/queue/QueueList.vue'
+import SlotCardSkeleton from '../components/queue/SlotCardSkeleton.vue'
 import Footer from '../components/shared/Footer.vue'
 import CheckInCard from '../components/queue/CheckInCard.vue'
 
@@ -209,8 +214,18 @@ onMounted(async () => {
       return
     }
 
-    // Initialize WebSocket connection with the resolved eventId
-    console.log('Initializing WebSocket for event:', eventId.value)
+    // Fetch event data via REST API first for fast initial render
+    console.log('Fetching event data via REST API...')
+    const { event } = await apiService.getEvent(eventId.value)
+    eventStore.setEvent(event)
+
+    // Initial event data loaded - page can render now!
+    // Slots will be loaded via WebSocket (faster and real-time)
+    isLoadingEvent.value = false
+    console.log('Initial event data loaded, page ready to render')
+
+    // Initialize WebSocket connection for real-time updates (non-blocking)
+    console.log('Initializing WebSocket for real-time updates...')
     wsInstance = useWebSocket(eventId.value, 'public', toast)
 
     // Watch for connection status changes
@@ -219,41 +234,16 @@ onMounted(async () => {
       isConnected.value = connected || false
     }, { immediate: true })
 
-    // Connect to WebSocket (will populate stores)
-    console.log('Connecting to WebSocket...')
+    // Connect to WebSocket asynchronously (doesn't block page render)
+    console.log('Connecting to WebSocket in background...')
     wsInstance.connect()
 
-    // Wait for connection to actually be established
-    console.log('Waiting for WebSocket connection...')
-    let attempts = 0
-    while (!wsInstance.isConnected.value && attempts < 50) {
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      attempts++
-    }
+    // Request full state once connected (via the onConnected callback)
+    // The WebSocket manager will handle this automatically
 
-    if (!wsInstance.isConnected.value) {
-      console.error('WebSocket failed to connect after 5 seconds')
-      error.value = 'Failed to connect to event. Please try refreshing the page.'
-      return
-    }
-
-    console.log('WebSocket connected! Requesting full state...')
-    wsInstance.requestResync()
-
-    // Wait for the full_state message
-    console.log('Waiting for WebSocket full_state...')
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    console.log('Current event after WebSocket wait:', currentEvent.value)
-    console.log('WebSocket connected?', wsInstance.isConnected)
-
-    if (!currentEvent.value) {
-      error.value = 'Event not found or connection failed. Please try refreshing the page.'
-    }
   } catch (err: any) {
     console.error('Failed to load event:', err)
     error.value = err.message || 'Failed to load event'
-  } finally {
     isLoadingEvent.value = false
   }
 })
