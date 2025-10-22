@@ -5,7 +5,7 @@
         <i class="pi pi-microphone home-icon"></i>
         <h1>OpenMic.Site</h1>
         <p class="subtitle">Real-time open mic performance queue management</p>
-        <span class="made-with-love">made with love~ &lt;3</span>
+        <span class="made-with-love">made with love~</span>
       </div>
 
       <p class="intro-text">You're probably here for this ↓</p>
@@ -66,33 +66,62 @@
         </Card>
       </div>
 
-      <div class="about-section">
-        <h2 class="about-title">What is OpenMic.Site?</h2>
-        <p class="about-description">
+      <div class="intro-section">
+        <h2 class="section-title">What is OpenMic.Site?</h2>
+        <p class="intro-description">
           A modern, real-time queue management system designed to make open mic nights run smoothly.
           Performers can sign up instantly, hosts can manage the queue with ease, and everyone stays
           informed with live updates.
         </p>
-        <div class="features-grid">
-          <div class="feature-item">
-            <i class="pi pi-bolt feature-icon"></i>
-            <h3>Real-time Updates</h3>
-            <p>Instant queue changes via WebSocket connections</p>
+      </div>
+
+      <div class="about-section">
+        <h2 class="section-title">Everything You Want to Know</h2>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <h3><i class="pi pi-lightbulb"></i> Why use it?</h3>
+            <ul>
+              <li>No more asking "when am I up?"</li>
+              <li>No clipboard chaos for hosts</li>
+              <li>Everyone knows exactly what's happening ⚡</li>
+            </ul>
           </div>
-          <div class="feature-item">
-            <i class="pi pi-user-plus feature-icon"></i>
-            <h3>Easy Signup</h3>
-            <p>Performers can join the queue in seconds</p>
+
+          <div class="info-item">
+            <h3><i class="pi pi-users"></i> Who's it for?</h3>
+            <ul>
+              <li><strong>Hosts</strong> managing the night</li>
+              <li><strong>Performers</strong> waiting their turn 🎤</li>
+              <li><strong>Friends</strong> tracking their people 🥳</li>
+            </ul>
           </div>
-          <div class="feature-item">
-            <i class="pi pi-chart-line feature-icon"></i>
-            <h3>Live Dashboard</h3>
-            <p>Hosts control everything from one place</p>
+
+          <div class="info-item">
+            <h3><i class="pi pi-star"></i> What's included?</h3>
+            <ul>
+              <li>Live updates for everyone</li>
+              <li>Auto wait time estimates</li>
+              <li>Password-protected slots 🔒</li>
+              <li>Projector-ready display 📺</li>
+              <li>Mobile-friendly interface</li>
+              <li>No personal data collection</li>
+            </ul>
           </div>
-          <div class="feature-item">
-            <i class="pi pi-clock feature-icon"></i>
-            <h3>Time Tracking</h3>
-            <p>Automatic performance timing and ETAs</p>
+
+          <div class="info-item">
+            <h3><i class="pi pi-play"></i> How it works</h3>
+            <ol>
+              <li>Host creates event → gets code</li>
+              <li>Performers enter code → join queue</li>
+              <li>Everyone watches live updates</li>
+            </ol>
+          </div>
+
+          <div class="info-item info-item-highlight">
+            <h3><i class="pi pi-dollar"></i> How much?</h3>
+            <p class="big-answer">Free! ...for now >:)</p>
+            <p class="subtext">We're in closed beta. Pricing TBD, but enjoy it while it lasts!</p>
           </div>
         </div>
       </div>
@@ -315,7 +344,7 @@ function goToAdmin() {
   margin-bottom: 5rem;
 }
 
-.about-section {
+.intro-section {
   margin-top: 5rem;
   padding: 3rem 2.5rem;
   background: rgba(255, 255, 255, 0.03);
@@ -326,7 +355,27 @@ function goToAdmin() {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-.about-title {
+.intro-description {
+  text-align: center;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-section {
+  margin-top: 3rem;
+  padding: 3rem 2.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
   text-align: center;
   font-size: 2.5rem;
   font-weight: 800;
@@ -338,44 +387,88 @@ function goToAdmin() {
   letter-spacing: -0.02em;
 }
 
-.about-description {
-  text-align: center;
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.8;
-  max-width: 800px;
-  margin: 0 auto 3rem auto;
-}
-
-.features-grid {
+.info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
 }
 
-.feature-item {
-  text-align: center;
-  padding: 1.5rem;
+.info-item {
+  padding: 1.75rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.feature-icon {
-  font-size: 2.5rem;
-  color: rgba(0, 206, 144, 1);
-  margin-bottom: 1rem;
-  filter: drop-shadow(0 0 10px rgba(0, 206, 144, 0.4));
-}
-
-.feature-item h3 {
-  font-size: 1.2rem;
+.info-item h3 {
+  font-size: 1.15rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.95);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.feature-item p {
+.info-item h3 i {
+  color: rgba(0, 206, 144, 1);
+  filter: drop-shadow(0 0 8px rgba(0, 206, 144, 0.4));
+}
+
+.info-item p {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.info-item .big-answer {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.4;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(0, 206, 144, 0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.info-item .subtext {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.5rem;
+}
+
+.info-item ul,
+.info-item ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.info-item ul li,
+.info-item ol li {
+  font-size: 1.05rem;
+  line-height: 2;
+  margin-bottom: 0.25rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.info-item ul li strong {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 700;
+}
+
+.info-item ul li::marker,
+.info-item ol li::marker {
+  color: rgba(0, 206, 144, 1);
+  font-weight: 700;
+}
+
+.info-item-highlight {
+  border: 1px solid rgba(0, 206, 144, 0.3) !important;
+  background: rgba(0, 206, 144, 0.05) !important;
+  box-shadow: 0 0 20px rgba(0, 206, 144, 0.15);
 }
 
 .admin-section {
@@ -656,20 +749,25 @@ function goToAdmin() {
     padding: 2rem 1rem;
   }
 
-  .about-section {
+  .intro-section {
     margin-top: 3rem;
     padding: 2rem 1.5rem;
   }
 
-  .about-title {
+  .about-section {
+    margin-top: 2rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .section-title {
     font-size: 2rem;
   }
 
-  .about-description {
+  .intro-description {
     font-size: 1rem;
   }
 
-  .features-grid {
+  .info-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
@@ -722,30 +820,42 @@ function goToAdmin() {
     margin: 2.5rem 1rem 1.5rem 1rem;
   }
 
-  .about-section {
+  .intro-section {
     margin-top: 2.5rem;
     padding: 1.75rem 1.25rem;
   }
 
-  .about-title {
+  .about-section {
+    margin-top: 1.5rem;
+    padding: 1.75rem 1.25rem;
+  }
+
+  .section-title {
     font-size: 1.75rem;
   }
 
-  .about-description {
+  .intro-description {
     font-size: 0.95rem;
-    margin-bottom: 2rem;
   }
 
-  .feature-icon {
-    font-size: 2rem;
+  .info-item {
+    padding: 1.5rem;
   }
 
-  .feature-item h3 {
-    font-size: 1.1rem;
+  .info-item h3 {
+    font-size: 1.05rem;
   }
 
-  .feature-item p {
+  .info-item .big-answer {
+    font-size: 1.2rem;
+  }
+
+  .info-item p {
     font-size: 0.9rem;
+  }
+
+  .info-item ul li {
+    font-size: 0.95rem;
   }
 
   .admin-intro {
