@@ -78,6 +78,12 @@ export class APIService {
     return this.apiCall<{ event: Event }>(`/events/${eventId}`)
   }
 
+  async getPublicEvent(eventId: string): Promise<{ event: Event }> {
+    return this.apiCall<{ event: Event }>(`/public/events/${eventId}`, {
+      authenticated: false // Public endpoint - no auth required
+    })
+  }
+
   async getEventByCode(code: string): Promise<{ event: Event }> {
     return this.apiCall<{ event: Event }>(`/events/by-code/${code}`, {
       authenticated: false // Public endpoint

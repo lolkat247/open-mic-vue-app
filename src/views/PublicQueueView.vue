@@ -216,7 +216,7 @@ onMounted(async () => {
 
     // Fetch event data via REST API first for fast initial render
     console.log('Fetching event data via REST API...')
-    const { event } = await apiService.getEvent(eventId.value)
+    const { event } = await apiService.getPublicEvent(eventId.value)
     eventStore.setEvent(event)
 
     // Initial event data loaded - page can render now!
