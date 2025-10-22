@@ -237,7 +237,10 @@ watch(() => props.event, (newEvent) => {
     formData.date = newEvent.date
     // Convert string date to Date object for DatePicker (local timezone)
     if (newEvent.date) {
-      const [year, month, day] = newEvent.date.split('-').map(Number)
+      const parts = newEvent.date.split('-').map(Number)
+      const year = parts[0] ?? 0
+      const month = parts[1] ?? 1
+      const day = parts[2] ?? 1
       dateValue.value = new Date(year, month - 1, day)
     } else {
       dateValue.value = null

@@ -140,6 +140,7 @@ export type DeltaAction =
   | 'event_updated'
   | 'signups_paused'
   | 'signups_resumed'
+  | 'checkin_created'
 
 export interface FullStateMessage {
   type: 'full_state'
@@ -184,3 +185,27 @@ export type WebSocketMessage =
   | PongMessage
 
 export type WebSocketOutboundMessage = PingMessage | RequestResyncMessage
+
+// Check-in types
+
+export interface Checkin {
+  email: string
+  event_id: string
+  event_code: string
+  wants_contact: boolean
+  checked_in_at: string
+}
+
+export interface CreateCheckinRequest {
+  email: string
+  wants_contact: boolean
+}
+
+export interface CreateCheckinResponse {
+  message: string
+  checkin: Checkin
+}
+
+export interface GetCheckinsResponse {
+  checkins: Checkin[]
+}

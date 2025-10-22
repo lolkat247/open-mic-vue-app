@@ -23,18 +23,42 @@
           <span class="stat-label">No Shows</span>
         </div>
       </div>
+      <div class="stat-badge info">
+        <i class="pi pi-id-card"></i>
+        <div class="stat-data">
+          <span class="stat-number">{{ checkinCount }}</span>
+          <span class="stat-label">Check-ins</span>
+        </div>
+        <Button
+          icon="pi pi-download"
+          text
+          rounded
+          size="small"
+          @click="$emit('download-checkins')"
+          v-tooltip.top="'Download check-ins CSV'"
+          class="download-button"
+          :disabled="checkinCount === 0"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import Button from 'primevue/button'
+
 interface Props {
   queuedCount: number
   completedCount: number
   noShowCount: number
+  checkinCount: number
 }
 
 defineProps<Props>()
+
+defineEmits<{
+  'download-checkins': []
+}>()
 </script>
 
 <style scoped>
@@ -97,6 +121,14 @@ defineProps<Props>()
     0 0 12px rgba(239, 68, 68, 0.2);
 }
 
+.stat-badge.info {
+  border: 1px solid rgba(14, 165, 233, 0.5);
+  border-left: 4px solid rgba(14, 165, 233, 1);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 12px rgba(14, 165, 233, 0.2);
+}
+
 .stat-badge i {
   font-size: 1.75rem;
   flex-shrink: 0;
@@ -117,11 +149,32 @@ defineProps<Props>()
   filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.5));
 }
 
+.stat-badge.info i {
+  color: rgba(14, 165, 233, 1);
+  filter: drop-shadow(0 0 8px rgba(14, 165, 233, 0.5));
+}
+
 .stat-data {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
   flex: 1;
+}
+
+.download-button {
+  flex-shrink: 0;
+  color: rgba(14, 165, 233, 1) !important;
+  transition: all 0.2s ease;
+}
+
+.download-button:hover:not(:disabled) {
+  background: rgba(14, 165, 233, 0.15) !important;
+  transform: scale(1.1);
+}
+
+.download-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .stat-number {
@@ -167,6 +220,11 @@ defineProps<Props>()
   .stat-badge.danger {
     border-top-color: rgba(239, 68, 68, 1);
     border-left-color: rgba(239, 68, 68, 0.5);
+  }
+
+  .stat-badge.info {
+    border-top-color: rgba(14, 165, 233, 1);
+    border-left-color: rgba(14, 165, 233, 0.5);
   }
 
   .stat-badge i {

@@ -47,9 +47,6 @@ class WebSocketManager {
         onDelta: (message) => {
           entry!.handlers.forEach(h => h.onDelta?.(message))
         },
-        onBanner: (message) => {
-          entry!.handlers.forEach(h => h.onBanner?.(message))
-        },
         onConnected: () => {
           entry!.handlers.forEach(h => h.onConnected?.())
         },

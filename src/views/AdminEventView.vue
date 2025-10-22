@@ -149,6 +149,8 @@
               :queued-count="queuedCount"
               :completed-count="completedCount"
               :no-show-count="noShowCount"
+              :checkin-count="checkinCount"
+              @download-checkins="handleDownloadCheckins"
             />
           </div>
 
@@ -226,7 +228,6 @@ import Button from 'primevue/button'
 import Badge from 'primevue/badge'
 import Menu from 'primevue/menu'
 import Message from 'primevue/message'
-import Dialog from 'primevue/dialog'
 import { useEventStore } from '../stores/event'
 import { useQueueStore } from '../stores/queue'
 import { useAuthStore } from '../stores/auth'
@@ -266,6 +267,7 @@ let wsConnect: (() => void) | null = null
 let wsDisconnect: (() => void) | null = null
 
 const currentEvent = computed(() => eventStore.currentEvent)
+const checkinCount = computed(() => eventStore.checkinCount)
 const queueSlots = computed(() => queueStore.slots.filter(s => s.status === 'queued'))
 const upNextSlot = computed(() => queueStore.slots.find(s => s.status === 'up_next'))
 const settingUpSlot = computed(() => queueStore.slots.find(s => s.status === 'setting_up'))
@@ -580,6 +582,39 @@ function copyEventCode() {
   }
 }
 
+async function handleDownloadCheckins() {
+  try {
+    const blob = await apiService.exportCheckins(eventId.value)
+    const eventCode = currentEvent.value?.event_code || 'event'
+    const date = currentEvent.value?.date || new Date().toISOString().split('T')[0]
+    const filename = `event-checkins-${eventCode}-${date}.csv`
+
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', filename)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(url)
+
+    toast.add({
+      severity: 'success',
+      summary: 'Downloaded',
+      detail: 'Check-ins exported successfully',
+      life: 3000
+    })
+  } catch (err: any) {
+    console.error('Failed to download check-ins:', err)
+    toast.add({
+      severity: 'error',
+      summary: 'Download Failed',
+      detail: err.message || 'Failed to export check-ins',
+      life: 5000
+    })
+  }
+}
+
 onMounted(async () => {
   isLoading.value = true
   error.value = null
@@ -652,6 +687,15 @@ onMounted(async () => {
     } else {
       // Request full state from server (can't be sent during $connect)
       ws.requestResync()
+    }
+
+    // Fetch check-in count
+    try {
+      const countResult = await apiService.getCheckinCount(eventId.value)
+      eventStore.setCheckinCount(countResult.count)
+    } catch (err) {
+      console.error('Failed to fetch check-in count:', err)
+      // Don't fail the whole page load if check-in count fails
     }
   } catch (err: any) {
     console.error('Failed to load event:', err)

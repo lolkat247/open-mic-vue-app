@@ -203,7 +203,7 @@ const emit = defineEmits<{
   submit: [data: SignupFormData]
 }>()
 
-const actTypes = ACT_TYPES
+const actTypes = [...ACT_TYPES]
 
 const formData = reactive<SignupFormData & { youtube_link?: string }>({
   stage_name: '',

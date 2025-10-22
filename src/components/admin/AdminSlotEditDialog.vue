@@ -141,7 +141,6 @@ import InputNumber from 'primevue/inputnumber'
 import Checkbox from 'primevue/checkbox'
 import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
-import Badge from 'primevue/badge'
 import Divider from 'primevue/divider'
 import TimePickerInput from '../shared/TimePickerInput.vue'
 import { validateEstimatedMinutes, validateTimeFormat } from '../../utils/validation'
@@ -186,7 +185,7 @@ const formData = reactive<AdminUpdateSlotData>({
 
 const errors = reactive<Partial<Record<keyof AdminUpdateSlotData, string>>>({})
 
-const actTypes = ACT_TYPES
+const actTypes = [...ACT_TYPES]
 
 const statusOptions = [
   { label: 'Queued', value: 'queued' },
@@ -197,32 +196,6 @@ const statusOptions = [
   { label: 'No Show', value: 'no_show' },
   { label: 'Withdrawn', value: 'withdrawn' }
 ]
-
-const statusLabel = computed(() => {
-  switch (props.slot.status) {
-    case 'queued': return 'Queued'
-    case 'up_next': return 'Up Next'
-    case 'setting_up': return 'Setting Up'
-    case 'performing': return 'Performing'
-    case 'completed': return 'Completed'
-    case 'no_show': return 'No Show'
-    case 'withdrawn': return 'Withdrawn'
-    default: return props.slot.status
-  }
-})
-
-const statusSeverity = computed(() => {
-  switch (props.slot.status) {
-    case 'queued': return 'info'
-    case 'up_next': return 'warn'
-    case 'setting_up':
-    case 'performing': return 'success'
-    case 'completed': return 'secondary'
-    case 'no_show':
-    case 'withdrawn': return 'danger'
-    default: return 'info'
-  }
-})
 
 const isFormValid = computed(() => {
   return (

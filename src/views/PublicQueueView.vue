@@ -35,6 +35,9 @@
           <p>{{ currentEvent.house_rules }}</p>
         </div>
 
+        <!-- Check-In Card -->
+        <CheckInCard :event-id="eventId" />
+
         <!-- Current Performer -->
         <CurrentPerformer :slot="currentSlot" />
 
@@ -93,6 +96,7 @@ import LoadingState from '../components/shared/LoadingState.vue'
 import CurrentPerformer from '../components/queue/CurrentPerformer.vue'
 import QueueList from '../components/queue/QueueList.vue'
 import Footer from '../components/shared/Footer.vue'
+import CheckInCard from '../components/queue/CheckInCard.vue'
 
 const route = useRoute()
 const router = useRouter()

@@ -20,7 +20,10 @@ export function formatDate(isoString: string): string {
   // For date-only strings (YYYY-MM-DD), parse as local instead of UTC
   let date: Date
   if (/^\d{4}-\d{2}-\d{2}$/.test(isoString)) {
-    const [year, month, day] = isoString.split('-').map(Number)
+    const parts = isoString.split('-').map(Number)
+    const year = parts[0] ?? 0
+    const month = parts[1] ?? 1
+    const day = parts[2] ?? 1
     date = new Date(year, month - 1, day)
   } else {
     date = new Date(isoString)

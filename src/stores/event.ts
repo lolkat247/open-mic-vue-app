@@ -9,6 +9,7 @@ export const useEventStore = defineStore('event', () => {
   const currentEvent = ref<Event | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const checkinCount = ref(0)
 
   // Getters
   const eventId = computed(() => currentEvent.value?.event_id ?? null)
@@ -58,11 +59,16 @@ export const useEventStore = defineStore('event', () => {
     }
   }
 
+  function setCheckinCount(count: number) {
+    checkinCount.value = count
+  }
+
   return {
     // State
     currentEvent,
     isLoading,
     error,
+    checkinCount,
     // Getters
     eventId,
     eventName,
@@ -75,6 +81,7 @@ export const useEventStore = defineStore('event', () => {
     setLoading,
     setError,
     pauseSignups,
-    resumeSignups
+    resumeSignups,
+    setCheckinCount
   }
 })

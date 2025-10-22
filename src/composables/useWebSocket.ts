@@ -8,7 +8,7 @@ import type { ToastServiceMethods } from 'primevue/toastservice'
 import type { WebSocketViewType } from '../types/api'
 import { config } from '../config'
 
-export function useWebSocket(eventId: string, viewType: WebSocketViewType, toast: ToastServiceMethods, token: string | null = null) {
+export function useWebSocket(eventId: string, viewType: WebSocketViewType, _toast: ToastServiceMethods, token: string | null = null) {
   const eventStore = useEventStore()
   const queueStore = useQueueStore()
 
@@ -62,6 +62,8 @@ export function useWebSocket(eventId: string, viewType: WebSocketViewType, toast
           eventStore.pauseSignups()
         } else if (message.action === 'signups_resumed') {
           eventStore.resumeSignups()
+        } else if (message.action === 'checkin_created' && deltaData?.checkin_count !== undefined) {
+          eventStore.setCheckinCount(deltaData.checkin_count)
         }
       },
 

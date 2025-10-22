@@ -10,7 +10,10 @@ import type {
   UpdateSlotRequest,
   WithdrawSlotRequest,
   ReorderSlotsRequest,
-  APIError
+  APIError,
+  CreateCheckinRequest,
+  CreateCheckinResponse,
+  GetCheckinsResponse
 } from '../types/api'
 
 export class APIService {
@@ -214,6 +217,45 @@ export class APIService {
       method: 'POST',
       body: JSON.stringify(data)
     })
+  }
+
+  // Check-in APIs
+
+  async createCheckin(eventId: string, data: CreateCheckinRequest): Promise<CreateCheckinResponse> {
+    return this.apiCall<CreateCheckinResponse>(`/events/${eventId}/checkins`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      authenticated: false
+    })
+  }
+
+  async getCheckins(eventId: string): Promise<GetCheckinsResponse> {
+    return this.apiCall<GetCheckinsResponse>(`/events/${eventId}/checkins`)
+  }
+
+  async getCheckinCount(eventId: string): Promise<{ count: number }> {
+    return this.apiCall<{ count: number }>(`/events/${eventId}/checkins/count`)
+  }
+
+  async exportCheckins(eventId: string): Promise<Blob> {
+    const url = `${this.baseUrl}/events/${eventId}/checkins/export`
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    }
+
+    // Add Authorization header if authenticated and token is available
+    if (this.token) {
+      headers['Authorization'] = `Bearer ${this.token}`
+    }
+
+    const response = await fetch(url, { headers })
+
+    if (!response.ok) {
+      const errorData: APIError = await response.json()
+      throw new Error(errorData.error || `HTTP ${response.status}`)
+    }
+
+    return await response.blob()
   }
 
 }
