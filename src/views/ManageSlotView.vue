@@ -166,7 +166,14 @@ const authenticatedPassword = ref<string>('')
 const ws = useWebSocket(eventId, 'public', toast)
 
 const currentEvent = computed(() => eventStore.currentEvent)
-const storedSlotId = computed(() => localStorage.getItem(`slot_${eventId}`) || '')
+const storedSlotId = computed(() => {
+  // First check route query for slotId (from manage button click)
+  const querySlotId = route.query.slotId as string | undefined
+  if (querySlotId) return querySlotId
+
+  // Fall back to localStorage
+  return localStorage.getItem(`slot_${eventId}`) || ''
+})
 const queuePosition = computed(() => {
   if (!currentSlot.value) return 0
   const queuedSlots = queueStore.queuedSlots

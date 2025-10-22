@@ -140,8 +140,12 @@ function goToSignup() {
   router.push({ name: 'performer-signup', params: { eventId: eventId.value } })
 }
 
-function goToManageSlot() {
-  router.push({ name: 'manage-slot', params: { eventId: eventId.value } })
+function goToManageSlot(slotId: string) {
+  router.push({
+    name: 'manage-slot',
+    params: { eventId: eventId.value },
+    query: { slotId }
+  })
 }
 
 // Lifecycle
