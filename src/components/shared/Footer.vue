@@ -1,7 +1,7 @@
 <template>
   <footer class="app-footer">
     <span class="footer-rawr">rawr~</span>
-    <span class="footer-copyright">© 2025 JGlacier LLC</span>
+    <span class="footer-copyright">© 2025 All Rights Reserved</span>
   </footer>
 </template>
 
